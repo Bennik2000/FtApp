@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <TextView
+        android:text="@string/SelectDeviceActivity_connectToTxtController"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/controlMargin" />
+    <RadioGroup
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioGroupConnectionType">
+        <RadioButton
+            android:text="@string/SelectDeviceActivity_wifi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonWifi"
+            android:layout_margin="@dimen/controlMargin" />
+        <RadioButton
+            android:text="@string/SelectDeviceActivity_bluetooth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonBluetooth"
+            android:layout_margin="@dimen/controlMargin" />
+        <RadioButton
+            android:text="@string/SelectDeviceActivity_custom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButton_custom"
+            android:layout_margin="@dimen/controlMargin" />
+    </RadioGroup>
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/connectTxtIpAdressTextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/controlMargin"
+        android:visibility="gone">
+        <EditText
+            android:id="@+id/connectTxtIpAdress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/SelectDeviceActivity_ipAdress_Hint"
+            android:inputType="textUri"
+            android:layout_margin="@dimen/controlMargin" />
+    </android.support.design.widget.TextInputLayout>
+    <Button
+        android:text="@string/SelectDeviceActivity_connect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonConnect"
+        android:layout_margin="@dimen/controlMargin" />
+</LinearLayout>

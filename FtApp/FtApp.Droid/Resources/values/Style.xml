@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <style name="FtAppBaseTheme" parent="FtApp.Base">
+  </style>
+  <style name="FtApp.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="colorPrimary">@color/primaryColor</item>
+    <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+    <item name="colorAccent">@color/accentColor</item>
+  </style>
+</resources>

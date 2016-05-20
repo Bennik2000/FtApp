@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>88c31bbf-cb2d-4283-973f-6a2b3f8f55f5</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>FtApp</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\FtInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\FrameReceivedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\ResponseCameraFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\TxtCameraCommunication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandExchangeData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandQueryStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandStartCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandStartOnline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandStopCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandStopOnline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Command\CommandUpdateConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Events\InputValueChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseExchangeData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseQueryStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseStartCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseStartOnline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseStopCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseStopOnline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseUpdateConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\TxtCommunication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\TxtExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\TxtInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\TaskQueue.cs" />
+  </ItemGroup>
+</Project>

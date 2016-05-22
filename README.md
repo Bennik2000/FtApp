@@ -25,7 +25,10 @@ Android 4.0.3 (Ice Cream Sandwich) or higher.
 * Add Windows Phone and iOS support (I can't do this because i do not have a WP or Mac)
 
 ## Contributing
-* Please report any bugs which you can find. 
+If you want to work on this app you have to install Visual Studio 2015 Community Edition
+with the Xamarin package.  
+
+* Please report any bugs which you can find.
 * If you have an idea please let me know.
 * You can try to work on the things which are listed in the TODO list
 

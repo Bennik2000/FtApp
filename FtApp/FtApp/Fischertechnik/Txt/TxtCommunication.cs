@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Security;
 using TXTCommunication.Fischertechnik.Txt.Command;
 using TXTCommunication.Fischertechnik.Txt.Response;
 using TXTCommunication.Utils;
@@ -11,22 +10,22 @@ namespace TXTCommunication.Fischertechnik.Txt
     /// <summary>
     /// This class manages the TCP/IP communication between the TXT and us.
     /// </summary>
-    //TODO: Implement timeout
     class TxtCommunication : IDisposable
     {
         public bool Connected { get; private set; }
-        public string IpAdress { get; private set; }
 
 
         private Socket _socket;
+
+        public TxtInterface TxtInterface { get; private set; }
 
         // We do all the network communication in one thread with this queue
         private readonly TaskQueue _networkingTaskQueue;
 
 
-        public TxtCommunication(string ipAdress)
+        public TxtCommunication(TxtInterface txtInterface)
         {
-            IpAdress = ipAdress;
+            TxtInterface = txtInterface;
 
             _networkingTaskQueue = new TaskQueue("TXT Communication");
         }
@@ -38,25 +37,34 @@ namespace TXTCommunication.Fischertechnik.Txt
                 throw new InvalidOperationException("Already connected!");
             }
 
+            Exception exception = null;
+
             _networkingTaskQueue.DoWorkInQueue(() =>
             {
                 try
                 {
-                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(IpAdress), TxtInterface.ControllerIpPort);
-                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(TxtInterface.Ip), TxtInterface.ControllerIpPort);
+                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                    {
+                        SendTimeout = TxtInterface.TcpTimeout,
+                        ReceiveTimeout = TxtInterface.TcpTimeout
+                    };
                     _socket.Connect(ipEndPoint);
                 }
-                catch (SocketException)
+                catch (Exception e)
                 {
-                    Connected = false;
-                }
-                catch (SecurityException)
-                {
+                    exception = e;
                     Connected = false;
                 }
 
                 Connected = _socket.Connected;
             }, true);
+
+            if (exception != null)
+            {
+                Connected = false;
+                throw exception;
+            }
         }
 
         public void CloseConnection()
@@ -66,16 +74,33 @@ namespace TXTCommunication.Fischertechnik.Txt
                 throw new InvalidOperationException("Not connected!");
             }
 
+            Exception exception = null;
+
             _networkingTaskQueue.DoWorkInQueue(() =>
             {
-                _socket.Close();
-                Connected = false;
+                try
+                {
+                    _socket.Shutdown(SocketShutdown.Both);
+                    _socket.Close();
+                    Connected = false;
+                }
+                catch (SocketException e)
+                {
+                    exception = e;
+                    Connected = false;
+                }
             }, true);
+            
+            if (exception != null)
+            {
+                Connected = false;
+                throw exception;
+            }
         }
 
         public void SendCommand(CommandBase command, ResponseBase response)
         {
-            Exception exteption = null;
+            Exception exception = null;
             
             _networkingTaskQueue.DoWorkInQueue(() =>
             {
@@ -97,7 +122,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                     {
                         // Set an exception when the received response id is not the same as the expected response id
                         // The exception is thrown at the end
-                        exteption =
+                        exception =
                             new InvalidOperationException(
                                 $"The response id ({responseId}) is not the same response id ({response.ResponseId}) as expected");
                     }
@@ -109,15 +134,20 @@ namespace TXTCommunication.Fischertechnik.Txt
                 }
                 catch (Exception ex)
                 {
-                    exteption = ex;
+                    exception = ex;
                 }
 
             }, true);
 
 
-            if (exteption != null)
+            if (exception != null)
             {
-                throw exteption;
+                if (!(exception is InvalidOperationException))
+                {
+                    Connected = false;
+                }
+
+                throw exception;
             }
         }
         

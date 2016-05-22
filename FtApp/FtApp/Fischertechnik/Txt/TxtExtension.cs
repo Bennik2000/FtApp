@@ -132,7 +132,6 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         public void SetOutputMode(int outputIndex, bool isMotor)
         {
-            Console.WriteLine((int)Math.Floor((double)outputIndex / 2));
             OutputModes[(int) Math.Floor((double)outputIndex / 2)] = isMotor;
         }
 

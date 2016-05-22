@@ -36,7 +36,7 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
         public TxtCameraCommunication(TxtCommunication txtCommunication)
         {
             TxtCommunication = txtCommunication;
-            IpAdress = TxtCommunication.IpAdress;
+            IpAdress = TxtCommunication.TxtInterface.Ip;
 
             ReceivedFrames = new ConcurrentQueue<ResponseCameraFrame>();
             _networkingTaskQueue = new TaskQueue("TXT Camera communication");
@@ -45,6 +45,7 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
         
         public void StartCamera()
         {
+            TxtCommunication.TxtInterface.LogMessage("Starting camera");
             if (Connected)
             {
                 throw new InvalidOperationException("Already connected!");
@@ -79,14 +80,18 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
             int tries = 0;
             while (tries < 2) // Try 2 times to connect to the camera server
             {
+                TxtCommunication.TxtInterface.LogMessage("Trying to connect to camera server");
                 try
                 {
                     var ipEndPoint = new IPEndPoint(IPAddress.Parse(IpAdress), TxtInterface.ControllerCameraIpPort);
                     _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     _socket.Connect(ipEndPoint);
+                    
+                    TxtCommunication.TxtInterface.LogMessage("Connected to camera server");
                 }
-                catch (SocketException)
+                catch (SocketException e)
                 {
+                    TxtCommunication.TxtInterface.LogMessage($"Exception while connecting to camera server: {e.Message}");
                     Connected = false;
 
                     tries++;
@@ -94,8 +99,10 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
 
                     continue;
                 }
-                catch (SecurityException)
+                catch (SecurityException e)
                 {
+                    TxtCommunication.TxtInterface.LogMessage($"Exception while connecting to camera server: {e.Message}");
+
                     Connected = false;
 
                     tries++;
@@ -111,16 +118,19 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
 
         private void CameraReceiverMethod()
         {
+            byte[] framedata = new byte[1];
+
+            var responseCameraFrame = new ResponseCameraFrame();
+
+
             while (!RequestedStop)
             {
                 try
                 {
-                    var responseCameraFrame = new ResponseCameraFrame();
-
                     var responseBytes = new byte[responseCameraFrame.GetResponseLength()];
 
                     // Receive the first part of the frame. This part contains the informations like height, width or length
-                    Receive(_socket, responseBytes);
+                    Receive(_socket, responseBytes, responseBytes.Length);
 
                     try
                     {
@@ -134,13 +144,21 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
                         DisconnectFromCameraServerMethod();
                         break;
                     }
-                    
-                    
-                    var framedata = new byte[responseCameraFrame.FrameSizeCompressed];
+
+
+                    // Use the existing framedata object and resize if needed
+                    if (framedata.Length < responseCameraFrame.FrameSizeCompressed + 2)
+                    {
+                        Array.Resize(ref framedata, responseCameraFrame.FrameSizeCompressed + 2);
+                    }
 
 
                     // Receive the second part of the frame. This part contains the compressed JPEG data
-                    Receive(_socket, framedata);
+                    Receive(_socket, framedata, responseCameraFrame.FrameSizeCompressed);
+
+                    // Add the missing EOI (End of image) tag
+                    framedata[framedata.Length - 2] = 0xFF;
+                    framedata[framedata.Length - 1] = 0xD9;
 
                     // Store the received frame in the responseCameraFrame object
                     responseCameraFrame.FrameData = framedata;
@@ -152,9 +170,9 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
                         if (!ReceivedFrames.IsEmpty)
                         {
                             ResponseCameraFrame frame;
-                            if (ReceivedFrames.TryDequeue(out frame))
+                            if (ReceivedFrames.TryDequeue(out frame) && !RequestedStop)
                             {
-                                FrameReceivedEventArgs eventArgs = new FrameReceivedEventArgs(frame);
+                                FrameReceivedEventArgs eventArgs = new FrameReceivedEventArgs(framedata, responseCameraFrame.FrameSizeCompressed + 2);
                                 FrameReceived?.Invoke(this, eventArgs);
                             }
 
@@ -171,15 +189,15 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
             }
         }
 
-        private int Receive(Socket socket, byte[] buffer)
+        private int Receive(Socket socket, byte[] buffer, int count)
         {
             // Wait until enough bytes are received
-            while (socket.Available < buffer.Length && !RequestedStop)
+            while (socket.Available < count && !RequestedStop)
             {
                 Thread.Sleep(5);
             }
 
-            return socket.Receive(buffer);
+            return socket.Receive(buffer, 0, count, SocketFlags.None);
         }
 
         private void DisconnectFromCameraServerMethod()

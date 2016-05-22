@@ -19,7 +19,21 @@
   <string name="ControlTxtActivity_tabStatusTitle">Status</string>
   <string name="ControlTxtActivity_tabInputTitle">Input</string>
   <string name="ControlTxtActivity_tabOutputTitle">Output</string>
+  <string name="ControlTxtActivity_tabCameraTitle">Camera</string>
   
+  <string name="ControlTxtActivity_interfaceNotAvaliableTitle">Interface not available</string>
+  <string name="ControlTxtActivity_interfaceNotAvaliable">Interface not available. Please check the connection</string>
+  <string name="ControlTxtActivity_interfaceNotAvaliablePositive">Ok</string>
+  
+  
+  <string name="ControlTxtActivity_interfaceConnecting">Connecting...</string>
+  <string name="ControlTxtActivity_interfaceConnectingTitle">Please wait...</string>
+
+  <string name="ControlTxtActivity_interfaceConnectionLostMessage">The connection to the interface has been lost.</string>
+  <string name="ControlTxtActivity_interfaceConnectionLostTitle">Connection lost</string>
+  <string name="ControlTxtActivity_interfaceConnectionLostPositive">Ok</string>
+
+
   <string name="ControlTxtActivity_inputDigitalOne">Pressed</string>
   <string name="ControlTxtActivity_inputDigitalZero">Not pressed</string>
   

@@ -8,6 +8,7 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using FtApp.Droid.Activities.ControlTxt;
 using System.Net;
+using FtApp.Utils;
 using TXTCommunication.Fischertechnik.Txt;
 
 namespace FtApp.Droid.Activities.SelectDevice
@@ -144,7 +145,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             }
             
 
-            if (IsValidIpAdress(_ip))
+            if (NetworkUtils.IsValidIpAdress(_ip))
             {
                 // Open the control activity and pass the ip adress
                 Intent intent = new Intent(Activity, typeof(ControlTxtActivity));
@@ -157,20 +158,6 @@ namespace FtApp.Droid.Activities.SelectDevice
                 string message = GetString(Resource.String.SelectDeviceActivity_notValidIp, _ip);
                 Toast.MakeText(Activity, message, ToastLength.Long).Show();
             }
-        }
-
-        private bool IsValidIpAdress(string ip)
-        {
-            IPAddress address;
-            if (IPAddress.TryParse(ip, out address))
-            {
-                switch (address.AddressFamily)
-                {
-                    case System.Net.Sockets.AddressFamily.InterNetwork:
-                        return true;
-                }
-            }
-            return false;
         }
 
         private class FadeOutAnimationListener : AnimatorListenerAdapter

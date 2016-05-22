@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtApp.Droid", "FtApp\FtApp.
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FtApp", "FtApp\FtApp\FtApp.shproj", "{88C31BBF-CB2D-4283-973F-6A2B3F8F55F5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB7180A8-C865-4B38-9CDE-3FDAD1D7D277}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		FtApp\FtApp\FtApp.projitems*{2433eeae-fd4c-4ba9-975a-ca12d611b038}*SharedItemsImports = 4

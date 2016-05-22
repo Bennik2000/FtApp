@@ -10,25 +10,25 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace FtApp.Droid.Activities.ControlTxt
 {
-    public class OutputFragment : Fragment
+    public class OutputFragment : Fragment, IFtInterfaceFragment
     {
-        private readonly FtInterface _ftInterface;
+        private FtInterface _ftInterface;
 
         private ListAdapter _listAdapter;
         private ListView _listViewOutputPorts;
 
         private readonly List<OutputViewModel> _outputViewModels;
 
-        public OutputFragment(FtInterface ftInterface)
+        public OutputFragment()
         {
-            _ftInterface = ftInterface;
-            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
-
             _outputViewModels = new List<OutputViewModel>();
         }
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
+            _outputViewModels.Clear();
+            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+
             for (int i = 0; i < _ftInterface.GetMotorCount(); i++)
             {
                 var outputModel = new OutputViewModel(_ftInterface);
@@ -38,6 +38,13 @@ namespace FtApp.Droid.Activities.ControlTxt
 
                 _outputViewModels.Add(outputModel);
             }
+            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+        }
+
+        private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
+        {
+            _outputViewModels.Clear();
+            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -45,12 +52,27 @@ namespace FtApp.Droid.Activities.ControlTxt
             var view = inflater.Inflate(Resource.Layout.OutputFragmentLayout, container, false);
 
             _listViewOutputPorts = view.FindViewById<ListView>(Resource.Id.listViewOutputPorts);
+            _listViewOutputPorts.Divider = null;
+            _listViewOutputPorts.DividerHeight = 0;
+
 
             _listAdapter = new ListAdapter(Activity, _outputViewModels);
 
             _listViewOutputPorts.Adapter = _listAdapter;
 
             return view;
+        }
+
+        public void SetFtInterface(FtInterface ftInterface)
+        {
+            _ftInterface = ftInterface;
+            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
+            _ftInterface.OnlineStopped += FtInterfaceOnOnlineStopped;
+        }
+
+        public string GetTitle(Context context)
+        {
+            return context.GetText(Resource.String.ControlTxtActivity_tabOutputTitle);
         }
 
         /// <summary>
@@ -99,12 +121,38 @@ namespace FtApp.Droid.Activities.ControlTxt
 
                     seekBarValue1.ProgressChanged += delegate (object sender, SeekBar.ProgressChangedEventArgs args)
                     {
-                        item.SetValueOutput1(args.Progress);
+                        int itemIndex = position;
+
+                        if (args.FromUser)
+                        {
+                            int threshold = 0;
+
+                            if (_items[itemIndex].IsMotor)
+                            {
+                                threshold = _items[itemIndex].MaxOutput1/2;
+                            }
+
+                            if (Math.Abs(args.Progress - threshold) < 100)
+                            {
+                                args.SeekBar.Progress = threshold;
+                            }
+                        }
+
+                        item.SetValueOutput1(args.SeekBar.Progress);
                     };
 
                     seekBarValue2.ProgressChanged += delegate (object sender, SeekBar.ProgressChangedEventArgs args)
                     {
-                        item.SetValueOutput2(args.Progress);
+                        if (args.FromUser)
+                        {
+                            if (args.Progress < 100)
+                            {
+                                args.SeekBar.Progress = 0;
+                            }
+                        }
+
+
+                        item.SetValueOutput2(args.SeekBar.Progress);
                     };
 
 
@@ -114,6 +162,8 @@ namespace FtApp.Droid.Activities.ControlTxt
                         ShowInputModeContextMenu(view.Context, imageViewContextualMenu, position);
                     };
 
+
+                    FadeInAnimation(view, position);
                 }
 
                 if (seekBarValue1 == null)
@@ -148,7 +198,16 @@ namespace FtApp.Droid.Activities.ControlTxt
                 return view;
             }
             
-            
+            private void FadeInAnimation(View view, int position)
+            {
+                view.Alpha = 0;
+
+                view.TranslationY = 20;
+
+                view.Animate().Alpha(1).SetDuration(225).SetStartDelay(position * 20).Start();
+                view.Animate().TranslationY(0).SetDuration(100).SetStartDelay(position * 20).Start();
+            }
+
             private void ShowInputModeContextMenu(Context context, ImageView imageView, int position)
             {
                 if (_popupMenus.ContainsKey(_items[position]))
@@ -192,7 +251,7 @@ namespace FtApp.Droid.Activities.ControlTxt
                 NotifyDataSetChanged();
             }
         }
-
+        
         /// <summary>
         /// This class holds the output values
         /// </summary>
@@ -252,8 +311,10 @@ namespace FtApp.Droid.Activities.ControlTxt
                         absoluteValue = MaxOutput1;
                     }
 
-
-                    FtInterface.SetMotorValue(IndexMotor, absoluteValue, direction);
+                    if (FtInterface.CanSendCommand())
+                    {
+                        FtInterface.SetMotorValue(IndexMotor, absoluteValue, direction);
+                    }
                 }
                 else
                 {
@@ -262,7 +323,10 @@ namespace FtApp.Droid.Activities.ControlTxt
                         value = MaxOutput1;
                     }
 
-                    FtInterface.SetOutputValue(IndexOutput1, value);
+                    if (FtInterface.CanSendCommand())
+                    {
+                        FtInterface.SetOutputValue(IndexOutput1, value);
+                    }
                 }
             }
 
@@ -275,7 +339,10 @@ namespace FtApp.Droid.Activities.ControlTxt
 
                 if (!IsMotor)
                 {
-                    FtInterface.SetOutputValue(IndexOutput2, value);
+                    if (FtInterface.CanSendCommand())
+                    {
+                        FtInterface.SetOutputValue(IndexOutput2, value);
+                    }
                 }
             }
 

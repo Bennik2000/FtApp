@@ -11,22 +11,16 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace FtApp.Droid.Activities.ControlTxt
 {
-    public class InputFragment : Fragment
+    public class InputFragment : Fragment, IFtInterfaceFragment
     {
-        private readonly FtInterface _ftInterface;
-
         private readonly List<InputViewModel> _inputViewModels;
 
+        private FtInterface _ftInterface;
         private ListAdapter _listAdapter;
         private ListView _listViewInputPorts;
 
-        public InputFragment(FtInterface ftInterface)
+        public InputFragment()
         {
-            _ftInterface = ftInterface;
-
-            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
-            _ftInterface.InputValueChanged += FtInterfaceOnInputValueChanged;
-
             _inputViewModels = new List<InputViewModel>();
         }
 
@@ -42,10 +36,13 @@ namespace FtApp.Droid.Activities.ControlTxt
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
+            _inputViewModels.Clear();
+
             for (int i = 0; i < _ftInterface.GetInputCount(); i++)
             {
                 var inputViewModel = new InputViewModel()
                 {
+                    Context = Activity,
                     InputIndex = i,
                     FtInterface = _ftInterface,
                     InputUnit = "",
@@ -58,6 +55,7 @@ namespace FtApp.Droid.Activities.ControlTxt
 
                 _inputViewModels.Add(inputViewModel);
             }
+            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
         private void FtInterfaceOnInputValueChanged(object sender, InputValueChangedEventArgs inputValueChangedEventArgs)
@@ -67,9 +65,18 @@ namespace FtApp.Droid.Activities.ControlTxt
                 _inputViewModels[inputPort].InputValue = _ftInterface.GetInputValue(inputPort);
                 Activity?.RunOnUiThread(() =>
                 {
-                    UpdateListView(inputPort, _inputViewModels[inputPort]);
+                    if (_inputViewModels.Count > inputPort)
+                    {
+                        UpdateListView(inputPort, _inputViewModels[inputPort]);
+                    }
                 });
             }
+        }
+        
+        private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
+        {
+            _inputViewModels.Clear();
+            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
         private void UpdateListView(int position, InputViewModel item)
@@ -93,11 +100,27 @@ namespace FtApp.Droid.Activities.ControlTxt
             progressBarValue.Progress = item.InputValue;
         }
 
+        public void SetFtInterface(FtInterface ftInterface)
+        {
+            _ftInterface = ftInterface;
+
+            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
+            _ftInterface.InputValueChanged += FtInterfaceOnInputValueChanged;
+            _ftInterface.OnlineStopped += FtInterfaceOnOnlineStopped;
+        }
+
+        public string GetTitle(Context context)
+        {
+            return context.GetText(Resource.String.ControlTxtActivity_tabInputTitle);
+        }
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.InputFragmentLayout, container, false);
 
             _listViewInputPorts = view.FindViewById<ListView>(Resource.Id.listViewInputPorts);
+            _listViewInputPorts.Divider = null;
+            _listViewInputPorts.DividerHeight = 0;
 
             _listAdapter = new ListAdapter(Activity, _inputViewModels);
 
@@ -148,6 +171,8 @@ namespace FtApp.Droid.Activities.ControlTxt
                     {
                         ShowInputModeContextMenu(view.Context, imageViewContextualMenu, position);
                     };
+
+                    FadeInAnimation(view, position);
                 }
 
 
@@ -164,6 +189,15 @@ namespace FtApp.Droid.Activities.ControlTxt
 
 
                 return view;
+            }
+
+            private void FadeInAnimation(View view, int position)
+            {
+                view.Alpha = 0;
+                view.TranslationY = 20;
+
+                view.Animate().Alpha(1).SetDuration(225).SetStartDelay(position*20).Start();
+                view.Animate().TranslationY(0).SetDuration(100).SetStartDelay(position*20).Start();
             }
 
             private void ShowInputModeContextMenu(Context context, ImageView imageView, int position)
@@ -197,24 +231,36 @@ namespace FtApp.Droid.Activities.ControlTxt
 
                 switch (id)
                 {
-                    case Resource.Id.menuInputModeDigitalR:
+                    case Resource.Id.menuInputModeSwitch:
                         item.ChangeInputDevice(InputDevices.Switch);
                         break;
 
-                    case Resource.Id.menuInputModeAnalogR2:
+                    case Resource.Id.menuInputModeNtc:
                         item.ChangeInputDevice(InputDevices.Ntc);
                         break;
 
-                    case Resource.Id.menuInputModeDigitalU:
+                    case Resource.Id.menuInputModeTrailSensor:
                         item.ChangeInputDevice(InputDevices.TrailSensor);
-                        break;
-
-                    case Resource.Id.menuInputModeAnalogU:
-                        item.ChangeInputDevice(InputDevices.ColorSensor);
                         break;
 
                     case Resource.Id.menuInputModeUltrasonic:
                         item.ChangeInputDevice(InputDevices.Ultrasonic);
+                        break;
+
+                    case Resource.Id.menuInputModeAnalogR:
+                        item.ChangeInputDevice(InputDevices.AnalogR);
+                        break;
+
+                    case Resource.Id.menuInputModeDigitalR:
+                        item.ChangeInputDevice(InputDevices.DigitalR);
+                        break;
+
+                    case Resource.Id.menuInputModeAnalogU:
+                        item.ChangeInputDevice(InputDevices.AnalogU);
+                        break;
+
+                    case Resource.Id.menuInputModeDigitalU:
+                        item.ChangeInputDevice(InputDevices.DigitalU);
                         break;
                 }
 
@@ -268,12 +314,10 @@ namespace FtApp.Droid.Activities.ControlTxt
                         return InputValue == 1
                             ? Context.GetString(Resource.String.ControlTxtActivity_inputDigitalNoTrail)
                             : Context.GetString(Resource.String.ControlTxtActivity_inputDigitalTrail);
-
-                    case InputDevices.ColorSensor:
-                    case InputDevices.Ultrasonic:
+                        
+                    default:
                         return $"{InputValue} {InputUnit}";
                 }
-                return string.Empty;
             }
 
             public string GetDecoratedInputIndex()
@@ -306,17 +350,40 @@ namespace FtApp.Droid.Activities.ControlTxt
                         InputUnit = "";
                         InputMode = FtInterface.InputMode.ModeU;
                         break;
-                    case InputDevices.ColorSensor:
-                        InputMaxValue = 9999;
-                        IsDigital = false;
-                        InputMode = FtInterface.InputMode.ModeU;
-                        InputUnit = "";
-                        break;
+
                     case InputDevices.Ultrasonic:
                         InputMaxValue = 1023;
                         IsDigital = false;
                         InputUnit = "cm";
                         InputMode = FtInterface.InputMode.ModeUltrasonic;
+                        break;
+
+
+
+                    case InputDevices.AnalogU:
+                        InputMaxValue = 9999;
+                        IsDigital = false;
+                        InputMode = FtInterface.InputMode.ModeU;
+                        InputUnit = "";
+                        break;
+                    case InputDevices.DigitalU:
+                        InputMaxValue = 1;
+                        IsDigital = true;
+                        InputMode = FtInterface.InputMode.ModeU;
+                        InputUnit = "";
+                        break;
+
+                    case InputDevices.AnalogR:
+                        InputMaxValue = 2000;
+                        IsDigital = false;
+                        InputMode = FtInterface.InputMode.ModeR;
+                        InputUnit = "";
+                        break;
+                    case InputDevices.DigitalR:
+                        InputMaxValue = 1;
+                        IsDigital = true;
+                        InputMode = FtInterface.InputMode.ModeR;
+                        InputUnit = "";
                         break;
                 }
 
@@ -343,8 +410,11 @@ namespace FtApp.Droid.Activities.ControlTxt
             Switch,
             Ntc,
             TrailSensor,
-            ColorSensor,
-            Ultrasonic
+            Ultrasonic,
+            AnalogR,
+            DigitalR,
+            AnalogU,
+            DigitalU
         }
     }
 }

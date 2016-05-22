@@ -1,7 +1,9 @@
 ﻿using FtApp.Fischertechnik.Txt.Events;
 using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Timers;
+using FtApp.Utils;
 using TXTCommunication.Fischertechnik.Txt.Camera;
 using TXTCommunication.Fischertechnik.Txt.Command;
 using TXTCommunication.Fischertechnik.Txt.Response;
@@ -11,6 +13,8 @@ namespace TXTCommunication.Fischertechnik.Txt
 {
     class TxtInterface : FtInterface
     {
+        public const bool IsDebugEnabled = true;
+
         #region Constants
 
         public const int DefaultUpdateInterval = 50;
@@ -20,6 +24,7 @@ namespace TXTCommunication.Fischertechnik.Txt
         public const string ControllerWifiIp = "192.168.8.2";
         public const int ControllerIpPort = 65000;
         public const int ControllerCameraIpPort = 65001;
+        public const int TcpTimeout = 2000;
 
         public const int PwmMaxValue = 512;
 
@@ -64,6 +69,8 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         public int UpdateInterval { get; set; } = DefaultUpdateInterval;
 
+        public string Ip { get; private set; }
+
         private bool _configurationChanged;
         private bool _soundChanged;
         private bool _soundPlaying;
@@ -81,29 +88,51 @@ namespace TXTCommunication.Fischertechnik.Txt
         
         public override void Connect(string ip)
         {
+            LogMessage($"Connecting to {ip}");
+            Ip = ip;
             if (Connection == ConnectionStatus.Connected || Connection == ConnectionStatus.Online)
             {
                 throw new InvalidOperationException("Already connected to an interface");
             }
             
-            TxtCommunication = new TxtCommunication(ip);
+            TxtCommunication = new TxtCommunication(this);
             TxtCamera = new TxtCameraCommunication(TxtCommunication);
-            
-            TxtCommunication.OpenConnection();
 
-            Connection = TxtCommunication.Connected ? ConnectionStatus.Connected : ConnectionStatus.NotConnected;
+            try
+            {
+                TxtCommunication.OpenConnection();
+                Connection = TxtCommunication.Connected ? ConnectionStatus.Connected : ConnectionStatus.NotConnected;
+            }
+            catch (Exception e)
+            {
+                LogMessage($"Exception while connecting: {e.Message}");
+                Connection = ConnectionStatus.Invalid;
+                HandleException(e);
+            }
+
 
             _masterInterface.ResetValues();
 
+            LogMessage("Connected");
             Connected?.Invoke(this, new EventArgs());
         }
 
         public override void Disconnect()
         {
+            LogMessage("Disconnecting");
             ThrowWhenNotConnected();
 
-            TxtCommunication.CloseConnection();
-            Connection = ConnectionStatus.NotConnected;
+            try
+            {
+                TxtCommunication.CloseConnection();
+                Connection = ConnectionStatus.NotConnected;
+            }
+            catch (Exception e)
+            {
+                LogMessage($"Exception while disconnecting: {e.Message}");
+                Connection = ConnectionStatus.Invalid;
+                HandleException(e);
+            }
 
             Disconnected?.Invoke(this, new EventArgs());
 
@@ -113,11 +142,13 @@ namespace TXTCommunication.Fischertechnik.Txt
             TxtCamera.Dispose();
             TxtCamera = null;
 
+            LogMessage("Disconnected");
             _masterInterface.ResetValues();
         }
 
         public override void StartOnlineMode()
         {
+            LogMessage("Starting online mode");
             if (Connection == ConnectionStatus.Online)
             {
                 throw new InvalidOperationException("Already connected to an interface");
@@ -131,27 +162,39 @@ namespace TXTCommunication.Fischertechnik.Txt
             _soundPlayIndex = 0;
             _configurationIndex = 0;
 
+
             var responseStartOnline = new ResponseStartOnline();
-            TxtCommunication.SendCommand(new CommandStartOnline(), responseStartOnline);
 
-            Connection = ConnectionStatus.Online;
-            
-            _updateValuesTimer.Start();
-
-            OnlineStarted?.Invoke(this, new EventArgs());
-
-            List<int> inputPorts = new List<int>();
-            for (int i = 0; i < UniversalInputs; i++)
+            try
             {
-                inputPorts.Add(i);
-            }
-            InputValueChangedEventArgs eventArgs = new InputValueChangedEventArgs(inputPorts);
+                TxtCommunication.SendCommand(new CommandStartOnline(), responseStartOnline);
+                Connection = ConnectionStatus.Online;
 
-            InputValueChanged?.Invoke(this, eventArgs);
+                _updateValuesTimer.Start();
+
+                OnlineStarted?.Invoke(this, new EventArgs());
+
+                List<int> inputPorts = new List<int>();
+                for (int i = 0; i < UniversalInputs; i++)
+                {
+                    inputPorts.Add(i);
+                }
+                InputValueChangedEventArgs eventArgs = new InputValueChangedEventArgs(inputPorts);
+
+                InputValueChanged?.Invoke(this, eventArgs);
+            }
+            catch (Exception e)
+            {
+                LogMessage($"Exception while starting online mode: {e.Message}");
+                Connection = ConnectionStatus.Invalid;
+                HandleException(e);
+            }
+            LogMessage("Online mode started");
         }
 
         public override void StopOnlineMode()
         {
+            LogMessage("Stopping online mode");
             if (Connection == ConnectionStatus.Connected)
             {
                 throw new InvalidOperationException("Interface is not in online mode");
@@ -164,28 +207,53 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             StopAllOutputs();
 
-            var responseStopOnline = new ResponseStopOnline();
-            TxtCommunication.SendCommand(new CommandStopOnline(), responseStopOnline);
-            
-            OnlineStopped?.Invoke(this, new EventArgs());
+            try
+            {
+                var responseStopOnline = new ResponseStopOnline();
+                TxtCommunication.SendCommand(new CommandStopOnline(), responseStopOnline);
 
-            Connection = ConnectionStatus.Connected;
+                OnlineStopped?.Invoke(this, new EventArgs());
+
+                Connection = ConnectionStatus.Connected;
+            }
+            catch (Exception e)
+            {
+                LogMessage($"Exception while stopping online mode: {e.Message}");
+                HandleException(e);
+            }
+            LogMessage("Online mode stopped");
+        }
+
+        public override bool CanSendCommand()
+        {
+            return Connection == ConnectionStatus.Online || Connection == ConnectionStatus.Connected;
         }
 
         public override string GetInterfaceVersionCode()
         {
             ThrowWhenNotConnected();
-            
 
-            var responseQueryStatus = new ResponseQueryStatus();
-            TxtCommunication.SendCommand(new CommandQueryStatus(), responseQueryStatus);
-
-            return responseQueryStatus.GetDecoratedVersion();
+            try
+            {
+                var responseQueryStatus = new ResponseQueryStatus();
+                TxtCommunication.SendCommand(new CommandQueryStatus(), responseQueryStatus);
+                return responseQueryStatus.GetDecoratedVersion();
+            }
+            catch (Exception e)
+            {
+                HandleException(e);
+            }
+            return string.Empty;
         }
 
         public override string GetInterfaceName()
         {
             return "TXT";
+        }
+
+        public override bool IsInterfaceReachable(string adress)
+        {
+            return NetworkUtils.PingIp(adress);
         }
 
         public override int GetInputCount()
@@ -278,6 +346,7 @@ namespace TXTCommunication.Fischertechnik.Txt
         public event SoundPlaybackFinishedEventHandler SoundPlaybackFinished;
 
         public override event ConnectedEventHandler Connected;
+        public override event ConnectionLostEventHandler ConnectionLost;
         public override event DisconnectedEventHandler Disconnected;
         public override event OnlineStartedEventHandler OnlineStarted;
         public override event OnlineStoppedEventHandler OnlineStopped;
@@ -350,8 +419,15 @@ namespace TXTCommunication.Fischertechnik.Txt
             }
 
 
-
-            TxtCommunication.SendCommand(commandExchangeData, responseExchangeData);
+            try
+            {
+                TxtCommunication.SendCommand(commandExchangeData, responseExchangeData);
+            }
+            catch (Exception e)
+            {
+                HandleException(e);
+                return;
+            }
 
 
             IList<int> valueChanged = new List<int>();
@@ -435,9 +511,15 @@ namespace TXTCommunication.Fischertechnik.Txt
                     ? (byte)1
                     : (byte)0;
             }
-            
-            
-            TxtCommunication.SendCommand(commandUpdateConfig, responseUpdateConfig);
+
+            try
+            {
+                TxtCommunication.SendCommand(commandUpdateConfig, responseUpdateConfig);
+            }
+            catch (Exception e)
+            {
+                HandleException(e);
+            }
 
             _configurationChanged = false;
         }
@@ -448,6 +530,28 @@ namespace TXTCommunication.Fischertechnik.Txt
             {
                 throw new InvalidOperationException("Not connected to an interface");
             }
+            if (Connection == ConnectionStatus.Invalid)
+            {
+                throw new InvalidOperationException("The connection is invalid");
+            }
+        }
+
+        private void HandleException(Exception exception)
+        {
+            if (exception is Exception)
+            {
+                Connection = ConnectionStatus.Invalid;
+
+                ConnectionLost?.Invoke(this, new EventArgs());
+            }
+        }
+
+        internal void LogMessage(string message)
+        {
+            if (IsDebugEnabled)
+            {
+                Console.WriteLine(message);
+            }
         }
 
         private void UpdateValuesTimerTick(object sender, ElapsedEventArgs eventArgs)
@@ -457,33 +561,6 @@ namespace TXTCommunication.Fischertechnik.Txt
             UpdateValues();
 
             _updateValuesTimer.Start();
-        }
-
-        public static string IsControllerAvailable(string ip)
-        {
-            string versionCode = null;
-            TxtInterface txt = new TxtInterface();
-            try
-            {
-                txt.Connect(ip);
-
-                versionCode = txt.GetInterfaceVersionCode();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                if (txt.Connection != ConnectionStatus.NotConnected)
-                {
-                    txt.Disconnect();
-                }
-                txt.Dispose();
-                
-            }
-
-            return versionCode;
         }
     }
 }

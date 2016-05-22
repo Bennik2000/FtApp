@@ -29,7 +29,12 @@ namespace TXTCommunication.Fischertechnik
             /// <summary>
             /// No interface is connected
             /// </summary>
-            NotConnected
+            NotConnected,
+
+            /// <summary>
+            /// The connection is invalid most likely because of an timeout
+            /// </summary>
+            Invalid
         }
 
         /// <summary>
@@ -53,7 +58,7 @@ namespace TXTCommunication.Fischertechnik
             /// </summary>
             ModeUltrasonic,
             ModeInvalid
-        };
+        }
 
         public ConnectionStatus Connection { get; protected set; }
 
@@ -79,6 +84,11 @@ namespace TXTCommunication.Fischertechnik
         public abstract void StopOnlineMode();
 
         /// <summary>
+        /// Checks if commands (like set an output value) can be sent
+        /// </summary>
+        public abstract bool CanSendCommand();
+
+        /// <summary>
         /// Reads the version code of the interface firmware
         /// </summary>
         /// <returns>The firmware version</returns>
@@ -89,6 +99,13 @@ namespace TXTCommunication.Fischertechnik
         /// </summary>
         /// <returns>The interface name</returns>
         public abstract string GetInterfaceName();
+
+        /// <summary>
+        /// Checks if the interface is ready to connect
+        /// </summary>
+        /// <param name="adress"></param>
+        /// <returns></returns>
+        public abstract bool IsInterfaceReachable(string adress);
 
         /// <summary>
         /// Returns the numberof universal inputs
@@ -127,7 +144,7 @@ namespace TXTCommunication.Fischertechnik
         /// <param name="outputIndex">The index of the port.</param>
         /// <param name="value">The value to set between 0 and 512</param>
         /// <param name="extension">The extension where the value should be set</param>
-        // ReSharper disable once UnusedParameter.Global
+        /// ReSharper disable once UnusedParameter.Global
         public abstract void SetOutputValue(int outputIndex, int value, int extension = 0);
 
         /// <summary>
@@ -137,7 +154,7 @@ namespace TXTCommunication.Fischertechnik
         /// <param name="value">The value to set between 0 and 512</param>
         /// <param name="direction">The direction</param>
         /// <param name="extension">The extension where the value should be set</param>
-        // ReSharper disable once UnusedParameter.Global
+        /// ReSharper disable once UnusedParameter.Global
         public abstract void SetMotorValue(int motorIndex, int value, MotorDirection direction, int extension = 0);
 
         /// <summary>
@@ -146,7 +163,7 @@ namespace TXTCommunication.Fischertechnik
         /// <param name="outputIndex">The index of the output port</param>
         /// <param name="isMotor">Specifies whether the output port is a motor</param>
         /// <param name="extension">The extension where the value should be set</param>
-        // ReSharper disable once UnusedParameter.Global
+        /// ReSharper disable once UnusedParameter.Global
         public abstract void ConfigureOutputMode(int outputIndex, bool isMotor, int extension = 0);
 
         /// <summary>
@@ -154,7 +171,7 @@ namespace TXTCommunication.Fischertechnik
         /// </summary>
         /// <param name="index">The index of the input port</param>
         /// <param name="extension">The extension where the value should be read</param>
-        // ReSharper disable once UnusedParameter.Global
+        /// ReSharper disable once UnusedParameter.Global
         public abstract int GetInputValue(int index, int extension = 0);
 
         /// <summary>
@@ -164,10 +181,9 @@ namespace TXTCommunication.Fischertechnik
         /// <param name="inputMode">The input mode of the port</param>
         /// <param name="digital">Specifies whether the port is digital or analog</param>
         /// <param name="extension">The extension where the value should be set</param>
-        // ReSharper disable once UnusedParameter.Global
+        /// ReSharper disable once UnusedParameter.Global
         public abstract void ConfigureInputMode(int inputIndex, InputMode inputMode, bool digital, int extension = 0);
-
-
+        
 
         /// <summary>
         /// This event is fired when the input valus have changed
@@ -180,6 +196,12 @@ namespace TXTCommunication.Fischertechnik
         /// </summary>
         public abstract event ConnectedEventHandler Connected;
         public delegate void ConnectedEventHandler(object sender, EventArgs e);
+
+        /// <summary>
+        /// This event is fired when the connection to the interface is lost
+        /// </summary>
+        public abstract event ConnectionLostEventHandler ConnectionLost;
+        public delegate void ConnectionLostEventHandler(object sender, EventArgs e);
 
         /// <summary>
         /// This event is fired when the interface is disconnected
@@ -198,6 +220,7 @@ namespace TXTCommunication.Fischertechnik
         /// </summary>
         public abstract event OnlineStoppedEventHandler OnlineStopped;
         public delegate void OnlineStoppedEventHandler(object sender, EventArgs e);
+
 
         /// <summary>
         /// Call this function to cleanup ressources like threads, ...

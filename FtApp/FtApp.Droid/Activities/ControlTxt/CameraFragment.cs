@@ -17,7 +17,7 @@ namespace FtApp.Droid.Activities.ControlTxt
         private TxtInterface _ftInterface;
 
         private ImageView _imageViewCameraStream;
-        private ProgressBar _progressBarRamUsage;
+        //private ProgressBar _progressBarRamUsage;
         private Bitmap _frameBitmap;
 
         private bool _firstFrameReceived;
@@ -39,10 +39,10 @@ namespace FtApp.Droid.Activities.ControlTxt
             var view = inflater.Inflate(Resource.Layout.CameraFragmentLayout, container, false);
 
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
-            _progressBarRamUsage = view.FindViewById<ProgressBar>(Resource.Id.progressBarRamUsage);
+            //_progressBarRamUsage = view.FindViewById<ProgressBar>(Resource.Id.progressBarRamUsage);
 
-            _progressBarRamUsage.Max = 100;
-            _progressBarRamUsage.Indeterminate = false;
+            //_progressBarRamUsage.Max = 100;
+            //_progressBarRamUsage.Indeterminate = false;
 
             return view;
         }
@@ -120,12 +120,12 @@ namespace FtApp.Droid.Activities.ControlTxt
             }
 
             // Display the current ram usage for debugging
-            Activity.RunOnUiThread(() =>
-            {
-                var x = 100f/Runtime.GetRuntime().TotalMemory()*
-                        (Runtime.GetRuntime().TotalMemory() - Runtime.GetRuntime().FreeMemory());
-                _progressBarRamUsage.Progress = (int) x;
-            });
+            //Activity.RunOnUiThread(() =>
+            //{
+            //    var x = 100f/Runtime.GetRuntime().TotalMemory()*
+            //            (Runtime.GetRuntime().TotalMemory() - Runtime.GetRuntime().FreeMemory());
+            //    _progressBarRamUsage.Progress = (int) x;
+            //});
         }
 
         public string GetTitle(Context context)

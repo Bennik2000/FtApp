@@ -231,24 +231,36 @@ namespace FtApp.Droid.Activities.ControlTxt
 
                 switch (id)
                 {
-                    case Resource.Id.menuInputModeDigitalR:
+                    case Resource.Id.menuInputModeSwitch:
                         item.ChangeInputDevice(InputDevices.Switch);
                         break;
 
-                    case Resource.Id.menuInputModeAnalogR2:
+                    case Resource.Id.menuInputModeNtc:
                         item.ChangeInputDevice(InputDevices.Ntc);
                         break;
 
-                    case Resource.Id.menuInputModeDigitalU:
+                    case Resource.Id.menuInputModeTrailSensor:
                         item.ChangeInputDevice(InputDevices.TrailSensor);
-                        break;
-
-                    case Resource.Id.menuInputModeAnalogU:
-                        item.ChangeInputDevice(InputDevices.ColorSensor);
                         break;
 
                     case Resource.Id.menuInputModeUltrasonic:
                         item.ChangeInputDevice(InputDevices.Ultrasonic);
+                        break;
+
+                    case Resource.Id.menuInputModeAnalogR:
+                        item.ChangeInputDevice(InputDevices.AnalogR);
+                        break;
+
+                    case Resource.Id.menuInputModeDigitalR:
+                        item.ChangeInputDevice(InputDevices.DigitalR);
+                        break;
+
+                    case Resource.Id.menuInputModeAnalogU:
+                        item.ChangeInputDevice(InputDevices.AnalogU);
+                        break;
+
+                    case Resource.Id.menuInputModeDigitalU:
+                        item.ChangeInputDevice(InputDevices.DigitalU);
                         break;
                 }
 
@@ -302,12 +314,10 @@ namespace FtApp.Droid.Activities.ControlTxt
                         return InputValue == 1
                             ? Context.GetString(Resource.String.ControlTxtActivity_inputDigitalNoTrail)
                             : Context.GetString(Resource.String.ControlTxtActivity_inputDigitalTrail);
-
-                    case InputDevices.ColorSensor:
-                    case InputDevices.Ultrasonic:
+                        
+                    default:
                         return $"{InputValue} {InputUnit}";
                 }
-                return string.Empty;
             }
 
             public string GetDecoratedInputIndex()
@@ -340,17 +350,40 @@ namespace FtApp.Droid.Activities.ControlTxt
                         InputUnit = "";
                         InputMode = FtInterface.InputMode.ModeU;
                         break;
-                    case InputDevices.ColorSensor:
-                        InputMaxValue = 9999;
-                        IsDigital = false;
-                        InputMode = FtInterface.InputMode.ModeU;
-                        InputUnit = "";
-                        break;
+
                     case InputDevices.Ultrasonic:
                         InputMaxValue = 1023;
                         IsDigital = false;
                         InputUnit = "cm";
                         InputMode = FtInterface.InputMode.ModeUltrasonic;
+                        break;
+
+
+
+                    case InputDevices.AnalogU:
+                        InputMaxValue = 9999;
+                        IsDigital = false;
+                        InputMode = FtInterface.InputMode.ModeU;
+                        InputUnit = "";
+                        break;
+                    case InputDevices.DigitalU:
+                        InputMaxValue = 1;
+                        IsDigital = true;
+                        InputMode = FtInterface.InputMode.ModeU;
+                        InputUnit = "";
+                        break;
+
+                    case InputDevices.AnalogR:
+                        InputMaxValue = 2000;
+                        IsDigital = false;
+                        InputMode = FtInterface.InputMode.ModeR;
+                        InputUnit = "";
+                        break;
+                    case InputDevices.DigitalR:
+                        InputMaxValue = 1;
+                        IsDigital = true;
+                        InputMode = FtInterface.InputMode.ModeR;
+                        InputUnit = "";
                         break;
                 }
 
@@ -377,8 +410,11 @@ namespace FtApp.Droid.Activities.ControlTxt
             Switch,
             Ntc,
             TrailSensor,
-            ColorSensor,
-            Ultrasonic
+            Ultrasonic,
+            AnalogR,
+            DigitalR,
+            AnalogU,
+            DigitalU
         }
     }
 }

@@ -2,20 +2,29 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
   <group android:checkableBehavior="single">
     <item
-        android:id="@+id/menuInputModeDigitalR"
+        android:id="@+id/menuInputModeSwitch"
         android:checked="true"
+        android:title="@string/ControlTxtActivity_inputModeSwitch" />
+    <item
+        android:id="@+id/menuInputModeNtc"
+        android:title="@string/ControlTxtActivity_inputModeNtc" />
+    <item
+        android:id="@+id/menuInputModeTrailSensor"
+        android:title="@string/ControlTxtActivity_inputModeTrailSensor" />
+    <item
+        android:id="@+id/menuInputModeUltrasonic"
+        android:title="@string/ControlTxtActivity_inputModeUltrasonic" />
+    <item
+        android:id="@+id/menuInputModeDigitalR"
         android:title="@string/ControlTxtActivity_inputModeDigitalR" />
     <item
-        android:id="@+id/menuInputModeAnalogR2"
-        android:title="@string/ControlTxtActivity_inputModeAnalogR2" />
+        android:id="@+id/menuInputModeAnalogR"
+        android:title="@string/ControlTxtActivity_inputModeAnalogR" />
     <item
         android:id="@+id/menuInputModeDigitalU"
         android:title="@string/ControlTxtActivity_inputModeDigitalU" />
     <item
         android:id="@+id/menuInputModeAnalogU"
         android:title="@string/ControlTxtActivity_inputModeAnalogU" />
-    <item
-        android:id="@+id/menuInputModeUltrasonic"
-        android:title="@string/ControlTxtActivity_inputModeUltrasonic" />
   </group>
 </menu>

@@ -14,7 +14,7 @@
   <string name="SelectDeviceActivity_noIp">No ip is avaliable</string>
 
 
-  <string name="ControlTxtActivity_toolbarTitle">TXT</string>
+  <string name="ControlTxtActivity_toolbarTitle">ROBOTICS TXT Controller</string>
   
   <string name="ControlTxtActivity_tabStatusTitle">Status</string>
   <string name="ControlTxtActivity_tabInputTitle">Input</string>
@@ -40,11 +40,15 @@
   <string name="ControlTxtActivity_inputDigitalTrail">Traill</string>
   <string name="ControlTxtActivity_inputDigitalNoTrail">No trail</string>
   
-  <string name="ControlTxtActivity_inputModeDigitalR">Digital 5kΩ (Switch, ...)</string>
-  <string name="ControlTxtActivity_inputModeAnalogR2">Analog 5kΩ (NTC, ...)</string>
-  <string name="ControlTxtActivity_inputModeDigitalU">Digital 10V (Trail sensor, ...)</string>
-  <string name="ControlTxtActivity_inputModeAnalogU">Analog 10V (Color sensor, ...)</string>
+  <string name="ControlTxtActivity_inputModeSwitch">Switch</string>
+  <string name="ControlTxtActivity_inputModeNtc">NTC</string>
+  <string name="ControlTxtActivity_inputModeTrailSensor">Trail sensor</string>
+  <!--string name="ControlTxtActivity_inputModeAnalogU">Analog 10V (Color sensor, ...)</string-->
   <string name="ControlTxtActivity_inputModeUltrasonic">Ultrasonic</string>
+  <string name="ControlTxtActivity_inputModeDigitalR">Digital 5kΩ</string>
+  <string name="ControlTxtActivity_inputModeAnalogR">Analog 5kΩ</string>
+  <string name="ControlTxtActivity_inputModeDigitalU">Digital 10V</string>
+  <string name="ControlTxtActivity_inputModeAnalogU">Analog 10V</string>
   
   <string name="ControlTxtActivity_outputModeMotor">Motor</string>
   <string name="ControlTxtActivity_outputModeOutuput">Single outputs</string>

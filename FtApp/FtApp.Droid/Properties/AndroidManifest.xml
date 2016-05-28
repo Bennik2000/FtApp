@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.bennik2000.ftapp" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.bennik2000.ftapp" android:installLocation="preferExternal" android:versionCode="2" android:versionName="0.2">
 	<uses-sdk android:minSdkVersion="15" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.BLUETOOTH" />
 	<application android:icon="@drawable/Icon" android:label="FtApp" android:theme="@style/FtApp.Base"></application>
 </manifest>

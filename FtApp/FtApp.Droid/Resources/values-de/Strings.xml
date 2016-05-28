@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Ft App</string>
+	
+  
+  <string name="SelectDeviceActivity_toolbarTitle">FtApp for TXT</string>
+  <string name="SelectDeviceActivity_connectToTxtController">Mit dem ROBOTICS TXT Controller verbinden</string>
+  <string name="SelectDeviceActivity_ipAdress_Hint">Ip Adresse</string>
+  <string name="SelectDeviceActivity_wifi">WLAN</string>
+  <string name="SelectDeviceActivity_bluetooth">Bluetooth</string>
+  <string name="SelectDeviceActivity_custom">Andere Ip</string>
+  <string name="SelectDeviceActivity_connect">Verbinden</string>
+  <string name="SelectDeviceActivity_notValidIp">"%1$s" Ist keine gültige Ip Adresse</string>
+  <string name="SelectDeviceActivity_noIp">Keine Ip adresse ist abgegeben</string>
+
+
+  <string name="ControlTxtActivity_toolbarTitle">ROBOTICS TXT Controller</string>
+  
+  <string name="ControlTxtActivity_tabStatusTitle">Status</string>
+  <string name="ControlTxtActivity_tabInputTitle">Eingänge</string>
+  <string name="ControlTxtActivity_tabOutputTitle">Ausgänge</string>
+  <string name="ControlTxtActivity_tabCameraTitle">Kamera</string>
+  
+  <string name="ControlTxtActivity_interfaceNotAvaliableTitle">Interface ist nicht verfügbar</string>
+  <string name="ControlTxtActivity_interfaceNotAvaliable">Das Interface ist nich verfügbar. Bitte überprüfe die Verbindung</string>
+  <string name="ControlTxtActivity_interfaceNotAvaliablePositive">Ok</string>
+  
+  
+  <string name="ControlTxtActivity_interfaceConnecting">Verbinden...</string>
+  <string name="ControlTxtActivity_interfaceConnectingTitle">Bitte warten...</string>
+
+  <string name="ControlTxtActivity_interfaceConnectionLostMessage">Die Verbindung zum Interface wurde unterbrochen</string>
+  <string name="ControlTxtActivity_interfaceConnectionLostTitle">Verbindung underbrochen</string>
+  <string name="ControlTxtActivity_interfaceConnectionLostPositive">Ok</string>
+
+
+  <string name="ControlTxtActivity_inputDigitalOne">Gedrückt</string>
+  <string name="ControlTxtActivity_inputDigitalZero">Nicht gedrückt</string>
+  
+  <string name="ControlTxtActivity_inputDigitalTrail">Spur</string>
+  <string name="ControlTxtActivity_inputDigitalNoTrail">Keine Spur</string>
+  
+  <string name="ControlTxtActivity_inputModeSwitch">Taster</string>
+  <string name="ControlTxtActivity_inputModeNtc">NTC</string>
+  <string name="ControlTxtActivity_inputModeTrailSensor">Spursensor</string>
+  <!--string name="ControlTxtActivity_inputModeAnalogU">Analog 10V (Color sensor, ...)</string-->
+  <string name="ControlTxtActivity_inputModeUltrasonic">Ultraschallsensor</string>
+  <string name="ControlTxtActivity_inputModeDigitalR">Digital 5kΩ</string>
+  <string name="ControlTxtActivity_inputModeAnalogR">Analog 5kΩ</string>
+  <string name="ControlTxtActivity_inputModeDigitalU">Digital 10V</string>
+  <string name="ControlTxtActivity_inputModeAnalogU">Analog 10V</string>
+  
+  <string name="ControlTxtActivity_outputModeMotor">Motor</string>
+  <string name="ControlTxtActivity_outputModeOutuput">Einzelne Ausgänge</string>
+</resources>

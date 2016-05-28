@@ -15,7 +15,7 @@ namespace FtApp.Droid.Activities.ControlTxt
     {
         private readonly List<InputViewModel> _inputViewModels;
 
-        private FtInterface _ftInterface;
+        private IFtInterface _ftInterface;
         private ListAdapter _listAdapter;
         private ListView _listViewInputPorts;
 
@@ -33,7 +33,7 @@ namespace FtApp.Droid.Activities.ControlTxt
 
             base.OnAttach(context);
         }
-
+        
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
             _inputViewModels.Clear();
@@ -45,13 +45,10 @@ namespace FtApp.Droid.Activities.ControlTxt
                     Context = Activity,
                     InputIndex = i,
                     FtInterface = _ftInterface,
-                    InputUnit = "",
-                    InputMaxValue = 1,
-                    InputValue = 1,
-                    IsDigital = true
+                    InputValue = 1
                 };
 
-                inputViewModel.ChangeInputDevice(InputDevices.Switch);
+                inputViewModel.ChangeInputDevice(GetInputDeviceFromPreferences(i));
 
                 _inputViewModels.Add(inputViewModel);
             }
@@ -75,8 +72,34 @@ namespace FtApp.Droid.Activities.ControlTxt
         
         private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
         {
+            for (int i = 0; i < _inputViewModels.Count; i++)
+            {
+                SetInputDeviceInPreferences(i, _inputViewModels[i].InputDevice);
+            }
+
             _inputViewModels.Clear();
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+        }
+
+        private InputDevices GetInputDeviceFromPreferences(int inputIndex)
+        {
+            ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
+
+            int value = settings.GetInt($"InputState_{inputIndex}", (int) InputDevices.Switch);
+            Console.WriteLine((InputDevices)value);
+            return (InputDevices) value;
+        }
+
+        private void SetInputDeviceInPreferences(int inputIndex, InputDevices inputDevice)
+        {
+            ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
+            ISharedPreferencesEditor editor = settings.Edit();
+
+
+            Console.WriteLine(inputDevice);
+
+            editor.PutInt($"InputState_{inputIndex}", (int)inputDevice);
+            editor.Commit();
         }
 
         private void UpdateListView(int position, InputViewModel item)
@@ -100,7 +123,7 @@ namespace FtApp.Droid.Activities.ControlTxt
             progressBarValue.Progress = item.InputValue;
         }
 
-        public void SetFtInterface(FtInterface ftInterface)
+        public void SetFtInterface(IFtInterface ftInterface)
         {
             _ftInterface = ftInterface;
 
@@ -274,14 +297,14 @@ namespace FtApp.Droid.Activities.ControlTxt
         private class InputViewModel
         {
             private int _inputValue;
-            public FtInterface FtInterface { get; set; }
+            public IFtInterface FtInterface { get; set; }
             public int InputIndex { get; set; }
             
             public int InputMaxValue { get; set; }
             public string InputUnit { get; set; }
             public bool IsDigital { get; set; }
             public InputDevices InputDevice { get; set; }
-            public FtInterface.InputMode InputMode { get; set; }
+            public InputMode InputMode { get; set; }
             public int InputValue
             {
                 get { return _inputValue; }
@@ -334,28 +357,28 @@ namespace FtApp.Droid.Activities.ControlTxt
                         InputMaxValue = 1;
                         IsDigital = true;
                         InputUnit = "";
-                        InputMode = FtInterface.InputMode.ModeR;
+                        InputMode = InputMode.ModeR;
                         break;
 
                     case InputDevices.Ntc:
                         InputMaxValue = 2000;
                         IsDigital = false;
                         InputUnit = "°C";
-                        InputMode = FtInterface.InputMode.ModeR;
+                        InputMode = InputMode.ModeR;
                         break;
 
                     case InputDevices.TrailSensor:
                         InputMaxValue = 1;
                         IsDigital = true;
                         InputUnit = "";
-                        InputMode = FtInterface.InputMode.ModeU;
+                        InputMode = InputMode.ModeU;
                         break;
 
                     case InputDevices.Ultrasonic:
                         InputMaxValue = 1023;
                         IsDigital = false;
                         InputUnit = "cm";
-                        InputMode = FtInterface.InputMode.ModeUltrasonic;
+                        InputMode = InputMode.ModeUltrasonic;
                         break;
 
 
@@ -363,26 +386,26 @@ namespace FtApp.Droid.Activities.ControlTxt
                     case InputDevices.AnalogU:
                         InputMaxValue = 9999;
                         IsDigital = false;
-                        InputMode = FtInterface.InputMode.ModeU;
+                        InputMode = InputMode.ModeU;
                         InputUnit = "";
                         break;
                     case InputDevices.DigitalU:
                         InputMaxValue = 1;
                         IsDigital = true;
-                        InputMode = FtInterface.InputMode.ModeU;
+                        InputMode = InputMode.ModeU;
                         InputUnit = "";
                         break;
 
                     case InputDevices.AnalogR:
                         InputMaxValue = 2000;
                         IsDigital = false;
-                        InputMode = FtInterface.InputMode.ModeR;
+                        InputMode = InputMode.ModeR;
                         InputUnit = "";
                         break;
                     case InputDevices.DigitalR:
                         InputMaxValue = 1;
                         IsDigital = true;
-                        InputMode = FtInterface.InputMode.ModeR;
+                        InputMode = InputMode.ModeR;
                         InputUnit = "";
                         break;
                 }

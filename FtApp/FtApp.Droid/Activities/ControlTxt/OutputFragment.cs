@@ -12,7 +12,7 @@ namespace FtApp.Droid.Activities.ControlTxt
 {
     public class OutputFragment : Fragment, IFtInterfaceFragment
     {
-        private FtInterface _ftInterface;
+        private IFtInterface _ftInterface;
 
         private ListAdapter _listAdapter;
         private ListView _listViewOutputPorts;
@@ -63,7 +63,7 @@ namespace FtApp.Droid.Activities.ControlTxt
             return view;
         }
 
-        public void SetFtInterface(FtInterface ftInterface)
+        public void SetFtInterface(IFtInterface ftInterface)
         {
             _ftInterface = ftInterface;
             _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
@@ -271,9 +271,9 @@ namespace FtApp.Droid.Activities.ControlTxt
             public bool IsMotor { get; private set; }
             public int IndexMotor { get; private set; }
 
-            public FtInterface FtInterface { get; set; }
+            public IFtInterface FtInterface { get; set; }
 
-            public OutputViewModel(FtInterface ftInterface)
+            public OutputViewModel(IFtInterface ftInterface)
             {
                 FtInterface = ftInterface;
             }
@@ -299,9 +299,9 @@ namespace FtApp.Droid.Activities.ControlTxt
                 {
                     int outputValue = value - MaxOutput1/2;
 
-                    FtInterface.MotorDirection direction = outputValue > 0
-                        ? FtInterface.MotorDirection.Left
-                        : FtInterface.MotorDirection.Right;
+                    MotorDirection direction = outputValue > 0
+                        ? MotorDirection.Left
+                        : MotorDirection.Right;
 
 
                     int absoluteValue = Math.Abs(outputValue);

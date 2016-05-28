@@ -31,7 +31,7 @@ namespace FtApp.Droid.Activities.ControlTxt
 
         private string _ip;
 
-        private FtInterface _ftInterface;
+        private IFtInterface _ftInterface;
         
         private Fragment[] _fragments;
         

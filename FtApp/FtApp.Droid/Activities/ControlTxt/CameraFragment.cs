@@ -60,7 +60,7 @@ namespace FtApp.Droid.Activities.ControlTxt
             _firstFrameReceived = false;
         }
 
-        public void SetFtInterface(FtInterface ftInterface)
+        public void SetFtInterface(IFtInterface ftInterface)
         {
             TxtInterface txtInterface = ftInterface as TxtInterface;
             if (txtInterface != null)

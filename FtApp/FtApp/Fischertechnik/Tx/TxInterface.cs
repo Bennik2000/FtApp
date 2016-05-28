@@ -1,108 +1,69 @@
-﻿using FtApp.Fischertechnik.Txt.Events;
-using FtApp.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Timers;
-using TXTCommunication.Fischertechnik.Txt.Camera;
-using TXTCommunication.Fischertechnik.Txt.Command;
-using TXTCommunication.Fischertechnik.Txt.Response;
-using Timer = System.Timers.Timer;
+using FtApp.Fischertechnik.Txt.Events;
+using TXCommunication.Packets;
+using TXTCommunication.Fischertechnik;
+using TXTCommunication.Fischertechnik.Txt;
 
-namespace TXTCommunication.Fischertechnik.Txt
+namespace TXCommunication
 {
-    class TxtInterface : IFtInterface
+    class TxInterface : IFtInterface
     {
         public bool IsDebugEnabled { get; set; }
 
         #region Constants
 
         public const int DefaultUpdateInterval = 50;
-
-        public const string ControllerUsbIp = "192.168.7.2";
-        public const string ControllerBluetoothIp = "192.168.9.2";
-        public const string ControllerWifiIp = "192.168.8.2";
-        public const int ControllerIpPort = 65000;
-        public const int ControllerCameraIpPort = 65001;
-        public const int TcpTimeout = 2000;
-
+        
         public const int PwmMaxValue = 512;
 
         public const int PwmOutputs = 8;
         public const int MotorOutputs = 4;
         public const int Counters = 4;
         public const int UniversalInputs = 8;
-        public const int IrChannels = 4;
 
-
-        #region Command Ids
-        public const uint CommandIdQueryStatus = 0xDC21219A;
-        public const uint CommandIdStartOnline = 0x163FF61D;
-        public const uint CommandIdUpdateConfig = 0x060EF27E;
-        public const uint CommandIdExchangeData = 0xCC3597BA;
-        public const uint CommandIdExchangeDataCmpr = 0xFBC56F98;
-        public const uint CommandIdStopOnline = 0x9BE5082C;
-        public const uint CommandIdStartCameraOnline = 0x882A40A6;
-        public const uint CommandIdStopCameraOnline = 0x17C31F2F;
-
-        public const uint AcknowledgeIdCameraOnlineFrame = 0xADA09FBA;
         #endregion
-        
-        #region Response Ids
-        public const uint ResponseIdQueryStatus = 0xBAC9723E;
-        public const uint ResponseIdStartOnline = 0xCA689F75;
-        public const uint ResponseIdUpdateConfig = 0x9689A68C;
-        public const uint ResponseIdExchangeData = 0x4EEFAC41;
-        public const uint ResponseIdExchangeDataCmpr = 0x6F3B54E6;
-        public const uint ResponseIdStopOnline = 0xFBF600D2;
-        public const uint ResponseIdStartCameraOnline = 0xCF41B24E;
-        public const uint ResponseIdStopCameraOnline = 0x4B3C1EB6;
 
-        public const uint DataIdCameraOnlineFrame = 0xBDC2D7A1;
-        #endregion
-        #endregion
-        
         private readonly FtExtension _masterInterface;
 
-        private TxtCommunication TxtCommunication { get; set; }
-        public TxtCameraCommunication TxtCamera { get; private set; }
+        private TxCommunication TxCommunication { get; set; }
 
         public int UpdateInterval { get; set; } = DefaultUpdateInterval;
 
-        public string Ip { get; private set; }
+        public string Mac { get; private set; }
 
         private bool _configurationChanged;
-        private bool _soundChanged;
-        private bool _soundPlaying;
+        
 
-        private int _soundPlayIndex;
-        private int _configurationIndex;
+        private IRfcommAdapter SerialAdapter { get; set; }
 
         private Timer _updateValuesTimer;
 
-        public TxtInterface()
+        public TxInterface(IRfcommAdapter serialAdapter)
         {
+            SerialAdapter = serialAdapter;
             Connection = ConnectionStatus.NotConnected;
             _masterInterface = new FtExtension(0);
         }
 
         public ConnectionStatus Connection { get; set; }
 
-        public void Connect(string ip)
+        public void Connect(string mac)
         {
-            LogMessage($"Connecting to {ip}");
-            Ip = ip;
+            LogMessage($"Connecting to {mac}");
+            Mac = mac;
             if (Connection == ConnectionStatus.Connected || Connection == ConnectionStatus.Online)
             {
                 throw new InvalidOperationException("Already connected to an interface");
             }
-            
-            TxtCommunication = new TxtCommunication(this);
-            TxtCamera = new TxtCameraCommunication(TxtCommunication);
+
+            TxCommunication = new TxCommunication(SerialAdapter);
 
             try
             {
-                TxtCommunication.OpenConnection();
-                Connection = TxtCommunication.Connected ? ConnectionStatus.Connected : ConnectionStatus.NotConnected;
+                TxCommunication.OpenConnection(mac);
+                Connection = TxCommunication.Connected ? ConnectionStatus.Connected : ConnectionStatus.NotConnected;
             }
             catch (Exception e)
             {
@@ -125,7 +86,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             try
             {
-                TxtCommunication.CloseConnection();
+                TxCommunication.CloseConnection();
                 Connection = ConnectionStatus.NotConnected;
             }
             catch (Exception e)
@@ -137,12 +98,9 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             Disconnected?.Invoke(this, new EventArgs());
 
-            TxtCommunication.Dispose();
-            TxtCommunication = null;
-
-            TxtCamera.Dispose();
-            TxtCamera = null;
-
+            TxCommunication.Dispose();
+            TxCommunication = null;
+            
             LogMessage("Disconnected");
             _masterInterface.ResetValues();
         }
@@ -159,22 +117,23 @@ namespace TXTCommunication.Fischertechnik.Txt
             _updateValuesTimer = new Timer(UpdateInterval);
             _updateValuesTimer.Elapsed += UpdateValuesTimerTick;
             _updateValuesTimer.AutoReset = true;
-
-            _soundPlayIndex = 0;
-            _configurationIndex = 0;
-
-
-            var responseStartOnline = new ResponseStartOnline();
+            
 
             try
             {
-                TxtCommunication.SendCommand(new CommandStartOnline(), responseStartOnline);
+                // Send an echo packet to obtain the session id
+                var echoResponsePacket = new EchoResponsePacket();
+                TxCommunication.SendPacket(new EchoPacket(), echoResponsePacket);
+                
                 Connection = ConnectionStatus.Online;
 
+                // Start update timer
                 _updateValuesTimer.Start();
 
+                // Fire event to notify that online mode has started
                 OnlineStarted?.Invoke(this, new EventArgs());
 
+                // Fire InputValueChanged event with default values
                 List<int> inputPorts = new List<int>();
                 for (int i = 0; i < UniversalInputs; i++)
                 {
@@ -201,7 +160,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 throw new InvalidOperationException("Interface is not in online mode");
             }
             ThrowWhenNotConnected();
-            
+
             _updateValuesTimer.Stop();
             _updateValuesTimer.Close();
             _updateValuesTimer = null;
@@ -210,9 +169,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             try
             {
-                var responseStopOnline = new ResponseStopOnline();
-                TxtCommunication.SendCommand(new CommandStopOnline(), responseStopOnline);
-
+                // TODO: Stop all motors
                 OnlineStopped?.Invoke(this, new EventArgs());
 
                 Connection = ConnectionStatus.Connected;
@@ -236,9 +193,9 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             try
             {
-                var responseQueryStatus = new ResponseQueryStatus();
-                TxtCommunication.SendCommand(new CommandQueryStatus(), responseQueryStatus);
-                return responseQueryStatus.GetDecoratedVersion();
+                var requestInfoResponsePacket = new RequestInfoResponsePacket();
+                TxCommunication.SendPacket(new RequestInfoPacket(), requestInfoResponsePacket);
+                return requestInfoResponsePacket.FirmwareVersion;
             }
             catch (Exception e)
             {
@@ -254,7 +211,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         public bool IsInterfaceReachable(string adress)
         {
-            return NetworkUtils.PingIp(adress);
+            return SerialAdapter.IsAvaliable(adress);
         }
 
         public int GetInputCount()
@@ -279,7 +236,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         public int GetMotorIndex(int outputIndex)
         {
-            return (int) Math.Ceiling((double) outputIndex/2);
+            return (int)Math.Ceiling((double)outputIndex / 2);
         }
 
         public void SetOutputValue(int outputIndex, int value, int extension = 0)
@@ -289,7 +246,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 throw new NotImplementedException("More than one extension is not implemented right now");
             }
             ThrowWhenNotConnected();
-            
+
             _masterInterface.SetOutputValue(outputIndex, value);
         }
 
@@ -327,7 +284,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             return _masterInterface.GetInputValue(index);
         }
-        
+
         public void ConfigureInputMode(int inputIndex, InputMode inputMode, bool digital, int extension = 0)
         {
             if (extension > 0)
@@ -342,7 +299,7 @@ namespace TXTCommunication.Fischertechnik.Txt
         }
 
         public event InputValueChangedEventHandler InputValueChanged;
-        
+
         public delegate void SoundPlaybackFinishedEventHandler(object sender, EventArgs e);
         public event SoundPlaybackFinishedEventHandler SoundPlaybackFinished;
 
@@ -356,35 +313,15 @@ namespace TXTCommunication.Fischertechnik.Txt
         {
             Connection = ConnectionStatus.NotConnected;
 
-            if (TxtCommunication != null)
+            if (TxCommunication != null)
             {
-                TxtCommunication.Dispose();
-                TxtCommunication = null;
+                TxCommunication.Dispose();
+                TxCommunication = null;
             }
-
-            if (TxtCamera != null)
-            {
-                TxtCamera.Dispose();
-                TxtCamera = null;
-            }
-
+            
             _masterInterface.ResetValues();
         }
-
-        // ReSharper disable once UnusedParameter.Global
-        public void PlaySound(ushort soundIndex, ushort repeatCount, int extension = 0)
-        {
-            if (extension > 0)
-            {
-                throw new NotImplementedException("More than one extension is not implemented right now");
-            }
-            ThrowWhenNotConnected();
-
-            _masterInterface.SoundIndex = soundIndex;
-            _masterInterface.SountRepeatCount = repeatCount;
-
-            _soundChanged = true;
-        }
+        
 
         public void UpdateValues()
         {
@@ -397,32 +334,20 @@ namespace TXTCommunication.Fischertechnik.Txt
             }
 
 
-            var commandExchangeData = new CommandExchangeData();
-            var responseExchangeData = new ResponseExchangeData();
+            var outputPacket = new OutputPacket();
+            var inputPacket = new InputPacket();
 
 
             for (int i = 0; i < _masterInterface.OutputValues.Length; i++)
             {
-                commandExchangeData.PwmOutputValues[i] = (short)_masterInterface.OutputValues[i];
+                outputPacket.PwmOutputValues[i] = (short)_masterInterface.OutputValues[i];
             }
 
             
-            commandExchangeData.SoundCommandId = (ushort)_soundPlayIndex;
-            
-
-            if (_soundChanged)
-            {
-                commandExchangeData.SoundCommandId = (ushort)++_soundPlayIndex;
-                commandExchangeData.SoundIndex = _masterInterface.SoundIndex;
-                commandExchangeData.SoundRepeat = _masterInterface.SountRepeatCount;
-                _soundChanged = false;
-                _soundPlaying = true;
-            }
-
 
             try
             {
-                TxtCommunication.SendCommand(commandExchangeData, responseExchangeData);
+                TxCommunication.SendPacket(outputPacket, inputPacket);
             }
             catch (Exception e)
             {
@@ -433,14 +358,14 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             IList<int> valueChanged = new List<int>();
 
-            for (int i = 0; i < responseExchangeData.UniversalInputs.Length; i++)
+            for (int i = 0; i < inputPacket.UniversalInputs.Length; i++)
             {
-                var newInputValue = responseExchangeData.UniversalInputs[i];
+                var newInputValue = inputPacket.UniversalInputs[i];
 
                 if (_masterInterface.GetInputValue(i) != newInputValue)
                 {
-                    _masterInterface.SetInputValue(i, newInputValue);
-                    
+                    _masterInterface.SetInputValue(i, (short)newInputValue);
+
                     valueChanged.Add(i);
                 }
             }
@@ -450,15 +375,6 @@ namespace TXTCommunication.Fischertechnik.Txt
                 // Fire an event when an input value has changed
                 InputValueChangedEventArgs eventArgs = new InputValueChangedEventArgs(valueChanged);
                 InputValueChanged?.Invoke(this, eventArgs);
-            }
-
-
-            if (responseExchangeData.SoundCommandId != _soundPlayIndex - 1 && _soundPlaying)
-            {
-                _soundPlaying = false;
-
-                // Fire an event when the sound playback has finished
-                SoundPlaybackFinished?.Invoke(this, new EventArgs());
             }
         }
 
@@ -473,7 +389,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             }
             for (int i = 0; i < MotorOutputs; i++)
             {
-                if (_masterInterface.OutputModes[i/2])
+                if (_masterInterface.OutputModes[i / 2])
                 {
                     _masterInterface.SetMotorValue(i, 0);
                 }
@@ -488,34 +404,27 @@ namespace TXTCommunication.Fischertechnik.Txt
 
 
             // ReSharper disable once UseObjectOrCollectionInitializer
-            var commandUpdateConfig = new CommandUpdateConfig();
-            var responseUpdateConfig = new ResponseUpdateConfig();
-
-            // Increase the configuration id to notify that the configuration has changed
-            commandUpdateConfig.ConfigId = (short)++_configurationIndex;
-
+            var configPacket = new ConfigPacket();
+            var configResponsePacket = new ConfigResponsePacket();
+            
 
             for (int i = 0; i < _masterInterface.InputModes.Length; i++)
             {
-                commandUpdateConfig.Config.UniversalInputs[i].Mode = (byte)_masterInterface.InputModes[i];
+                configPacket.UniversalInputs[i].Mode = _masterInterface.InputModes[i];
             }
             for (int i = 0; i < _masterInterface.InputIsDigital.Length; i++)
             {
-                commandUpdateConfig.Config.UniversalInputs[i].Digital = _masterInterface.InputIsDigital[i]
-                    ? (byte) 1
-                    : (byte) 0;
+                configPacket.UniversalInputs[i].Digital = _masterInterface.InputIsDigital[i];
             }
 
             for (int i = 0; i < _masterInterface.OutputModes.Length; i++)
             {
-                commandUpdateConfig.Config.Motor[0] = _masterInterface.OutputModes[i]
-                    ? (byte)1
-                    : (byte)0;
+                configPacket.Motor[0] = _masterInterface.OutputModes[i];
             }
 
             try
             {
-                TxtCommunication.SendCommand(commandUpdateConfig, responseUpdateConfig);
+                TxCommunication.SendPacket(configPacket, configResponsePacket);
             }
             catch (Exception e)
             {
@@ -527,7 +436,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         private void ThrowWhenNotConnected()
         {
-            if (Connection == ConnectionStatus.NotConnected || TxtCommunication == null || _masterInterface == null)
+            if (Connection == ConnectionStatus.NotConnected || TxCommunication == null || _masterInterface == null)
             {
                 throw new InvalidOperationException("Not connected to an interface");
             }

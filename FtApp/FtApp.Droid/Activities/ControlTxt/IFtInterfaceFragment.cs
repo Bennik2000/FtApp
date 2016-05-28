@@ -5,7 +5,7 @@ namespace FtApp.Droid.Activities.ControlTxt
 {
     public interface IFtInterfaceFragment
     {
-        void SetFtInterface(FtInterface ftInterface);
+        void SetFtInterface(IFtInterface ftInterface);
         string GetTitle(Context context);
     }
 }

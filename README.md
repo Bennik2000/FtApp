@@ -10,8 +10,8 @@ The app is divided into two parts. The first part is responsible for the communi
 interface and the second part is the Android UI.  
 
 #### Communication part
-`FtInterface` is the main class to control a fischertechnik interface. `TxtInterface` is 
-derived from it and provides the ROBOTICS TXT Controller protocol implementation.
+`IFtInterface` is the main interface to control a fischertechnik interface. `TxtInterface` is 
+the implementation for the ROBOTICS TXT Controller protocol.
 
 ## Installation
 This app is not listed in the play store. You have to download the `de.bennik2000.ftapp.apk` file
@@ -19,10 +19,14 @@ and install it manually on your android phone. Note your Android version must be
 Android 4.0.3 (Ice Cream Sandwich) or higher.
 
 ## TODO
+* Upload and play audio file
+* Multiple extensions
+* Overal status page
 * Add ROBO TX Controller protocol implementation
-* Add German translation (or any other :D)
 * Testing on real Android devices
-* Add Windows Phone and iOS support (I can't do this because i do not have a WP or Mac)
+* Simulation option?
+* Add translations for more languages?
+* Add Windows Phone and iOS support? (I can't do this because i do not have a WP or Mac)
 
 ## Contributing
 If you want to work on this app you have to install Visual Studio 2015 Community Edition

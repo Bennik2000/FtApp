@@ -7,13 +7,13 @@ You can use it to write a separate desktop application or an app for Windows Pho
 
 ### Screenshots
 The screen to select a fischertechnik interface:
-![The screen to select a fischertechnik interface](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png)
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_SelectDevice.png" height="300">
 Here you can view the input values:
-![The screen to view the input values](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Inputs.png)
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Inputs.png" height="300">
 You are able to set the output vlues here:
-![The screen to set the output values](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Outputs.png)
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Outputs.png" height="300">
 When you are connected to an ROBOTICS TXT Controller you can see view the camera stream here:
-![The screen to view the camera stream](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png)
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png" height="300">
 
 ## Application architecture
 The app is divided into two parts. The first part is responsible for the communication to the

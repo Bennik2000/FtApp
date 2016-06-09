@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Timers;
+using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Txt.Events;
 using TXCommunication.Packets;
 using TXTCommunication.Fischertechnik;
@@ -58,6 +59,7 @@ namespace TXCommunication
                 throw new InvalidOperationException("Already connected to an interface");
             }
 
+            TxCommunication?.Dispose();
             TxCommunication = new TxCommunication(SerialAdapter);
 
             try
@@ -234,6 +236,28 @@ namespace TXCommunication
             return PwmMaxValue;
         }
 
+        public ControllerType GetControllerType() => ControllerType.Tx;
+
+        public string RequestControllerName(string adress)
+        {
+            if (TxCommunication == null)
+            {
+                TxCommunication = new TxCommunication(SerialAdapter);
+            }
+
+            return TxCommunication.RequestControllerName(adress);
+        }
+
+        public bool IsValidInterface(string adress)
+        {
+            if (TxCommunication == null)
+            {
+                TxCommunication = new TxCommunication(SerialAdapter);
+            }
+
+            return TxCommunication.IsValidInterface(adress);
+        }
+
         public int GetMotorIndex(int outputIndex)
         {
             return (int)Math.Ceiling((double)outputIndex / 2);
@@ -297,11 +321,9 @@ namespace TXCommunication
 
             _configurationChanged = true;
         }
-
+        
         public event InputValueChangedEventHandler InputValueChanged;
-
-        public delegate void SoundPlaybackFinishedEventHandler(object sender, EventArgs e);
-        public event SoundPlaybackFinishedEventHandler SoundPlaybackFinished;
+        
 
         public event ConnectedEventHandler Connected;
         public event ConnectionLostEventHandler ConnectionLost;
@@ -419,7 +441,7 @@ namespace TXCommunication
 
             for (int i = 0; i < _masterInterface.OutputModes.Length; i++)
             {
-                configPacket.Motor[0] = _masterInterface.OutputModes[i];
+                configPacket.Motor[i] = _masterInterface.OutputModes[i];
             }
 
             try
@@ -448,12 +470,9 @@ namespace TXCommunication
 
         private void HandleException(Exception exception)
         {
-            if (exception is Exception)
-            {
-                Connection = ConnectionStatus.Invalid;
+            Connection = ConnectionStatus.Invalid;
 
-                ConnectionLost?.Invoke(this, new EventArgs());
-            }
+            ConnectionLost?.Invoke(this, new EventArgs());
         }
 
         internal void LogMessage(string message)

@@ -9,6 +9,7 @@
     <Import_RootNamespace>FtApp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\ControllerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Events\InputValueChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\IFtInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\FtExtension.cs" />

@@ -1,7 +1,7 @@
 ﻿using Android.Content;
 using TXTCommunication.Fischertechnik;
 
-namespace FtApp.Droid.Activities.ControlTxt
+namespace FtApp.Droid.Activities.ControllInterface
 {
     public interface IFtInterfaceFragment
     {

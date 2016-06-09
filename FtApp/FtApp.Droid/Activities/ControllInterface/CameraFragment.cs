@@ -1,16 +1,15 @@
+using System;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Java.Lang;
-using System;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Fischertechnik.Txt.Camera;
 using Fragment = Android.Support.V4.App.Fragment;
 
-namespace FtApp.Droid.Activities.ControlTxt
+namespace FtApp.Droid.Activities.ControllInterface
 {
     public class CameraFragment : Fragment, IFtInterfaceFragment
     {
@@ -39,11 +38,7 @@ namespace FtApp.Droid.Activities.ControlTxt
             var view = inflater.Inflate(Resource.Layout.CameraFragmentLayout, container, false);
 
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
-            //_progressBarRamUsage = view.FindViewById<ProgressBar>(Resource.Id.progressBarRamUsage);
-
-            //_progressBarRamUsage.Max = 100;
-            //_progressBarRamUsage.Indeterminate = false;
-
+            
             return view;
         }
 
@@ -52,10 +47,7 @@ namespace FtApp.Droid.Activities.ControlTxt
             base.OnDestroyView();
 
             // Cleanup the frame memory
-            if (_frameBitmap != null)
-            {
-                _frameBitmap.Recycle();
-            }
+            _frameBitmap?.Recycle();
 
             _firstFrameReceived = false;
         }
@@ -90,10 +82,7 @@ namespace FtApp.Droid.Activities.ControlTxt
         public void StopCameraStream()
         {
             _ftInterface.TxtCamera.StopCamera();
-
-            // Cleanup the frame memory
-            //_frameBitmap.Recycle();
-
+            
             _firstFrameReceived = false;
         }
 
@@ -118,14 +107,6 @@ namespace FtApp.Droid.Activities.ControlTxt
                 _firstFrameReceived = true;
 
             }
-
-            // Display the current ram usage for debugging
-            //Activity.RunOnUiThread(() =>
-            //{
-            //    var x = 100f/Runtime.GetRuntime().TotalMemory()*
-            //            (Runtime.GetRuntime().TotalMemory() - Runtime.GetRuntime().FreeMemory());
-            //    _progressBarRamUsage.Progress = (int) x;
-            //});
         }
 
         public string GetTitle(Context context)

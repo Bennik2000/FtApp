@@ -8,9 +8,49 @@
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
-    <FrameLayout
-        android:id="@+id/frameLayoutTxtFragment"
-        android:orientation="horizontal"
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBarScanning"
+        android:indeterminate="true"
+        android:visibility="visible" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/layoutInterfaceListEmpty"
+            android:visibility="visible"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center">
+            <ImageView
+                android:src="@drawable/NoInterfaceFoundEmptyState"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/imageViewListEmpty"
+                android:layout_gravity="center_horizontal" />
+            <TextView
+                android:text="Keine fischertechnik Interfaces wurden gefunden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textViewListEmpty"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:padding="16dp"
+                android:textAllCaps="false"
+                android:textSize="20dp"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+        <ListView
+            android:id="@+id/devicesListView"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true" />
+    </RelativeLayout>
 </LinearLayout>

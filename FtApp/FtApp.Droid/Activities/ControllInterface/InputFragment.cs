@@ -1,15 +1,15 @@
+using System;
+using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
 using FtApp.Fischertechnik.Txt.Events;
-using System;
-using System.Collections.Generic;
 using TXTCommunication.Fischertechnik;
 using Fragment = Android.Support.V4.App.Fragment;
 
-namespace FtApp.Droid.Activities.ControlTxt
+namespace FtApp.Droid.Activities.ControllInterface
 {
     public class InputFragment : Fragment, IFtInterfaceFragment
     {

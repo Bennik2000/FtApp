@@ -1,4 +1,5 @@
-﻿using FtApp.Fischertechnik.Txt.Events;
+﻿using FtApp.Fischertechnik;
+using FtApp.Fischertechnik.Txt.Events;
 using System;
 
 namespace TXTCommunication.Fischertechnik
@@ -44,13 +45,7 @@ namespace TXTCommunication.Fischertechnik
         /// </summary>
         /// <returns>The interface name</returns>
         string GetInterfaceName();
-
-        /// <summary>
-        /// Checks if the interface is ready to connect
-        /// </summary>
-        /// <param name="adress"></param>
-        /// <returns></returns>
-        bool IsInterfaceReachable(string adress);
+        
 
         /// <summary>
         /// Returns the numberof universal inputs
@@ -75,6 +70,26 @@ namespace TXTCommunication.Fischertechnik
         /// </summary>
         /// <returns>The maximal output value</returns>
         int GetMaxOutputValue();
+
+        /// <summary>
+        /// Returns the type of the controller protocol implementation
+        /// </summary>
+        /// <returns>the type of the interface</returns>
+        ControllerType GetControllerType();
+
+        /// <summary>
+        /// Reads the controller name without the need of connecting and disconnecting (This is done internally)
+        /// </summary>
+        /// <param name="adress"></param>
+        /// <returns></returns>
+        string RequestControllerName(string adress);
+
+        /// <summary>
+        /// Checks if the interface at the given address is valid
+        /// </summary>
+        /// <param name="adress">The adress to ckeck</param>
+        /// <returns>true, when the interface is valid otherwise false</returns>
+        bool IsValidInterface(string adress);
 
         /// <summary>
         /// Returns the index of the motor port. Output 5 => M3; Output 2 => M1
@@ -129,7 +144,6 @@ namespace TXTCommunication.Fischertechnik
         /// ReSharper disable once UnusedParameter.Global
         void ConfigureInputMode(int inputIndex, InputMode inputMode, bool digital, int extension = 0);
         
-
         /// <summary>
         /// This event is fired when the input valus have changed
         /// </summary>

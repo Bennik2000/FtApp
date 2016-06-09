@@ -3,5 +3,6 @@
 	<uses-sdk android:minSdkVersion="15" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.BLUETOOTH" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 	<application android:icon="@drawable/Icon" android:label="FtApp" android:theme="@style/FtApp.Base"></application>
 </manifest>

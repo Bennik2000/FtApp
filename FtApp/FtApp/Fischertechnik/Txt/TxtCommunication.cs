@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using TXTCommunication.Fischertechnik.Txt.Command;
 using TXTCommunication.Fischertechnik.Txt.Response;
 using TXTCommunication.Utils;
@@ -14,7 +17,11 @@ namespace TXTCommunication.Fischertechnik.Txt
     {
         public bool Connected { get; private set; }
 
+        private bool _requestedStop;
 
+        private readonly IDictionary<string, string> _controllerNameCache;
+
+        
         private Socket _socket;
 
         public TxtInterface TxtInterface { get; private set; }
@@ -28,14 +35,17 @@ namespace TXTCommunication.Fischertechnik.Txt
             TxtInterface = txtInterface;
 
             _networkingTaskQueue = new TaskQueue("TXT Communication");
+            _controllerNameCache = new ConcurrentDictionary<string, string>();
         }
-
+        
         public void OpenConnection()
         {
             if (Connected)
             {
                 throw new InvalidOperationException("Already connected!");
             }
+
+            _requestedStop = false;
 
             Exception exception = null;
 
@@ -73,6 +83,8 @@ namespace TXTCommunication.Fischertechnik.Txt
             {
                 throw new InvalidOperationException("Not connected!");
             }
+
+            _requestedStop = true;
 
             Exception exception = null;
 
@@ -113,7 +125,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                     var responseBytes = new byte[response.GetResponseLength()];
 
                     // Receive the response
-                    _socket.Receive(responseBytes);
+                    Receive(_socket, responseBytes, responseBytes.Length);
 
 
                     uint responseId = BitConverter.ToUInt32(responseBytes, 0);
@@ -150,7 +162,73 @@ namespace TXTCommunication.Fischertechnik.Txt
                 throw exception;
             }
         }
-        
+
+        private int Receive(Socket socket, byte[] buffer, int count)
+        {
+            // Wait until enough bytes are received
+            while (socket.Available < count && !_requestedStop)
+            {
+                Thread.Sleep(5);
+            }
+
+            return socket.Receive(buffer, 0, count, SocketFlags.None);
+        }
+
+
+        public string RequestControllerName(string adress)
+        {
+            // If we cached the adress already: return the controller name
+            if (_controllerNameCache.ContainsKey(adress))
+            {
+                return _controllerNameCache[adress];
+            }
+
+
+            try
+            {
+                // Connect to the interface
+                var ipEndPoint = new IPEndPoint(IPAddress.Parse(adress), TxtInterface.ControllerIpPort);
+                var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                {
+                    SendTimeout = 1000,
+                    ReceiveTimeout = 1000
+                };
+                socket.Connect(ipEndPoint);
+
+
+                // Send the command
+                socket.Send(new CommandQueryStatus().GetByteArray());
+
+                var response = new ResponseQueryStatus();
+
+                var responseBytes = new byte[response.GetResponseLength()];
+
+
+                // Receive the response
+                Receive(socket, responseBytes, responseBytes.Length);
+
+                // Close the socket
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+                socket.Dispose();
+
+                // Process the response
+                response.FromByteArray(responseBytes);
+                
+                _controllerNameCache.Add(adress, response.GetControllerName());
+
+                return response.GetControllerName();
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+        public bool IsValidInterface(string adress)
+        {
+            return !string.IsNullOrEmpty(RequestControllerName(adress));
+        }
+
         public void Dispose()
         {
             // Close the connection before disposing the task queue

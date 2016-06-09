@@ -1,14 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Android.App;
-using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.View;
 using Android.Support.V7.App;
 using Android.Widget;
-using FtApp.Utils;
-using System;
-using System.Linq;
+using FtApp.Droid.Native;
+using FtApp.Fischertechnik;
+using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Utils;
@@ -17,12 +20,14 @@ using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
-namespace FtApp.Droid.Activities.ControlTxt
+namespace FtApp.Droid.Activities.ControllInterface
 {
-    [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base")]
-    public class ControlTxtActivity : AppCompatActivity
+    [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base", ScreenOrientation = ScreenOrientation.Portrait)]
+    public class ControllInterfaceActivity : AppCompatActivity
     {
-        public const string IpAdressExtraDataId = "IpAdress";
+        public const string AdressExtraDataId = "Adress";
+        public const string ControllerNameExtraDataId = "ControllerName";
+        public const string ControllerTypeExtraDataId = "ControllerType";
 
         private readonly TaskQueue _connectionTaskQueue;
 
@@ -30,12 +35,15 @@ namespace FtApp.Droid.Activities.ControlTxt
         private AlertDialog _notAvailableDialog;
 
         private string _ip;
+        private string _controllerName;
+        private ControllerType _controllerType;
 
         private IFtInterface _ftInterface;
+
         
-        private Fragment[] _fragments;
+        private IList<Fragment> _fragments;
         
-        public ControlTxtActivity()
+        public ControllInterfaceActivity()
         {
             _connectionTaskQueue = new TaskQueue("Connection handler");
         }
@@ -44,29 +52,11 @@ namespace FtApp.Droid.Activities.ControlTxt
         {
             base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.ControlTxtLayout);
+            SetContentView(Resource.Layout.ControllInterfaceLayout);
 
-            
-            Bundle extras = Intent.Extras;
-            _ip = extras != null ? extras.GetString(IpAdressExtraDataId) : string.Empty;
+            ExtractExtraData();
 
-            _connectingDialog = new ProgressDialog(this);
-
-            _connectingDialog.SetTitle(GetString(Resource.String.ControlTxtActivity_interfaceConnectingTitle));
-            _connectingDialog.SetMessage(GetString(Resource.String.ControlTxtActivity_interfaceConnecting));
-            _connectingDialog.SetCancelable(false);
-            _connectingDialog.Indeterminate = true;
-
-            var notAvailableBuilder = new AlertDialog.Builder(this, Resource.Style.AlertDialogStyle);
-
-            notAvailableBuilder.SetTitle(GetString(Resource.String.ControlTxtActivity_interfaceNotAvaliableTitle));
-            notAvailableBuilder.SetMessage(GetString(Resource.String.ControlTxtActivity_interfaceNotAvaliable));
-            notAvailableBuilder.SetCancelable(false);
-            notAvailableBuilder.SetPositiveButton(Resource.String.ControlTxtActivity_interfaceNotAvaliablePositive,
-                delegate { Finish(); });
-
-            _notAvailableDialog = notAvailableBuilder.Create();
-
+            InitializeDialogs();
             SetupToolbar();
             SetupTabs();
         }
@@ -105,31 +95,72 @@ namespace FtApp.Droid.Activities.ControlTxt
             _ftInterface.Dispose();
         }
 
+        private void ExtractExtraData()
+        {
+            Bundle extras = Intent.Extras;
+
+            _controllerType = extras != null ? (ControllerType)extras.GetInt(ControllerTypeExtraDataId) : ControllerType.Unknown;
+            _controllerName = extras != null ? extras.GetString(ControllerNameExtraDataId) : string.Empty;
+            _ip = extras != null ? extras.GetString(AdressExtraDataId) : string.Empty;
+        }
+
+        private void InitializeDialogs()
+        {
+            _connectingDialog = new ProgressDialog(this);
+
+            _connectingDialog.SetTitle(GetString(Resource.String.ControlTxtActivity_interfaceConnectingTitle));
+            _connectingDialog.SetMessage(GetString(Resource.String.ControlTxtActivity_interfaceConnecting));
+            _connectingDialog.SetCancelable(false);
+            _connectingDialog.Indeterminate = true;
+
+            var notAvailableBuilder = new AlertDialog.Builder(this, Resource.Style.AlertDialogStyle);
+
+            notAvailableBuilder.SetTitle(GetString(Resource.String.ControlTxtActivity_interfaceNotAvaliableTitle));
+            notAvailableBuilder.SetMessage(GetString(Resource.String.ControlTxtActivity_interfaceNotAvaliable));
+            notAvailableBuilder.SetCancelable(false);
+            notAvailableBuilder.SetPositiveButton(Resource.String.ControlTxtActivity_interfaceNotAvaliablePositive,
+                delegate { Finish(); });
+
+            _notAvailableDialog = notAvailableBuilder.Create();
+        }
+
         private void SetupToolbar()
         {
             var toolbar = FindViewById<Toolbar>(Resource.Id.controlTxtToolbar);
             
             SetSupportActionBar(toolbar);
             
-            SupportActionBar.Title = Resources.GetString(Resource.String.ControlTxtActivity_toolbarTitle);
+            //SupportActionBar.Title = Resources.GetString(Resource.String.ControlTxtActivity_toolbarTitle);
+            SupportActionBar.Title = _controllerName;
         }
 
         private void SetupTabs()
         {
             var controlTxtTabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
 
-            _fragments = new Fragment[]
+            _fragments = new List<Fragment>
             {
                 new InputFragment(),
-                new OutputFragment(),
-                new CameraFragment()
+                new OutputFragment()
             };
+
+
+            switch (_controllerType)
+            {
+                case ControllerType.Tx:
+                    break;
+                case ControllerType.Txt:
+                    _fragments.Add(new CameraFragment());
+                    break;
+                case ControllerType.Unknown:
+                    break;
+            }
 
 
             foreach (Fragment fragment in _fragments)
             {
                 string title = string.Empty;
-                
+
                 if (fragment is IFtInterfaceFragment)
                 {
                     title = ((IFtInterfaceFragment) fragment).GetTitle(this);
@@ -138,10 +169,10 @@ namespace FtApp.Droid.Activities.ControlTxt
                 controlTxtTabLayout.AddTab(controlTxtTabLayout.NewTab().SetText(title));
             }
 
-            
+
             ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
-            PagerAdapter adapter = new TabPagerAdapter(SupportFragmentManager, _fragments);
-            viewPager.OffscreenPageLimit = _fragments.Length; // We have to set the OffscreenPageLimit because otherwise the fragments would be restored
+            PagerAdapter adapter = new TabPagerAdapter(SupportFragmentManager, _fragments.ToArray());
+            viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit because otherwise the fragments would be restored
             viewPager.Adapter = adapter;
 
             viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(controlTxtTabLayout));
@@ -173,7 +204,19 @@ namespace FtApp.Droid.Activities.ControlTxt
 
         private void SetupFtInterface()
         {
-            _ftInterface = new TxtInterface();
+            switch (_controllerType)
+            {
+                case ControllerType.Tx:
+                    _ftInterface = new TxInterface(new BluetoothAdapter(this));
+                    break;
+                case ControllerType.Txt:
+                    _ftInterface = new TxtInterface();
+                    break;
+                case ControllerType.Unknown:
+                    Finish();
+                    return;
+            }
+
             _ftInterface.ConnectionLost += FtInterfaceOnConnectionLost;
             _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
 
@@ -192,7 +235,9 @@ namespace FtApp.Droid.Activities.ControlTxt
                 {
                     _connectingDialog.Dismiss();
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -203,21 +248,11 @@ namespace FtApp.Droid.Activities.ControlTxt
 
             _connectionTaskQueue.DoWorkInQueue(() =>
             {
-                if (NetworkUtils.PingIp(_ip))
-                {
-                    _ftInterface.Connect(_ip);
-                    _ftInterface.StartOnlineMode();
-                }
-                else
-                {
-                    RunOnUiThread(() =>
-                    {
-                        _notAvailableDialog.Show();
-                    });
-                }
+                _ftInterface.Connect(_ip);
+                _ftInterface.StartOnlineMode();
             }, false);
         }
-        
+
         private void DisconnectFromInterface()
         {
             _connectionTaskQueue.DoWorkInQueue(() =>
@@ -231,14 +266,10 @@ namespace FtApp.Droid.Activities.ControlTxt
         }
 
 
-
         private void FtInterfaceOnConnectionLost(object sender, EventArgs eventArgs)
         {
             Finish();
-            RunOnUiThread(() =>
-            {
-                Toast.MakeText(this, GetString(Resource.String.ControlTxtActivity_interfaceConnectionLostMessage), ToastLength.Short).Show();
-            });
+            RunOnUiThread(() => { Toast.MakeText(this, GetString(Resource.String.ControlTxtActivity_interfaceConnectionLostMessage), ToastLength.Short).Show(); });
         }
 
         private class TabPagerAdapter : FragmentStatePagerAdapter

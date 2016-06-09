@@ -10,4 +10,8 @@ namespace TXCommunication
         bool IsAvaliable(string adress);
         byte[] Read(int count);
     }
+
+    public delegate void SerialSearchStarted();
+    public delegate void SerialSearchFound(string adress);
+    public delegate void SerialSearchFinished();
 }

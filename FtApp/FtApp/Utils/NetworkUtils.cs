@@ -8,9 +8,11 @@ namespace FtApp.Utils
         public static bool PingIp(string ip)
         {
             Ping sender = new Ping();
-            PingReply result = sender.Send(ip);
-            return result.Status == IPStatus.Success;
+            PingReply result = sender.Send(ip, 500);
+
+            return result?.Status == IPStatus.Success;
         }
+
         public static bool IsValidIpAdress(string ip)
         {
             IPAddress address;
@@ -24,6 +26,5 @@ namespace FtApp.Utils
             }
             return false;
         }
-
     }
 }

@@ -16,6 +16,7 @@ namespace TXCommunication.Packets
         protected bool SendTransferAreaIdBytes { get; set; } = true;
 
 
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual byte[] GetByteArray()
         {
             ConstructPayload();
@@ -131,7 +132,7 @@ namespace TXCommunication.Packets
             {
                 return false;
             }
-            catch (OverflowException e)
+            catch (OverflowException)
             {
             }
 

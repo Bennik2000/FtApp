@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO.Ports;
 using System.Threading;
+using TXCommunication;
 
-namespace TXCommunication
+namespace InterfaceTest
 {
     class SerialSocketAdapter : IRfcommAdapter
     {
@@ -47,6 +48,18 @@ namespace TXCommunication
             }
 
             _serialPort.Write(bytes, 0, bytes.Length);
+        }
+
+        public void GetAvailableDevices(SerialSearchStarted started, SerialSearchFound found, SerialSearchFinished finished)
+        {
+            started();
+
+            foreach (string portName in SerialPort.GetPortNames())
+            {
+                found(portName);
+            }
+
+            finished();
         }
 
         public bool IsAvaliable(string adress)

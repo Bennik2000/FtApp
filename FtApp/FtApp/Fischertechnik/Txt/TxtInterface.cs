@@ -1,4 +1,5 @@
-﻿using FtApp.Fischertechnik.Txt.Events;
+﻿using FtApp.Fischertechnik;
+using FtApp.Fischertechnik.Txt.Events;
 using FtApp.Utils;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,8 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         private TxtCommunication TxtCommunication { get; set; }
         public TxtCameraCommunication TxtCamera { get; private set; }
+        
+        private Timer _updateValuesTimer;
 
         public int UpdateInterval { get; set; } = DefaultUpdateInterval;
 
@@ -77,7 +80,6 @@ namespace TXTCommunication.Fischertechnik.Txt
         private int _soundPlayIndex;
         private int _configurationIndex;
 
-        private Timer _updateValuesTimer;
 
         public TxtInterface()
         {
@@ -96,6 +98,8 @@ namespace TXTCommunication.Fischertechnik.Txt
                 throw new InvalidOperationException("Already connected to an interface");
             }
             
+            TxtCommunication?.Dispose();
+
             TxtCommunication = new TxtCommunication(this);
             TxtCamera = new TxtCameraCommunication(TxtCommunication);
 
@@ -249,7 +253,19 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         public string GetInterfaceName()
         {
-            return "TXT";
+            ThrowWhenNotConnected();
+
+            try
+            {
+                var responseQueryStatus = new ResponseQueryStatus();
+                TxtCommunication.SendCommand(new CommandQueryStatus(), responseQueryStatus);
+                return responseQueryStatus.GetControllerName();
+            }
+            catch (Exception e)
+            {
+                HandleException(e);
+            }
+            return string.Empty;
         }
 
         public bool IsInterfaceReachable(string adress)
@@ -275,6 +291,28 @@ namespace TXTCommunication.Fischertechnik.Txt
         public int GetMaxOutputValue()
         {
             return PwmMaxValue;
+        }
+
+        public ControllerType GetControllerType() => ControllerType.Txt;
+
+        public string RequestControllerName(string adress)
+        {
+            if (TxtCommunication == null)
+            {
+                TxtCommunication = new TxtCommunication(this);
+            }
+
+            return TxtCommunication.RequestControllerName(adress);
+        }
+
+        public bool IsValidInterface(string adress)
+        {
+            if (TxtCommunication == null)
+            {
+                TxtCommunication = new TxtCommunication(this);
+            }
+
+            return TxtCommunication.IsValidInterface(adress);
         }
 
         public int GetMotorIndex(int outputIndex)
@@ -340,10 +378,11 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             _configurationChanged = true;
         }
-
+        
         public event InputValueChangedEventHandler InputValueChanged;
         
         public delegate void SoundPlaybackFinishedEventHandler(object sender, EventArgs e);
+
         public event SoundPlaybackFinishedEventHandler SoundPlaybackFinished;
 
         public event ConnectedEventHandler Connected;
@@ -508,7 +547,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             for (int i = 0; i < _masterInterface.OutputModes.Length; i++)
             {
-                commandUpdateConfig.Config.Motor[0] = _masterInterface.OutputModes[i]
+                commandUpdateConfig.Config.Motor[i] = _masterInterface.OutputModes[i]
                     ? (byte)1
                     : (byte)0;
             }
@@ -539,12 +578,9 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         private void HandleException(Exception exception)
         {
-            if (exception is Exception)
-            {
-                Connection = ConnectionStatus.Invalid;
-
-                ConnectionLost?.Invoke(this, new EventArgs());
-            }
+            Connection = ConnectionStatus.Invalid;
+            
+            ConnectionLost?.Invoke(this, new EventArgs());
         }
 
         internal void LogMessage(string message)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using TXCommunication.Packets;
 using TXTCommunication.Utils;
 
@@ -11,7 +13,9 @@ namespace TXCommunication
         private readonly TaskQueue _communicationTaskQueue;
 
         private readonly IRfcommAdapter _adapter;
-        
+
+        private readonly IDictionary<string, string> _controllerNameCache;
+
         public bool Connected { get; private set; }
         
         public short SessionId { get; private set; }
@@ -24,6 +28,7 @@ namespace TXCommunication
             }
 
             _communicationTaskQueue = new TaskQueue("TX Communication");
+            _controllerNameCache = new ConcurrentDictionary<string, string>();
 
             _adapter = adapter;
         }
@@ -140,6 +145,51 @@ namespace TXCommunication
             {
                 throw exception;
             }
+        }
+
+        public string RequestControllerName(string adress)
+        {
+            // If we cached the adress already: return the controller name
+            if (_controllerNameCache.ContainsKey(adress))
+            {
+                return _controllerNameCache[adress];
+            }
+
+
+            try
+            {
+                // Open the connection
+                _adapter.OpenConnection(adress);
+
+                // Write the packets bytes
+                _adapter.Write(new RequestInfoPacket().GetByteArray());
+                
+
+                var responsePacket = new RequestInfoResponsePacket();
+                
+                // Read the response packet
+                byte[] response = _adapter.Read(responsePacket.GetPacketLength());
+                responsePacket.FromByteArray(response);
+                
+                // Close the connection and dispose the adapter
+                _adapter.CloseConnection();
+                _adapter.Dispose();
+
+
+                _controllerNameCache.Add(adress, responsePacket.ControllerName);
+
+                return responsePacket.ControllerName;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
+        public bool IsValidInterface(string adress)
+        {
+            // If we can request the controller name this is a valid interface
+            return !string.IsNullOrEmpty(RequestControllerName(adress));
         }
 
         public void Dispose()

@@ -10,11 +10,13 @@ namespace InterfaceTest
     {
         private static IFtInterface _controller;
 
-        static void Main(string[] args)
+        static void Main()
         {
+            PrintAvailableComPorts();
+
             _controller = new TxInterface(new SerialSocketAdapter());
             //_controller = new TxtInterface();
-            
+
             // Hook events
             _controller.Connected += (sender, eventArgs) => Console.WriteLine("Connected");
             _controller.Disconnected += (sender, eventArgs) => Console.WriteLine("Disconnected");
@@ -67,7 +69,14 @@ namespace InterfaceTest
 
             // Don't forget to dispose
             _controller.Dispose();
-            
+
+        }
+
+        private static void PrintAvailableComPorts()
+        {
+            SerialSocketAdapter adapter = new SerialSocketAdapter();
+
+            adapter.GetAvailableDevices(() => { }, Console.WriteLine, () => { });
         }
 
         private static void ControllerOnInputValueChanged(object sender, InputValueChangedEventArgs inputValueChangedEventArgs)

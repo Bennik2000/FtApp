@@ -1879,7 +1879,19 @@ namespace FtApp.Droid
 			public const int Icon = 2130837583;
 			
 			// aapt resource value: 0x7f020050
-			public const int notification_template_icon_bg = 2130837584;
+			public const int InterfaceUnknownIcon = 2130837584;
+			
+			// aapt resource value: 0x7f020051
+			public const int NoInterfaceFoundEmptyState = 2130837585;
+			
+			// aapt resource value: 0x7f020054
+			public const int notification_template_icon_bg = 2130837588;
+			
+			// aapt resource value: 0x7f020052
+			public const int TxIcon = 2130837586;
+			
+			// aapt resource value: 0x7f020053
+			public const int TxtIcon = 2130837587;
 			
 			static Drawable()
 			{
@@ -1954,14 +1966,14 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06002a
 			public const int bottom = 2131099690;
 			
-			// aapt resource value: 0x7f060098
-			public const int buttonConnect = 2131099800;
-			
 			// aapt resource value: 0x7f060044
 			public const int buttonPanel = 2131099716;
 			
 			// aapt resource value: 0x7f06007e
 			public const int cancel_action = 2131099774;
+			
+			// aapt resource value: 0x7f060096
+			public const int cardView = 2131099798;
 			
 			// aapt resource value: 0x7f06002b
 			public const int center = 2131099691;
@@ -1986,12 +1998,6 @@ namespace FtApp.Droid
 			
 			// aapt resource value: 0x7f06001f
 			public const int collapseActionView = 2131099679;
-			
-			// aapt resource value: 0x7f060097
-			public const int connectTxtIpAdress = 2131099799;
-			
-			// aapt resource value: 0x7f060096
-			public const int connectTxtIpAdressTextInputLayout = 2131099798;
 			
 			// aapt resource value: 0x7f06004a
 			public const int contentPanel = 2131099722;
@@ -2032,6 +2038,9 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060072
 			public const int design_navigation_view = 2131099762;
 			
+			// aapt resource value: 0x7f060095
+			public const int devicesListView = 2131099797;
+			
 			// aapt resource value: 0x7f06000e
 			public const int disableHome = 2131099662;
 			
@@ -2071,9 +2080,6 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060038
 			public const int @fixed = 2131099704;
 			
-			// aapt resource value: 0x7f060091
-			public const int frameLayoutTxtFragment = 2131099793;
-			
 			// aapt resource value: 0x7f060005
 			public const int home = 2131099653;
 			
@@ -2095,11 +2101,20 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06007c
 			public const int imageViewContextualMenu = 2131099772;
 			
+			// aapt resource value: 0x7f060098
+			public const int imageViewContollerIcon = 2131099800;
+			
+			// aapt resource value: 0x7f060093
+			public const int imageViewListEmpty = 2131099795;
+			
 			// aapt resource value: 0x7f060088
 			public const int info = 2131099784;
 			
 			// aapt resource value: 0x7f060000
 			public const int item_touch_helper_previous_elevation = 2131099648;
+			
+			// aapt resource value: 0x7f060092
+			public const int layoutInterfaceListEmpty = 2131099794;
 			
 			// aapt resource value: 0x7f06002f
 			public const int left = 2131099695;
@@ -2115,6 +2130,9 @@ namespace FtApp.Droid
 			
 			// aapt resource value: 0x7f06007a
 			public const int linearLayoutContextMenu = 2131099770;
+			
+			// aapt resource value: 0x7f060097
+			public const int linearLayoutProgressBar = 2131099799;
 			
 			// aapt resource value: 0x7f06008b
 			public const int linearLayoutTextViewOutput = 2131099787;
@@ -2134,35 +2152,35 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060080
 			public const int media_actions = 2131099776;
 			
-			// aapt resource value: 0x7f06009e
-			public const int menuInputModeAnalogR = 2131099806;
+			// aapt resource value: 0x7f0600a1
+			public const int menuInputModeAnalogR = 2131099809;
+			
+			// aapt resource value: 0x7f0600a3
+			public const int menuInputModeAnalogU = 2131099811;
 			
 			// aapt resource value: 0x7f0600a0
-			public const int menuInputModeAnalogU = 2131099808;
-			
-			// aapt resource value: 0x7f06009d
-			public const int menuInputModeDigitalR = 2131099805;
-			
-			// aapt resource value: 0x7f06009f
-			public const int menuInputModeDigitalU = 2131099807;
-			
-			// aapt resource value: 0x7f06009a
-			public const int menuInputModeNtc = 2131099802;
-			
-			// aapt resource value: 0x7f060099
-			public const int menuInputModeSwitch = 2131099801;
-			
-			// aapt resource value: 0x7f06009b
-			public const int menuInputModeTrailSensor = 2131099803;
-			
-			// aapt resource value: 0x7f06009c
-			public const int menuInputModeUltrasonic = 2131099804;
-			
-			// aapt resource value: 0x7f0600a1
-			public const int menuOutpuModeMotor = 2131099809;
+			public const int menuInputModeDigitalR = 2131099808;
 			
 			// aapt resource value: 0x7f0600a2
-			public const int menuOutpuModeOutputs = 2131099810;
+			public const int menuInputModeDigitalU = 2131099810;
+			
+			// aapt resource value: 0x7f06009d
+			public const int menuInputModeNtc = 2131099805;
+			
+			// aapt resource value: 0x7f06009c
+			public const int menuInputModeSwitch = 2131099804;
+			
+			// aapt resource value: 0x7f06009e
+			public const int menuInputModeTrailSensor = 2131099806;
+			
+			// aapt resource value: 0x7f06009f
+			public const int menuInputModeUltrasonic = 2131099807;
+			
+			// aapt resource value: 0x7f0600a4
+			public const int menuOutpuModeMotor = 2131099812;
+			
+			// aapt resource value: 0x7f0600a5
+			public const int menuOutpuModeOutputs = 2131099813;
 			
 			// aapt resource value: 0x7f06001d
 			public const int middle = 2131099677;
@@ -2194,6 +2212,12 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060029
 			public const int pin = 2131099689;
 			
+			// aapt resource value: 0x7f06009b
+			public const int progressBarNameLoading = 2131099803;
+			
+			// aapt resource value: 0x7f060091
+			public const int progressBarScanning = 2131099793;
+			
 			// aapt resource value: 0x7f06007b
 			public const int progressBarValue = 2131099771;
 			
@@ -2205,18 +2229,6 @@ namespace FtApp.Droid
 			
 			// aapt resource value: 0x7f060054
 			public const int radio = 2131099732;
-			
-			// aapt resource value: 0x7f060094
-			public const int radioButtonBluetooth = 2131099796;
-			
-			// aapt resource value: 0x7f060093
-			public const int radioButtonWifi = 2131099795;
-			
-			// aapt resource value: 0x7f060095
-			public const int radioButton_custom = 2131099797;
-			
-			// aapt resource value: 0x7f060092
-			public const int radioGroupConnectionType = 2131099794;
 			
 			// aapt resource value: 0x7f060030
 			public const int right = 2131099696;
@@ -2335,11 +2347,20 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06004d
 			public const int textSpacerNoButtons = 2131099725;
 			
+			// aapt resource value: 0x7f06009a
+			public const int textViewContollerAdress = 2131099802;
+			
+			// aapt resource value: 0x7f060099
+			public const int textViewContollerName = 2131099801;
+			
 			// aapt resource value: 0x7f060078
 			public const int textViewInputIndex = 2131099768;
 			
 			// aapt resource value: 0x7f060079
 			public const int textViewInputValue = 2131099769;
+			
+			// aapt resource value: 0x7f060094
+			public const int textViewListEmpty = 2131099796;
 			
 			// aapt resource value: 0x7f06008c
 			public const int textViewOutputIndex1 = 2131099788;
@@ -2509,7 +2530,7 @@ namespace FtApp.Droid
 			public const int CameraFragmentLayout = 2130903065;
 			
 			// aapt resource value: 0x7f03001a
-			public const int ControlTxtLayout = 2130903066;
+			public const int ControllInterfaceLayout = 2130903066;
 			
 			// aapt resource value: 0x7f03001b
 			public const int design_bottom_sheet_dialog = 2130903067;
@@ -2596,7 +2617,7 @@ namespace FtApp.Droid
 			public const int SelectDeviceLayout = 2130903094;
 			
 			// aapt resource value: 0x7f030037
-			public const int SelectTxtFragmentLayout = 2130903095;
+			public const int SelectDeviceListViewItem = 2130903095;
 			
 			// aapt resource value: 0x7f030038
 			public const int support_simple_spinner_dropdown_item = 2130903096;

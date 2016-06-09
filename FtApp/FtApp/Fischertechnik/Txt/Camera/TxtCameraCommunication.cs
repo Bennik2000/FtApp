@@ -183,7 +183,7 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
                     // Send an acknowledge
                     _socket.Send(BitConverter.GetBytes(TxtInterface.AcknowledgeIdCameraOnlineFrame));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
             }

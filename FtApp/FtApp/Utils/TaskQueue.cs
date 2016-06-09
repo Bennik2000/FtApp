@@ -199,8 +199,10 @@ namespace TXTCommunication.Utils
                                 _functionObject(); // Aufgabe erledigen
                             }
                                 // ReSharper disable once CatchAllClause
-                            catch (Exception)
+                            catch (Exception e)
                             {
+                                Console.WriteLine(e.Message);
+                                Console.WriteLine(e.StackTrace);
                                 //_log.Error($"Konnte die Aufgabe nicht ausführen: {e.Message}");
                             }
                         }

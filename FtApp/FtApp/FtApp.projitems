@@ -9,8 +9,10 @@
     <Import_RootNamespace>FtApp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\ControllerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Events\InputValueChangedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\FtInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\IFtInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\FtExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\FrameReceivedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\ResponseCameraFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\TxtCameraCommunication.cs" />
@@ -31,8 +33,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseStopOnline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Response\ResponseUpdateConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\TxtCommunication.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\TxtExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\TxtInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\IRfcommAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\ConfigPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\ConfigResponsePacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\EchoPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\EchoResponsePacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\InputPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\OutputPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\RequestInfoPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\RequestInfoResponsePacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\TxCommunication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\TxInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\NetworkUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\TaskQueue.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace TXTCommunication.Fischertechnik.Txt.Response
 {
@@ -35,6 +36,13 @@ namespace TXTCommunication.Fischertechnik.Txt.Response
             byte version3 = (byte) (Version >> 24);
 
             return $"{version3}.{version2}.{version1}.{version0}";
+        }
+
+        public string GetControllerName()
+        {
+            string decoreatedName = Encoding.ASCII.GetString(Devicename, 0, Devicename.Length);
+            decoreatedName = decoreatedName.TrimEnd('\0');
+            return decoreatedName;
         }
 
         public override int GetResponseLength()

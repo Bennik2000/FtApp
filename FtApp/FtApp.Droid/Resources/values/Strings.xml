@@ -3,7 +3,7 @@
 	<string name="app_name">Ft App</string>
 	
   
-  <string name="SelectDeviceActivity_toolbarTitle">FtApp for TXT</string>
+  <string name="SelectDeviceActivity_toolbarTitle">FtApp</string>
   <string name="SelectDeviceActivity_connectToTxtController">Connect to ROBOTICS TXT Controller</string>
   <string name="SelectDeviceActivity_ipAdress_Hint">Ip adress</string>
   <string name="SelectDeviceActivity_wifi">Wifi</string>

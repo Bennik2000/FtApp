@@ -1,9 +1,9 @@
-﻿using FtApp.Fischertechnik.Txt.Events;
+﻿using FtApp.Fischertechnik;
+using FtApp.Fischertechnik.Txt.Events;
+using FtApp.Utils;
 using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using System.Timers;
-using FtApp.Utils;
 using TXTCommunication.Fischertechnik.Txt.Camera;
 using TXTCommunication.Fischertechnik.Txt.Command;
 using TXTCommunication.Fischertechnik.Txt.Response;
@@ -11,9 +11,9 @@ using Timer = System.Timers.Timer;
 
 namespace TXTCommunication.Fischertechnik.Txt
 {
-    class TxtInterface : FtInterface
+    class TxtInterface : IFtInterface
     {
-        public const bool IsDebugEnabled = true;
+        public bool IsDebugEnabled { get; set; }
 
         #region Constants
 
@@ -62,10 +62,12 @@ namespace TXTCommunication.Fischertechnik.Txt
         #endregion
         #endregion
         
-        private readonly TxtExtension _masterInterface;
+        private readonly FtExtension _masterInterface;
 
         private TxtCommunication TxtCommunication { get; set; }
         public TxtCameraCommunication TxtCamera { get; private set; }
+        
+        private Timer _updateValuesTimer;
 
         public int UpdateInterval { get; set; } = DefaultUpdateInterval;
 
@@ -78,15 +80,16 @@ namespace TXTCommunication.Fischertechnik.Txt
         private int _soundPlayIndex;
         private int _configurationIndex;
 
-        private Timer _updateValuesTimer;
 
         public TxtInterface()
         {
             Connection = ConnectionStatus.NotConnected;
-            _masterInterface = new TxtExtension(0);
+            _masterInterface = new FtExtension(0);
         }
-        
-        public override void Connect(string ip)
+
+        public ConnectionStatus Connection { get; set; }
+
+        public void Connect(string ip)
         {
             LogMessage($"Connecting to {ip}");
             Ip = ip;
@@ -95,6 +98,8 @@ namespace TXTCommunication.Fischertechnik.Txt
                 throw new InvalidOperationException("Already connected to an interface");
             }
             
+            TxtCommunication?.Dispose();
+
             TxtCommunication = new TxtCommunication(this);
             TxtCamera = new TxtCameraCommunication(TxtCommunication);
 
@@ -117,7 +122,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             Connected?.Invoke(this, new EventArgs());
         }
 
-        public override void Disconnect()
+        public void Disconnect()
         {
             LogMessage("Disconnecting");
             ThrowWhenNotConnected();
@@ -146,12 +151,12 @@ namespace TXTCommunication.Fischertechnik.Txt
             _masterInterface.ResetValues();
         }
 
-        public override void StartOnlineMode()
+        public void StartOnlineMode()
         {
             LogMessage("Starting online mode");
             if (Connection == ConnectionStatus.Online)
             {
-                throw new InvalidOperationException("Already connected to an interface");
+                throw new InvalidOperationException("Already in online mode");
             }
             ThrowWhenNotConnected();
 
@@ -192,7 +197,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             LogMessage("Online mode started");
         }
 
-        public override void StopOnlineMode()
+        public void StopOnlineMode()
         {
             LogMessage("Stopping online mode");
             if (Connection == ConnectionStatus.Connected)
@@ -224,12 +229,12 @@ namespace TXTCommunication.Fischertechnik.Txt
             LogMessage("Online mode stopped");
         }
 
-        public override bool CanSendCommand()
+        public bool CanSendCommand()
         {
             return Connection == ConnectionStatus.Online || Connection == ConnectionStatus.Connected;
         }
 
-        public override string GetInterfaceVersionCode()
+        public string GetInterfaceVersionCode()
         {
             ThrowWhenNotConnected();
 
@@ -246,42 +251,76 @@ namespace TXTCommunication.Fischertechnik.Txt
             return string.Empty;
         }
 
-        public override string GetInterfaceName()
+        public string GetInterfaceName()
         {
-            return "TXT";
+            ThrowWhenNotConnected();
+
+            try
+            {
+                var responseQueryStatus = new ResponseQueryStatus();
+                TxtCommunication.SendCommand(new CommandQueryStatus(), responseQueryStatus);
+                return responseQueryStatus.GetControllerName();
+            }
+            catch (Exception e)
+            {
+                HandleException(e);
+            }
+            return string.Empty;
         }
 
-        public override bool IsInterfaceReachable(string adress)
+        public bool IsInterfaceReachable(string adress)
         {
             return NetworkUtils.PingIp(adress);
         }
 
-        public override int GetInputCount()
+        public int GetInputCount()
         {
             return UniversalInputs;
         }
 
-        public override int GetOutputCount()
+        public int GetOutputCount()
         {
             return PwmOutputs;
         }
 
-        public override int GetMotorCount()
+        public int GetMotorCount()
         {
             return MotorOutputs;
         }
 
-        public override int GetMaxOutputValue()
+        public int GetMaxOutputValue()
         {
             return PwmMaxValue;
         }
 
-        public override int GetMotorIndex(int outputIndex)
+        public ControllerType GetControllerType() => ControllerType.Txt;
+
+        public string RequestControllerName(string adress)
+        {
+            if (TxtCommunication == null)
+            {
+                TxtCommunication = new TxtCommunication(this);
+            }
+
+            return TxtCommunication.RequestControllerName(adress);
+        }
+
+        public bool IsValidInterface(string adress)
+        {
+            if (TxtCommunication == null)
+            {
+                TxtCommunication = new TxtCommunication(this);
+            }
+
+            return TxtCommunication.IsValidInterface(adress);
+        }
+
+        public int GetMotorIndex(int outputIndex)
         {
             return (int) Math.Ceiling((double) outputIndex/2);
         }
 
-        public override void SetOutputValue(int outputIndex, int value, int extension = 0)
+        public void SetOutputValue(int outputIndex, int value, int extension = 0)
         {
             if (extension > 0)
             {
@@ -292,7 +331,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             _masterInterface.SetOutputValue(outputIndex, value);
         }
 
-        public override void SetMotorValue(int motorIndex, int value, MotorDirection direction, int extension = 0)
+        public void SetMotorValue(int motorIndex, int value, MotorDirection direction, int extension = 0)
         {
             if (extension > 0)
             {
@@ -304,7 +343,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             _masterInterface.SetMotorValue(motorIndex, value);
         }
 
-        public override void ConfigureOutputMode(int outputIndex, bool isMotor, int extension = 0)
+        public void ConfigureOutputMode(int outputIndex, bool isMotor, int extension = 0)
         {
             if (extension > 0)
             {
@@ -316,7 +355,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             _configurationChanged = true;
         }
 
-        public override int GetInputValue(int index, int extension = 0)
+        public int GetInputValue(int index, int extension = 0)
         {
             if (extension > 0)
             {
@@ -327,7 +366,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             return _masterInterface.GetInputValue(index);
         }
         
-        public override void ConfigureInputMode(int inputIndex, InputMode inputMode, bool digital, int extension = 0)
+        public void ConfigureInputMode(int inputIndex, InputMode inputMode, bool digital, int extension = 0)
         {
             if (extension > 0)
             {
@@ -339,19 +378,20 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             _configurationChanged = true;
         }
-
-        public override event InputValueChangedEventHandler InputValueChanged;
+        
+        public event InputValueChangedEventHandler InputValueChanged;
         
         public delegate void SoundPlaybackFinishedEventHandler(object sender, EventArgs e);
+
         public event SoundPlaybackFinishedEventHandler SoundPlaybackFinished;
 
-        public override event ConnectedEventHandler Connected;
-        public override event ConnectionLostEventHandler ConnectionLost;
-        public override event DisconnectedEventHandler Disconnected;
-        public override event OnlineStartedEventHandler OnlineStarted;
-        public override event OnlineStoppedEventHandler OnlineStopped;
+        public event ConnectedEventHandler Connected;
+        public event ConnectionLostEventHandler ConnectionLost;
+        public event DisconnectedEventHandler Disconnected;
+        public event OnlineStartedEventHandler OnlineStarted;
+        public event OnlineStoppedEventHandler OnlineStopped;
 
-        public override void Dispose()
+        public void Dispose()
         {
             Connection = ConnectionStatus.NotConnected;
 
@@ -507,7 +547,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             for (int i = 0; i < _masterInterface.OutputModes.Length; i++)
             {
-                commandUpdateConfig.Config.Motor[0] = _masterInterface.OutputModes[i]
+                commandUpdateConfig.Config.Motor[i] = _masterInterface.OutputModes[i]
                     ? (byte)1
                     : (byte)0;
             }
@@ -538,12 +578,9 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         private void HandleException(Exception exception)
         {
-            if (exception is Exception)
-            {
-                Connection = ConnectionStatus.Invalid;
-
-                ConnectionLost?.Invoke(this, new EventArgs());
-            }
+            Connection = ConnectionStatus.Invalid;
+            
+            ConnectionLost?.Invoke(this, new EventArgs());
         }
 
         internal void LogMessage(string message)

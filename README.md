@@ -1,7 +1,7 @@
 # FtApp
-With this app you can control the fischertechnik ROBOTICS TXT Controller.
+With this app you can control the fischertechnik ROBOTICS TXT Controller and ROBO TX Controller.
 It allows you to control the output ports and read the input ports.
-Moreover you can view the camera stream.  
+Moreover you can view the camera stream of the TXT Controller.  
 The communication part is written in C# and Xamarin and does not depend on any Android specific apis.
 You can use it to write a separate desktop application or an app for Windows Phone or iOS.
 
@@ -10,8 +10,9 @@ The app is divided into two parts. The first part is responsible for the communi
 interface and the second part is the Android UI.  
 
 #### Communication part
-`FtInterface` is the main class to control a fischertechnik interface. `TxtInterface` is 
-derived from it and provides the ROBOTICS TXT Controller protocol implementation.
+`IFtInterface` is the main interface to control a fischertechnik interface.   
+`TxtInterface` is the implementation for the ROBOTICS TXT Controller protocol.  
+`TxInterface` is the implementation for the ROBO TX Controller protocol.
 
 ## Installation
 This app is not listed in the play store. You have to download the `de.bennik2000.ftapp.apk` file
@@ -19,10 +20,13 @@ and install it manually on your android phone. Note your Android version must be
 Android 4.0.3 (Ice Cream Sandwich) or higher.
 
 ## TODO
-* Add ROBO TX Controller protocol implementation
-* Add German translation (or any other :D)
+* Upload and play audio file
+* Multiple extensions
+* Overal status page
 * Testing on real Android devices
-* Add Windows Phone and iOS support (I can't do this because i do not have a WP or Mac)
+* Simulation option?
+* Add translations for more languages?
+* Add Windows Phone and iOS support? (I can't do this because i do not have a WP or Mac)
 
 ## Contributing
 If you want to work on this app you have to install Visual Studio 2015 Community Edition
@@ -34,7 +38,7 @@ with the Xamarin package.
 
 ## License
 
-The MIT License (MIT)
+####The MIT License (MIT)
 ---------------------
 
 Copyright © `2016` `Bennik2000`

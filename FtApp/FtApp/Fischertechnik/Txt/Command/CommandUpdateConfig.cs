@@ -104,7 +104,7 @@ namespace TXTCommunication.Fischertechnik.Txt.Command
             bytes.AddRange(Dummy);
 
             return bytes.ToArray();
-        }
+        }   
     }
 
     class CounterConfig

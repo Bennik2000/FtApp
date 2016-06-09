@@ -6,13 +6,17 @@ The communication part is written in C# and Xamarin and does not depend on any A
 You can use it to write a separate desktop application or an app for Windows Phone or iOS.
 
 ### Screenshots
-The screen to select a fischertechnik interface:
+The screen to select a fischertechnik interface:  
+
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_SelectDevice.png" height="300">
-Here you can view the input values:
+Here you can view the input values:  
+
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Inputs.png" height="300">
-You are able to set the output vlues here:
+You are able to set the output vlues here:  
+
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Outputs.png" height="300">
-When you are connected to an ROBOTICS TXT Controller you can see view the camera stream here:
+When you are connected to an ROBOTICS TXT Controller you can see view the camera stream here:  
+
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png" height="300">
 
 ## Application architecture

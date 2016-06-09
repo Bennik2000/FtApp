@@ -5,6 +5,16 @@ Moreover you can view the camera stream of the TXT Controller.
 The communication part is written in C# and Xamarin and does not depend on any Android specific apis.
 You can use it to write a separate desktop application or an app for Windows Phone or iOS.
 
+### Screenshots
+The screen to select a fischertechnik interface:
+![The screen to select a fischertechnik interface](FtApp\FtApp.Droid\Screenshots\Screenshot_SelectDevice.png)
+Here you can view the input values:
+![The screen to view the input values](FtApp\FtApp.Droid\Screenshots\Screenshot_Inputs.png)
+You are able to set the output vlues here:
+![The screen to set the output values](FtApp\FtApp.Droid\Screenshots\Screenshot_Outputs.png)
+When you are connected to an ROBOTICS TXT Controller you can see view the camera stream here:
+![The screen to view the camera stream](FtApp\FtApp.Droid\Screenshots\Screenshot_Camera.png)
+
 ## Application architecture
 The app is divided into two parts. The first part is responsible for the communication to the
 interface and the second part is the Android UI.  

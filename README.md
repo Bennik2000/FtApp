@@ -7,13 +7,13 @@ You can use it to write a separate desktop application or an app for Windows Pho
 
 ### Screenshots
 The screen to select a fischertechnik interface:
-![The screen to select a fischertechnik interface](FtApp\FtApp.Droid\Screenshots\Screenshot_SelectDevice.png)
+![The screen to select a fischertechnik interface](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png)
 Here you can view the input values:
-![The screen to view the input values](FtApp\FtApp.Droid\Screenshots\Screenshot_Inputs.png)
+![The screen to view the input values](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Inputs.png)
 You are able to set the output vlues here:
-![The screen to set the output values](FtApp\FtApp.Droid\Screenshots\Screenshot_Outputs.png)
+![The screen to set the output values](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Outputs.png)
 When you are connected to an ROBOTICS TXT Controller you can see view the camera stream here:
-![The screen to view the camera stream](FtApp\FtApp.Droid\Screenshots\Screenshot_Camera.png)
+![The screen to view the camera stream](https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png)
 
 ## Application architecture
 The app is divided into two parts. The first part is responsible for the communication to the

@@ -1,7 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Ft App</string>
-	
+  <string name="app_version">Version 1.0</string>
+
+  
+  <string name="AboutActivity_developedBy">Developed by Bennik2000</string>
+  <string name="AboutActivity_moreInformation">The source code and more information is provided here: <a href="https://github.com/Bennik2000/FtApp/blob/master/README.md">GitHub</a></string>
+
   
   <string name="SelectDeviceActivity_toolbarTitle">FtApp</string>
   <string name="SelectDeviceActivity_connectToTxtController">Connect to ROBOTICS TXT Controller</string>
@@ -12,9 +17,14 @@
   <string name="SelectDeviceActivity_connect">Connect</string>
   <string name="SelectDeviceActivity_notValidIp">"%1$s" is not a valid ip adress</string>
   <string name="SelectDeviceActivity_noIp">No ip is avaliable</string>
+  <string name="SelectDeviceActivity_NotInterfaceFound">No fischertechnik Interfaces was found</string>
 
+  <string name="SelectDeviceOptionsMenuSimulate">Simulate</string>
+  <string name="SelectDeviceOptionsMenuAbout">About</string>
 
   <string name="ControlTxtActivity_toolbarTitle">ROBOTICS TXT Controller</string>
+  
+  <string name="ControlTxtActivity_SimulatedInterfaceName">Simulated interface</string>
   
   <string name="ControlTxtActivity_tabStatusTitle">Status</string>
   <string name="ControlTxtActivity_tabInputTitle">Input</string>
@@ -52,4 +62,6 @@
   
   <string name="ControlTxtActivity_outputModeMotor">Motor</string>
   <string name="ControlTxtActivity_outputModeOutuput">Single outputs</string>
+  
+  <string name="ControlTxtActivity_pictureTakenToast">Picture taken</string>
 </resources>

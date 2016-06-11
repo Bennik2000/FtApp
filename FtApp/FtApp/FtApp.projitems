@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Events\InputValueChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\IFtInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\FtExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Simulation\SimulatedFtInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\FrameReceivedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\ResponseCameraFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Txt\Camera\TxtCameraCommunication.cs" />

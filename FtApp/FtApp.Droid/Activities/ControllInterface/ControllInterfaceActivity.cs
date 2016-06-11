@@ -11,6 +11,7 @@ using Android.Support.V7.App;
 using Android.Widget;
 using FtApp.Droid.Native;
 using FtApp.Fischertechnik;
+using FtApp.Fischertechnik.Simulation;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
@@ -136,7 +137,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void SetupTabs()
         {
-            var controlTxtTabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
+            var controlInterfaceTabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
 
             _fragments = new List<Fragment>
             {
@@ -157,28 +158,33 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
 
 
+
             foreach (Fragment fragment in _fragments)
             {
                 string title = string.Empty;
 
                 if (fragment is IFtInterfaceFragment)
                 {
-                    title = ((IFtInterfaceFragment) fragment).GetTitle(this);
+                    title = ((IFtInterfaceFragment)fragment).GetTitle(this);
                 }
+                
+                var tab = controlInterfaceTabLayout.NewTab();
 
-                controlTxtTabLayout.AddTab(controlTxtTabLayout.NewTab().SetText(title));
+                tab.SetText(title);
+                
+                controlInterfaceTabLayout.AddTab(tab);
             }
 
-
-            ViewPager viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
             PagerAdapter adapter = new TabPagerAdapter(SupportFragmentManager, _fragments.ToArray());
-            viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit because otherwise the fragments would be restored
+            var viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
+            viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit to the tab count. Otherwise the fragments would be restored
             viewPager.Adapter = adapter;
 
-            viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(controlTxtTabLayout));
+            viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(controlInterfaceTabLayout));
             viewPager.PageSelected += ViewPagerOnPageSelected;
 
-            controlTxtTabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+
+            controlInterfaceTabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
         }
 
         private void ViewPagerOnPageSelected(object sender, ViewPager.PageSelectedEventArgs pageSelectedEventArgs)
@@ -211,6 +217,9 @@ namespace FtApp.Droid.Activities.ControllInterface
                     break;
                 case ControllerType.Txt:
                     _ftInterface = new TxtInterface();
+                    break;
+                case ControllerType.Simulate:
+                    _ftInterface = new SimulatedFtInterface();
                     break;
                 case ControllerType.Unknown:
                     Finish();

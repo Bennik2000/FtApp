@@ -4,6 +4,7 @@
     {
         Tx,
         Txt,
+        Simulate,
         Unknown
     }
 }

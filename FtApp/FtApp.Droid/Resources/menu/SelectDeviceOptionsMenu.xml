@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/optionsMenuItemSimulate"
+        android:title="@string/SelectDeviceOptionsMenuSimulate" />
+  <item
+      android:id="@+id/optionsMenuItemAbout"
+      android:title="@string/SelectDeviceOptionsMenuAbout" />
+</menu>

@@ -7,6 +7,8 @@ using Android.Views;
 using Android.Widget;
 using FtApp.Droid.Activities.ControllInterface;
 using System.Collections.Generic;
+using FtApp.Droid.Activities.About;
+using FtApp.Fischertechnik;
 using BluetoothAdapter = Android.Bluetooth.BluetoothAdapter;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
@@ -83,6 +85,29 @@ namespace FtApp.Droid.Activities.SelectDevice
             }
         }
 
+        public override bool OnPrepareOptionsMenu(IMenu menu)
+        {
+            if (menu.Size() == 0)
+            {
+                MenuInflater.Inflate(Resource.Menu.SelectDeviceOptionsMenu, menu);
+            }
+            return true;
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch (item.ItemId)
+            {
+                case Resource.Id.optionsMenuItemSimulate:
+                    OpenControlActivity(".", GetString(Resource.String.ControlTxtActivity_SimulatedInterfaceName), ControllerType.Simulate);
+                    return true;
+
+                case Resource.Id.optionsMenuItemAbout:
+                    OpenAboutActivity();
+                    return true;
+            }
+            return base.OnOptionsItemSelected(item);
+        }
 
         private void SetupListView()
         {
@@ -108,19 +133,33 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             if (_foundDevices.Count > itemClickEventArgs.Id)
             {
-                _interfaceSearchAsyncTask?.CancelSearch();
-
                 var clickedItem = _foundDevices[(int)itemClickEventArgs.Id];
-
-                // Open the control activity and pass the extra data
-                Intent intent = new Intent(this, typeof(ControllInterfaceActivity));
-
-                intent.PutExtra(ControllInterfaceActivity.AdressExtraDataId, clickedItem.Adress);
-                intent.PutExtra(ControllInterfaceActivity.ControllerNameExtraDataId, clickedItem.Name);
-                intent.PutExtra(ControllInterfaceActivity.ControllerTypeExtraDataId, (int)clickedItem.ControllerType);
-
-                StartActivity(intent);
+                
+                OpenControlActivity(clickedItem.Adress, clickedItem.Name, clickedItem.ControllerType);
             }
+        }
+
+        private void OpenControlActivity(string address, string name, ControllerType type)
+        {
+            _interfaceSearchAsyncTask?.CancelSearch();
+
+            // Open the control activity and pass the extra data
+            Intent intent = new Intent(this, typeof(ControllInterfaceActivity));
+
+            intent.PutExtra(ControllInterfaceActivity.AdressExtraDataId, address);
+            intent.PutExtra(ControllInterfaceActivity.ControllerNameExtraDataId, name);
+            intent.PutExtra(ControllInterfaceActivity.ControllerTypeExtraDataId, (int)type);
+
+            StartActivity(intent);
+        }
+
+        private void OpenAboutActivity()
+        {
+            _interfaceSearchAsyncTask?.CancelSearch();
+
+            // Open the control activity and pass the extra data
+            Intent intent = new Intent(this, typeof(AboutActivity));
+            StartActivity(intent);
         }
 
         private void SearchForInterfaces()

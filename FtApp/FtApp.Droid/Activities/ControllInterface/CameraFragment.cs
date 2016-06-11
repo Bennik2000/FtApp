@@ -2,6 +2,8 @@ using System;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
+using Android.Provider;
+using Android.Support.Design.Widget;
 using Android.Views;
 using Android.Widget;
 using TXTCommunication.Fischertechnik;
@@ -16,7 +18,9 @@ namespace FtApp.Droid.Activities.ControllInterface
         private TxtInterface _ftInterface;
 
         private ImageView _imageViewCameraStream;
-        //private ProgressBar _progressBarRamUsage;
+        private ImageButton _imageButtonTakePicture;
+        private View _rootView;
+
         private Bitmap _frameBitmap;
 
         private bool _firstFrameReceived;
@@ -38,7 +42,11 @@ namespace FtApp.Droid.Activities.ControllInterface
             var view = inflater.Inflate(Resource.Layout.CameraFragmentLayout, container, false);
 
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
-            
+            _imageButtonTakePicture = view.FindViewById<ImageButton>(Resource.Id.imageButtonTakePicture);
+            _rootView = view.FindViewById<CoordinatorLayout>(Resource.Id.snackbarCoordinatorLayout);
+
+            _imageButtonTakePicture.Click += ImageButtonTakePictureOnClick;
+
             return view;
         }
 
@@ -50,6 +58,15 @@ namespace FtApp.Droid.Activities.ControllInterface
             _frameBitmap?.Recycle();
 
             _firstFrameReceived = false;
+        }
+
+        private void ImageButtonTakePictureOnClick(object sender, EventArgs eventArgs)
+        {
+            var imageName = DateTime.Now.ToString("MM/dd/yyyy_HH_mm_ss") + ".jpg";
+
+            MediaStore.Images.Media.InsertImage(Context.ContentResolver, _frameBitmap, imageName, imageName);
+
+            Toast.MakeText(Activity, Resource.String.ControlTxtActivity_pictureTakenToast, ToastLength.Short).Show();
         }
 
         public void SetFtInterface(IFtInterface ftInterface)

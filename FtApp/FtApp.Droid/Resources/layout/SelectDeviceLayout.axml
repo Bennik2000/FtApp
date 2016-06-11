@@ -34,7 +34,7 @@
                 android:id="@+id/imageViewListEmpty"
                 android:layout_gravity="center_horizontal" />
             <TextView
-                android:text="Keine fischertechnik Interfaces wurden gefunden"
+                android:text="@string/SelectDeviceActivity_NotInterfaceFound"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/textViewListEmpty"

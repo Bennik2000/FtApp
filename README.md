@@ -8,14 +8,14 @@ You can use it to write a separate desktop application or an app for Windows Pho
 ### Screenshots
 The screen to select a fischertechnik interface:  
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_SelectDevice.png" height="300">  
-Here you can view the input values:  
   
+Here you can view the input values:  
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Inputs.png" height="300">  
   
-You are able to set the output vlues here:  
+You are able to set the output values here:  
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Outputs.png" height="300">  
   
-When you are connected to an ROBOTICS TXT Controller you can see view the camera stream here:  
+When you are connected to an ROBOTICS TXT Controller you can view the camera stream here:  
 <img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png" height="300">  
 
 ## Application architecture
@@ -28,31 +28,52 @@ interface and the second part is the Android UI.
 `TxInterface` is the implementation for the ROBO TX Controller protocol.
 
 ## Installation
-This app is not listed in the play store. You have to download the `de.bennik2000.ftapp.apk` file
-and install it manually on your android phone. Note your Android version must be 
-Android 4.0.3 (Ice Cream Sandwich) or higher.
+This app is listed in the Google Play Store. You can install it from the Store or 
+you can download the `de.bennik2000.ftapp.apk` file and install it manually on your 
+android phone. Note: Your Android version must be *Android 4.0.3 (Ice Cream Sandwich)* 
+or higher.
 
 ## TODO
-* Upload and play audio file
+* Upload and play audio files to TXT Controller
 * Multiple extensions
-* Overal status page
+* Overal status page (connection status, firmware version, ...)
 * Testing on real Android devices
-* Simulation option?
 * Add translations for more languages?
 * Add Windows Phone and iOS support? (I can't do this because i do not have a WP or Mac)
+
+## Testing
+Tested on these devices:  
+
+* Samsung Galaxy S4 mini
+* Samsung Galaxy S3 mini
+* Samsung Galaxy S3
+
+Feel free to test on more devices and report your result!
 
 ## Contributing
 If you want to work on this app you have to install Visual Studio 2015 Community Edition
 with the Xamarin package.  
 
-* Please report any bugs which you can find.
-* If you have an idea please let me know.
-* You can try to work on the things which are listed in the TODO list
+* If you have an idea for an awesome new feature let me know!
+* Please report any bugs which you can find (Use the *Issues* tab).
+* You own a cell phone which is not listed in the list above: Test the app and report the result
+* You can try to work on the things which are listed in the TODO list. (Checkout the actual code 
+  from the development branch and create a new branch with the name of the feature)
+
+## History
+#### Version 1.0
+* First working release version of the app
+* Connect to ROBOTICS TXT Controller
+* Connect to ROBO TX Controller
+* Read the sensor values of each input (TX / TXT)
+* Set the output values of each output port (TX / TXT)
+* View the camera stream of a connected camera (TXT)
+* Simulate an interface
+
 
 ## License
 
 ####The MIT License (MIT)
----------------------
 
 Copyright © `2016` `Bennik2000`
 

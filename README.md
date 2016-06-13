@@ -61,6 +61,9 @@ with the Xamarin package.
   from the development branch and create a new branch with the name of the feature)
 
 ## History
+#### Version 1.1.1
+* Fixed wrong build
+
 #### Version 1.1
 * Added help page
 

@@ -21,6 +21,7 @@
 
   <string name="SelectDeviceOptionsMenuSimulate">Simulieren</string>
   <string name="SelectDeviceOptionsMenuAbout">Über</string>
+  <string name="SelectDeviceOptionsMenuHelp">Hilfe</string>
 
   <string name="ControlTxtActivity_toolbarTitle">ROBOTICS TXT Controller</string>
 

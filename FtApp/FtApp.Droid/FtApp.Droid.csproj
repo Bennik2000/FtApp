@@ -109,40 +109,40 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Properties\AndroidManifest.xml" />
-    <AndroidResource Include="Resources\layout\SelectDeviceLayout.axml">
+    <AndroidResource Include="Resources\layout\ActivitySelectDeviceLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Toolbar.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\ControllInterfaceLayout.axml">
+    <AndroidResource Include="Resources\layout\ActivityControllInterfaceLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\InputFragmentLayout.axml">
+    <AndroidResource Include="Resources\layout\FragmentInputLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\OutputFragmentLayout.axml">
+    <AndroidResource Include="Resources\layout\FragmentOutputLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\InputListViewItemLayout.axml">
+    <AndroidResource Include="Resources\layout\ListViewItemInputLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\OutputMotorListViewItemLayout.axml">
+    <AndroidResource Include="Resources\layout\ListViewItemOutputMotorLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\CameraFragmentLayout.axml">
+    <AndroidResource Include="Resources\layout\FragmentCameraLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\SelectDeviceListViewItem.axml">
+    <AndroidResource Include="Resources\layout\ListViewItemSelectDeviceLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\AboutActivityLayout.axml">
+    <AndroidResource Include="Resources\layout\ActivityAboutLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\HelpActivityLayout.axml">
+    <AndroidResource Include="Resources\layout\ActivityHelpLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\ListViewFaqLayout.axml">
+    <AndroidResource Include="Resources\layout\ListViewItemFaqLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

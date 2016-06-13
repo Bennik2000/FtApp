@@ -13,7 +13,7 @@ namespace FtApp.Droid.Activities.About
         {
             base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.AboutActivityLayout);
+            SetContentView(Resource.Layout.ActivityAboutLayout);
 
             TextView t2 = FindViewById<TextView>(Resource.Id.textViewMoreInformation);
             t2.MovementMethod = LinkMovementMethod.Instance;

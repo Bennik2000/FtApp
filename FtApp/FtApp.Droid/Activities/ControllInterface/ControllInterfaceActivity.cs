@@ -53,7 +53,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.ControllInterfaceLayout);
+            SetContentView(Resource.Layout.ActivityControllInterfaceLayout);
 
             ExtractExtraData();
 

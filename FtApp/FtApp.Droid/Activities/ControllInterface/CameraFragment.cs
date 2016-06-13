@@ -39,7 +39,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.CameraFragmentLayout, container, false);
+            var view = inflater.Inflate(Resource.Layout.FragmentCameraLayout, container, false);
 
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
             _imageButtonTakePicture = view.FindViewById<ImageButton>(Resource.Id.imageButtonTakePicture);

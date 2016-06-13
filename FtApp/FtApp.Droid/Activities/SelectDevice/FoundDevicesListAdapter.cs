@@ -34,7 +34,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
             if (view == null) // no view to re-use, create new
             {
-                view = _context.LayoutInflater.Inflate(Resource.Layout.SelectDeviceListViewItem, null);
+                view = _context.LayoutInflater.Inflate(Resource.Layout.ListViewItemSelectDeviceLayout, null);
             }
 
             var imageViewControllerIcon = view.FindViewById<ImageView>(Resource.Id.imageViewContollerIcon);

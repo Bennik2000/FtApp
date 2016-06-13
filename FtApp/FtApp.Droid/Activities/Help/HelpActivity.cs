@@ -26,7 +26,7 @@ namespace FtApp.Droid.Activities.Help
         {
             base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.HelpActivityLayout);
+            SetContentView(Resource.Layout.ActivityHelpLayout);
 
             _listViewFaq = FindViewById<ListView>(Resource.Id.listViewFaq);
 

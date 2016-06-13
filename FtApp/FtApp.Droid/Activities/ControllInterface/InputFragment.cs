@@ -139,7 +139,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.InputFragmentLayout, container, false);
+            var view = inflater.Inflate(Resource.Layout.FragmentInputLayout, container, false);
 
             _listViewInputPorts = view.FindViewById<ListView>(Resource.Id.listViewInputPorts);
             _listViewInputPorts.Divider = null;
@@ -186,7 +186,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
                 if (view == null) // no view to re-use, create new
                 {
-                    view = _context.LayoutInflater.Inflate(Resource.Layout.InputListViewItemLayout, null);
+                    view = _context.LayoutInflater.Inflate(Resource.Layout.ListViewItemInputLayout, null);
 
                     var imageViewContextualMenu = view.FindViewById<ImageView>(Resource.Id.imageViewContextualMenu);
 

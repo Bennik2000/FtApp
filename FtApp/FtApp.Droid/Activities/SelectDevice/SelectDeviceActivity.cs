@@ -42,7 +42,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.SelectDeviceLayout);
+            SetContentView(Resource.Layout.ActivitySelectDeviceLayout);
 
             _foundDevices.Clear();
 

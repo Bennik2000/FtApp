@@ -34,7 +34,7 @@ namespace FtApp.Droid.Activities.Help
 
             if (view == null) // no view to re-use, create new
             {
-                view = _context.LayoutInflater.Inflate(Resource.Layout.ListViewFaqLayout, null);
+                view = _context.LayoutInflater.Inflate(Resource.Layout.ListViewItemFaqLayout, null);
             }
 
             var textViewQuestion = view.FindViewById<TextView>(Resource.Id.textViewFaqQuestion);

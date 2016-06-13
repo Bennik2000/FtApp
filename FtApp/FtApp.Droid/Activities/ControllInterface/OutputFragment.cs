@@ -49,7 +49,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.OutputFragmentLayout, container, false);
+            var view = inflater.Inflate(Resource.Layout.FragmentOutputLayout, container, false);
 
             _listViewOutputPorts = view.FindViewById<ListView>(Resource.Id.listViewOutputPorts);
             _listViewOutputPorts.Divider = null;
@@ -111,7 +111,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
                 if (view == null) // no view to re-use, create new
                 {
-                    view = _context.LayoutInflater.Inflate(Resource.Layout.OutputMotorListViewItemLayout, null);
+                    view = _context.LayoutInflater.Inflate(Resource.Layout.ListViewItemOutputMotorLayout, null);
 
                     seekBarValue1 = view.FindViewById<SeekBar>(Resource.Id.seekBarOutput1);
                     seekBarValue2 = view.FindViewById<SeekBar>(Resource.Id.seekBarOutput2);

@@ -61,6 +61,9 @@ with the Xamarin package.
   from the development branch and create a new branch with the name of the feature)
 
 ## History
+#### Version 1.1
+* Added help page
+
 #### Version 1.0
 * First working release version of the app
 * Connect to ROBOTICS TXT Controller

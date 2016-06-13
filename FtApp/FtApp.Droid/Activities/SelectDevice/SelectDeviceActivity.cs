@@ -8,6 +8,7 @@ using Android.Widget;
 using FtApp.Droid.Activities.ControllInterface;
 using System.Collections.Generic;
 using FtApp.Droid.Activities.About;
+using FtApp.Droid.Activities.Help;
 using FtApp.Fischertechnik;
 using BluetoothAdapter = Android.Bluetooth.BluetoothAdapter;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
@@ -41,7 +42,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.SelectDeviceLayout);
+            SetContentView(Resource.Layout.ActivitySelectDeviceLayout);
 
             _foundDevices.Clear();
 
@@ -105,6 +106,10 @@ namespace FtApp.Droid.Activities.SelectDevice
                 case Resource.Id.optionsMenuItemAbout:
                     OpenAboutActivity();
                     return true;
+
+                case Resource.Id.optionsMenuItemHelp:
+                    OpenHelpActivity();
+                    return true;
             }
             return base.OnOptionsItemSelected(item);
         }
@@ -139,6 +144,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             }
         }
 
+
         private void OpenControlActivity(string address, string name, ControllerType type)
         {
             _interfaceSearchAsyncTask?.CancelSearch();
@@ -156,10 +162,20 @@ namespace FtApp.Droid.Activities.SelectDevice
         private void OpenAboutActivity()
         {
             _interfaceSearchAsyncTask?.CancelSearch();
-
-            // Open the control activity and pass the extra data
+            
             Intent intent = new Intent(this, typeof(AboutActivity));
             StartActivity(intent);
+            OverridePendingTransition(Android.Resource.Animation.FadeIn, Android.Resource.Animation.FadeOut);
+        }
+
+        private void OpenHelpActivity()
+        {
+            _interfaceSearchAsyncTask?.CancelSearch();
+            
+            Intent intent = new Intent(this, typeof(HelpActivity));
+            StartActivity(intent);
+            OverridePendingTransition(Android.Resource.Animation.FadeIn, Android.Resource.Animation.FadeOut);
+
         }
 
         private void SearchForInterfaces()

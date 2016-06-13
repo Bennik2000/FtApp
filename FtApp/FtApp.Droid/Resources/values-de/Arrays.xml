@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+  <string-array name="HelpFaqTitles">
+    <item>Ich kann mich nich mit dem Interface verbinden!</item>
+    <item>Mein Interface ist nicht aufgelistet!</item>
+    <item>Das Kamera Bild ist eingefroren!</item>
+    <item>Kein Kamera Bild wird angezeigt!</item>
+    <item>Ich bin ein Entwickler! Wo kann ich den Quellcode bekommen?</item>
+  </string-array>
+  
+  <string-array name="HelpFaqMessages">
+    <item>Stelle sicher, dass die Firmware auf dem aktuellsten Stand ist. Dazu öffnest du ROBO Pro (natürlich die aktuellste Verion) und verbindest dich mit dem Controller. Wenn die Firmware nich auf dem neusten Stand ist, wird dich ein Popup Fenster informieren.</item>
+    <item>Versichere, dass Bluetooth aktiviert und der Controller sichtbar ist. Wenn du dich mit einem ROBOTICS TXT Controller verbinden willst, musst du mit dem WLAN Netz verbunden sein.</item>
+    <item>Stelle sicher, dass das WLAN Signal stark genug ist.</item>
+    <item>Wenn das der Fall ist, versuche den TXT Controller neu zu staten</item>
+    <item>Der Quellcode dieser App ist auf GitHub zu finden.</item>
+  </string-array>
+</resources>

@@ -17,8 +17,13 @@ namespace FtApp.Droid.Activities.About
 
             TextView t2 = FindViewById<TextView>(Resource.Id.textViewMoreInformation);
             t2.MovementMethod = LinkMovementMethod.Instance;
+        }
 
-            // Create your application here
+        public override void Finish()
+        {
+            base.Finish();
+
+            OverridePendingTransition(Android.Resource.Animation.FadeIn, Android.Resource.Animation.FadeOut);
         }
     }
 }

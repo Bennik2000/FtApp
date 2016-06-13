@@ -93,6 +93,9 @@
     <Compile Include="Activities\ControllInterface\IFtInterfaceFragment.cs" />
     <Compile Include="Activities\ControllInterface\InputFragment.cs" />
     <Compile Include="Activities\ControllInterface\OutputFragment.cs" />
+    <Compile Include="Activities\Help\FaqListAdapter.cs" />
+    <Compile Include="Activities\Help\FaqViewModel.cs" />
+    <Compile Include="Activities\Help\HelpActivity.cs" />
     <Compile Include="Activities\SelectDevice\FoundDevicesListAdapter.cs" />
     <Compile Include="Activities\SelectDevice\HideOnFinishedAnimationListener.cs" />
     <Compile Include="Activities\SelectDevice\InterfaceSearchAsyncTask.cs" />
@@ -134,6 +137,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\AboutActivityLayout.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\HelpActivityLayout.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\ListViewFaqLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -228,7 +237,9 @@
     <AndroidResource Include="Resources\drawable\NoInterfaceFoundEmptyState.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\menu\SelectDeviceOptionsMenu.xml" />
+    <AndroidResource Include="Resources\menu\SelectDeviceOptionsMenu.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_photo_camera_black_24dp.png" />
@@ -244,6 +255,31 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-hdpi\ic_photo_camera_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_help_outline_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_help_outline_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_help_outline_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\ic_help_outline_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_help_outline_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Arrays.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values-de\Arrays.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="..\FtApp\FtApp.projitems" Label="Shared" Condition="Exists('..\FtApp\FtApp.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

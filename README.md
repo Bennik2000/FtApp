@@ -44,9 +44,10 @@ or higher.
 ## Testing
 Tested on these devices:  
 
-* Samsung Galaxy S4 mini
-* Samsung Galaxy S3 mini
-* Samsung Galaxy S3
+* Samsung J5 (Android 5.1)
+* Samsung Galaxy S4 mini (Android 4.4)
+* Samsung Galaxy S2 (Android 4.2)
+* Samsung Galaxy S3 mini (Android 4.1.2)
 
 Feel free to test on more devices and report your result!
 
@@ -61,6 +62,9 @@ with the Xamarin package.
   from the development branch and create a new branch with the name of the feature)
 
 ## History
+#### Version 1.1.2
+* Fixed display bug where no I/O elements were displayed when not paired before
+
 #### Version 1.1.1
 * Fixed wrong build
 

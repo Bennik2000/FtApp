@@ -21,7 +21,6 @@ namespace FtApp.Droid.Activities.SelectDevice
         
         public void OnAnimationCancel(Animator animation)
         {
-            throw new NotImplementedException();
         }
 
         public void OnAnimationEnd(Animator animation)
@@ -31,12 +30,10 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         public void OnAnimationRepeat(Animator animation)
         {
-            throw new NotImplementedException();
         }
 
         public void OnAnimationStart(Animator animation)
         {
-            throw new NotImplementedException();
         }
     }
 }

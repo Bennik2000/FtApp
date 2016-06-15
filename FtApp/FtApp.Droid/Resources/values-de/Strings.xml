@@ -65,4 +65,6 @@
   <string name="ControlTxtActivity_outputModeOutuput">Einzelne Ausgänge</string>
 
   <string name="ControlTxtActivity_pictureTakenToast">Foto aufgenommen</string>
+
+  <string name="ControlInterfaceOptionsMenuJoystick">Joystick</string>
 </resources>

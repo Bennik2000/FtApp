@@ -71,21 +71,25 @@ namespace FtApp.Droid.Activities.ControllInterface
         
         protected override void OnPause()
         {
-            DisconnectFromInterface();
-
-            try
+            if (_ftInterface != null &&
+                (_ftInterface.Connection == ConnectionStatus.Online ||
+                 _ftInterface.Connection == ConnectionStatus.Connected))
             {
-                _connectingDialog.Dismiss();
+                DisconnectFromInterface();
+
+                try
+                {
+                    _connectingDialog.Dismiss();
+                }
+                catch (Exception) { }
+
+                try
+                {
+                    _notAvailableDialog.Dismiss();
+                }
+                catch (Exception) { }
             }
-            catch (Exception) { }
-
-            try
-            {
-                _notAvailableDialog.Dismiss();
-            }
-            catch (Exception) { }
-
-
+            
             base.OnPause();
         }
         

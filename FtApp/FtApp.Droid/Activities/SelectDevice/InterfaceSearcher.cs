@@ -99,12 +99,14 @@ namespace FtApp.Droid.Activities.SelectDevice
             {
                 string deviceName = Android.Bluetooth.BluetoothAdapter.DefaultAdapter.GetRemoteDevice(adress).Name;
 
-                
-                // Connecting to a bluetooth device while discovery is not possible (or very slow). Therefore we only check for a match in the device name.
-                Regex regex = new Regex(ValidateTxNameExpression);  
-                if (regex.IsMatch(deviceName))
+                if (deviceName != null)
                 {
-                    InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(adress, deviceName, ControllerType.Tx));
+                    // Connecting to a bluetooth device while discovery is not possible (or very slow). Therefore we only check for a match in the device name.
+                    Regex regex = new Regex(ValidateTxNameExpression);
+                    if (regex.IsMatch(deviceName))
+                    {
+                        InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(adress, deviceName, ControllerType.Tx));
+                    }
                 }
             }, () =>
             {

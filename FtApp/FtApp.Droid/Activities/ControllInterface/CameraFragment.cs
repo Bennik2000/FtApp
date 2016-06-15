@@ -1,12 +1,11 @@
-using System;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Provider;
-using Android.Support.Design.Widget;
 using Android.Views;
 using Android.Widget;
-using TXTCommunication.Fischertechnik;
+using System;
+using System.ComponentModel;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Fischertechnik.Txt.Camera;
 using Fragment = Android.Support.V4.App.Fragment;
@@ -15,11 +14,8 @@ namespace FtApp.Droid.Activities.ControllInterface
 {
     public class CameraFragment : Fragment, IFtInterfaceFragment
     {
-        private TxtInterface _ftInterface;
-
         private ImageView _imageViewCameraStream;
         private ImageButton _imageButtonTakePicture;
-        private View _rootView;
 
         private Bitmap _frameBitmap;
 
@@ -27,7 +23,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         
         private readonly BitmapFactory.Options _bitmapOptions;
 
-        public bool DisplayFrames { get; set; }
+        public bool DisplayFrames { get; } = true;
 
         public CameraFragment()
         {
@@ -35,6 +31,15 @@ namespace FtApp.Droid.Activities.ControllInterface
             {
                 InMutable = true
             };
+
+            FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+
+            HookEvents();
+        }
+
+        private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            HookEvents();
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -43,7 +48,6 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
             _imageButtonTakePicture = view.FindViewById<ImageButton>(Resource.Id.imageButtonTakePicture);
-            _rootView = view.FindViewById<CoordinatorLayout>(Resource.Id.snackbarCoordinatorLayout);
 
             _imageButtonTakePicture.Click += ImageButtonTakePictureOnClick;
 
@@ -54,10 +58,35 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             base.OnDestroyView();
 
+            TxtInterface txtInterface = FtInterfaceInstanceProvider.Instance as TxtInterface;
+
+            if (txtInterface?.TxtCamera != null)
+            {
+                txtInterface.TxtCamera.FrameReceived -= TxtCameraOnFrameReceived;
+            }
+
             // Cleanup the frame memory
             _frameBitmap?.Recycle();
 
             _firstFrameReceived = false;
+        }
+
+        private void HookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceInstanceProvider.Instance.Connected += FtInterfaceOnConnected;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped += FtInterfaceOnOnlineStopped;
+
+
+                TxtInterface txtInterface = FtInterfaceInstanceProvider.Instance as TxtInterface;
+
+                if (txtInterface?.TxtCamera != null)
+                {
+                    txtInterface.TxtCamera.FrameReceived -= TxtCameraOnFrameReceived;
+                    txtInterface.TxtCamera.FrameReceived += TxtCameraOnFrameReceived;
+                }
+            }
         }
 
         private void ImageButtonTakePictureOnClick(object sender, EventArgs eventArgs)
@@ -68,18 +97,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             Toast.MakeText(Activity, Resource.String.ControlTxtActivity_pictureTakenToast, ToastLength.Short).Show();
         }
-
-        public void SetFtInterface(IFtInterface ftInterface)
-        {
-            TxtInterface txtInterface = ftInterface as TxtInterface;
-            if (txtInterface != null)
-            {
-                _ftInterface = txtInterface;
-                _ftInterface.Connected += FtInterfaceOnConnected;
-                _ftInterface.OnlineStopped += FtInterfaceOnOnlineStopped;
-            }
-        }
-
+        
         private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
         {
             StopCameraStream();
@@ -87,42 +105,63 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void FtInterfaceOnConnected(object sender, EventArgs eventArgs)
         {
-            _ftInterface.TxtCamera.FrameReceived += TxtCameraOnFrameReceived;
-            StartCameraStream();
+            TxtInterface txtInterface = FtInterfaceInstanceProvider.Instance as TxtInterface;
+
+            if (txtInterface != null)
+            {
+                StartCameraStream();
+                txtInterface.TxtCamera.FrameReceived -= TxtCameraOnFrameReceived;
+                txtInterface.TxtCamera.FrameReceived += TxtCameraOnFrameReceived;
+            }
         }
 
         public void StartCameraStream()
         {
-            _ftInterface.TxtCamera.StartCamera();
+            TxtInterface txtInterface = FtInterfaceInstanceProvider.Instance as TxtInterface;
+
+            if (txtInterface != null)
+            {
+                txtInterface.TxtCamera.StartCamera();
+            }
         }
 
         public void StopCameraStream()
         {
-            _ftInterface.TxtCamera.StopCamera();
-            
-            _firstFrameReceived = false;
+            TxtInterface txtInterface = FtInterfaceInstanceProvider.Instance as TxtInterface;
+
+            if (txtInterface != null)
+            {
+                txtInterface.TxtCamera.StopCamera();
+                _firstFrameReceived = false;
+            }
+
         }
 
         private void TxtCameraOnFrameReceived(object sender, FrameReceivedEventArgs frameReceivedEventArgs)
         {
-            if (DisplayFrames)
+            if (_imageViewCameraStream != null)
             {
-                if (_frameBitmap != null && !_frameBitmap.IsRecycled)
+                if (DisplayFrames)
                 {
-                    _bitmapOptions.InBitmap = _frameBitmap;
+                    if (_frameBitmap != null && !_frameBitmap.IsRecycled)
+                    {
+                        _bitmapOptions.InBitmap = _frameBitmap;
+                    }
+
+                    _frameBitmap = BitmapFactory.DecodeByteArray(frameReceivedEventArgs.FrameData, 0,
+                        frameReceivedEventArgs.DataLength, _bitmapOptions);
+
+                    Activity.RunOnUiThread(() =>
+                    {
+                        if (!_firstFrameReceived)
+                        {
+                            _imageViewCameraStream.SetImageBitmap(_frameBitmap);
+                            _firstFrameReceived = true;
+                        }
+                        _imageViewCameraStream.Invalidate();
+                    });
+
                 }
-
-                _frameBitmap = BitmapFactory.DecodeByteArray(frameReceivedEventArgs.FrameData, 0,
-                    frameReceivedEventArgs.DataLength, _bitmapOptions);
-
-                if (!_firstFrameReceived)
-                {
-                    _imageViewCameraStream.SetImageBitmap(_frameBitmap);
-                }
-                Activity.RunOnUiThread(_imageViewCameraStream.Invalidate);
-
-                _firstFrameReceived = true;
-
             }
         }
 

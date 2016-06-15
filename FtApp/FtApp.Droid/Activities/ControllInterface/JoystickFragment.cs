@@ -12,8 +12,6 @@ namespace FtApp.Droid.Activities.ControllInterface
     // ReSharper disable once ClassNeverInstantiated.Global
     public class JoystickFragment : Fragment, IFtInterfaceFragment
     {
-        private IFtInterface _ftInterface;
-
         private JoystickView _joystickViewLeft;
         private JoystickView _joystickViewRight;
 
@@ -80,29 +78,24 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             var direction = percentage > 0 ? MotorDirection.Left : MotorDirection.Right;
 
-            int value = (int) Math.Abs(percentage/100*_ftInterface.GetMaxOutputValue());
+            int value = (int) Math.Abs(percentage/100* FtInterfaceInstanceProvider.Instance.GetMaxOutputValue());
 
-            if (value > _ftInterface.GetMaxOutputValue())
+            if (value > FtInterfaceInstanceProvider.Instance.GetMaxOutputValue())
             {
-                value = _ftInterface.GetMaxOutputValue();
+                value = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue();
             }
 
-            _ftInterface.SetMotorValue(motorIndex, value, direction);
+            FtInterfaceInstanceProvider.Instance.SetMotorValue(motorIndex, value, direction);
         }
 
         public void Activate()
         {
-            for (int i = 0; i < _ftInterface.GetOutputCount(); i++)
+            for (int i = 0; i < FtInterfaceInstanceProvider.Instance?.GetOutputCount(); i++)
             {
-                _ftInterface.ConfigureOutputMode(i, true);
+                FtInterfaceInstanceProvider.Instance?.ConfigureOutputMode(i, true);
             }
         }
-
-        public void SetFtInterface(IFtInterface ftInterface)
-        {
-            _ftInterface = ftInterface;
-        }
-
+        
         public string GetTitle(Context context)
         {
             return string.Empty;

@@ -1,5 +1,4 @@
 using Android.App;
-using Android.Content.PM;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
@@ -13,6 +12,7 @@ using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Simulation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
@@ -25,9 +25,12 @@ using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace FtApp.Droid.Activities.ControllInterface
 {
-    [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base", ScreenOrientation = ScreenOrientation.Portrait)]
+    [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base"/*, ScreenOrientation = ScreenOrientation.Portrait*/)]
     public class ControllInterfaceActivity : AppCompatActivity
     {
+        private const string JoystickVisibleDataId = "JoystickVisible";
+        private const string ActiveTabDataId = "ActiveTab";
+
         public const string AdressExtraDataId = "Adress";
         public const string ControllerNameExtraDataId = "ControllerName";
         public const string ControllerTypeExtraDataId = "ControllerType";
@@ -40,22 +43,21 @@ namespace FtApp.Droid.Activities.ControllInterface
         private TabLayout _tabLayout;
         private ViewPager _viewPager;
 
-        private string _ip;
-        private string _controllerName;
-        private ControllerType _controllerType;
-
-        private IFtInterface _ftInterface;
-
+        
         
         private IList<Fragment> _fragments;
         private JoystickFragment _joystickFragment;
 
         private bool _joystickVisibile;
-        
+        private bool _isActivityInFocus;
         
         public ControllInterfaceActivity()
         {
             _connectionTaskQueue = new TaskQueue("Connection handler");
+
+            FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+
+            HookEvents();
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -68,30 +70,34 @@ namespace FtApp.Droid.Activities.ControllInterface
             _tabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
             _viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
             
-
-            FragmentManager.BeginTransaction()
-                .Hide(_joystickFragment)
-                .Commit();
-
-
+            
             ExtractExtraData();
-
             InitializeDialogs();
+
+
             SetupToolbar();
             SetupTabs();
+
+
+            if (savedInstanceState == null)
+            {
+                HideJoystick();
+                SetupFtInterface();
+            }
+            else
+            {
+                RetreiveSavedState(savedInstanceState);
+            }
         }
 
         protected override void OnStart()
         {
             base.OnStart();
-            SetupFtInterface();
             ConnectToFtInterface();
         }
         
         protected override void OnPause()
         {
-            DisconnectFromInterface();
-
             try
             {
                 _connectingDialog.Dismiss();
@@ -107,6 +113,31 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             base.OnPause();
         }
+
+        protected override void OnStop()
+        {
+            base.OnStop();
+
+            if (!_isActivityInFocus)
+            {
+                DisconnectFromInterface();
+            }
+        }
+
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+
+            outState.PutBoolean(JoystickVisibleDataId, _joystickVisibile);
+            outState.PutInt(ActiveTabDataId, _tabLayout.SelectedTabPosition);
+        }
+
+        public override void OnWindowFocusChanged(bool hasFocus)
+        {
+            base.OnWindowFocusChanged(hasFocus);
+            _isActivityInFocus = hasFocus;
+        }
+
 
         public override bool OnPrepareOptionsMenu(IMenu menu)
         {
@@ -140,21 +171,34 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
         }
 
+        private void RetreiveSavedState(Bundle savedInstanceState)
+        {
+            if (savedInstanceState.GetBoolean(JoystickVisibleDataId))
+            {
+                ShowJoystick();
+            }
+            else
+            {
+                HideJoystick();
+            }
+
+            _viewPager.SetCurrentItem(savedInstanceState.GetInt(ActiveTabDataId, 0), false);
+        }
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
 
-            _ftInterface.Dispose();
+            FtInterfaceInstanceProvider.Instance?.Dispose();
         }
 
         private void ExtractExtraData()
         {
             Bundle extras = Intent.Extras;
 
-            _controllerType = extras != null ? (ControllerType)extras.GetInt(ControllerTypeExtraDataId) : ControllerType.Unknown;
-            _controllerName = extras != null ? extras.GetString(ControllerNameExtraDataId) : string.Empty;
-            _ip = extras != null ? extras.GetString(AdressExtraDataId) : string.Empty;
+            FtInterfaceInstanceProvider.ControllerType = extras != null ? (ControllerType)extras.GetInt(ControllerTypeExtraDataId) : ControllerType.Unknown;
+            FtInterfaceInstanceProvider.ControllerName = extras != null ? extras.GetString(ControllerNameExtraDataId) : string.Empty;
+            FtInterfaceInstanceProvider.Ip = extras != null ? extras.GetString(AdressExtraDataId) : string.Empty;
         }
 
         private void InitializeDialogs()
@@ -183,8 +227,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             
             SetSupportActionBar(toolbar);
             
-            //SupportActionBar.Title = Resources.GetString(Resource.String.ControlTxtActivity_toolbarTitle);
-            SupportActionBar.Title = _controllerName;
+            SupportActionBar.Title = FtInterfaceInstanceProvider.ControllerName;
         }
 
         private void SetupTabs()
@@ -198,7 +241,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             };
 
 
-            switch (_controllerType)
+            switch (FtInterfaceInstanceProvider.ControllerType)
             {
                 case ControllerType.Tx:
                     break;
@@ -241,32 +284,21 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void SetupFtInterface()
         {
-            switch (_controllerType)
+            switch (FtInterfaceInstanceProvider.ControllerType)
             {
                 case ControllerType.Tx:
-                    _ftInterface = new TxInterface(new BluetoothAdapter(this));
+                    FtInterfaceInstanceProvider.Instance = new TxInterface(new BluetoothAdapter(this));
                     break;
                 case ControllerType.Txt:
-                    _ftInterface = new TxtInterface();
+                    FtInterfaceInstanceProvider.Instance = new TxtInterface();
                     break;
                 case ControllerType.Simulate:
-                    _ftInterface = new SimulatedFtInterface();
+                    FtInterfaceInstanceProvider.Instance = new SimulatedFtInterface();
                     break;
                 case ControllerType.Unknown:
                     Finish();
                     return;
             }
-
-            _ftInterface.ConnectionLost += FtInterfaceOnConnectionLost;
-            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
-            _ftInterface.Connected += FtInterfaceOnConnected;
-
-            foreach (Fragment fragment in _fragments)
-            {
-                IFtInterfaceFragment interfaceFragment = fragment as IFtInterfaceFragment;
-                interfaceFragment?.SetFtInterface(_ftInterface);
-            }
-            _joystickFragment?.SetFtInterface(_ftInterface);
         }
 
         private void ShowJoystick()
@@ -314,20 +346,36 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             // Control the camera preview of the TXT Controller.
             // When the camera fragment is not visible we stop decoding the jpeg stream to save ressources
-            var fragment = _fragments[pageSelectedEventArgs.Position];
+            //var fragment = _fragments[pageSelectedEventArgs.Position];
 
-            if (fragment is CameraFragment)
-            {
-                ((CameraFragment) fragment).DisplayFrames = true;
-            }
-            else
-            {
-                var cameraFragment = _fragments.FirstOrDefault(f => f is CameraFragment) as CameraFragment;
+            //if (fragment is CameraFragment)
+            //{
+            //    ((CameraFragment) fragment).DisplayFrames = true;
+            //}
+            //else
+            //{
+            //    var cameraFragment = _fragments.FirstOrDefault(f => f is CameraFragment) as CameraFragment;
 
-                if (cameraFragment != null)
-                {
-                    cameraFragment.DisplayFrames = false;
-                }
+            //    if (cameraFragment != null)
+            //    {
+            //        cameraFragment.DisplayFrames = false;
+            //    }
+            //}
+        }
+
+
+        private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            HookEvents();
+        }
+
+        private void HookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceInstanceProvider.Instance.ConnectionLost += FtInterfaceOnConnectionLost;
+                FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.Connected += FtInterfaceOnConnected;
             }
         }
 
@@ -335,7 +383,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         private void FtInterfaceOnConnected(object sender, EventArgs eventArgs)
         {
         }
-
+        
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
             if (_connectingDialog.IsShowing)
@@ -353,23 +401,26 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void ConnectToFtInterface()
         {
-            _connectingDialog.Show();
-
-            _connectionTaskQueue.DoWorkInQueue(() =>
+            if (FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.NotConnected)
             {
-                _ftInterface.Connect(_ip);
-                _ftInterface.StartOnlineMode();
-            }, false);
+                _connectingDialog.Show();
+
+                _connectionTaskQueue.DoWorkInQueue(() =>
+                {
+                    FtInterfaceInstanceProvider.Instance?.Connect(FtInterfaceInstanceProvider.Ip);
+                    FtInterfaceInstanceProvider.Instance?.StartOnlineMode();
+                }, false);
+            }
         }
 
         private void DisconnectFromInterface()
         {
             _connectionTaskQueue.DoWorkInQueue(() =>
             {
-                if (_ftInterface.CanSendCommand())
+                if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                 {
-                    _ftInterface.StopOnlineMode();
-                    _ftInterface.Disconnect();
+                    FtInterfaceInstanceProvider.Instance.StopOnlineMode();
+                    FtInterfaceInstanceProvider.Instance.Disconnect();
                 }
             }, true);
         }

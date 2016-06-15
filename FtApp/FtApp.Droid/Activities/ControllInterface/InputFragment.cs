@@ -1,11 +1,13 @@
-using System;
-using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
 using FtApp.Fischertechnik.Txt.Events;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using Android.Util;
 using TXTCommunication.Fischertechnik;
 using Fragment = Android.Support.V4.App.Fragment;
 
@@ -14,14 +16,32 @@ namespace FtApp.Droid.Activities.ControllInterface
     public class InputFragment : Fragment, IFtInterfaceFragment
     {
         private readonly List<InputViewModel> _inputViewModels;
-
-        private IFtInterface _ftInterface;
+        
         private ListAdapter _listAdapter;
         private ListView _listViewInputPorts;
 
         public InputFragment()
         {
             _inputViewModels = new List<InputViewModel>();
+
+            FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+
+            HookEvents();
+        }
+
+        private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            HookEvents();
+        }
+
+        private void HookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.InputValueChanged += FtInterfaceOnInputValueChanged;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped += FtInterfaceOnOnlineStopped;
+            }
         }
 
         public override void OnAttach(Context context)
@@ -36,37 +56,19 @@ namespace FtApp.Droid.Activities.ControllInterface
         
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
-            _inputViewModels.Clear();
-
-            for (int i = 0; i < _ftInterface.GetInputCount(); i++)
-            {
-                var inputViewModel = new InputViewModel()
-                {
-                    Context = Activity,
-                    InputIndex = i,
-                    FtInterface = _ftInterface,
-                    InputValue = 1
-                };
-
-                inputViewModel.ChangeInputDevice(GetInputDeviceFromPreferences(i));
-
-                _inputViewModels.Add(inputViewModel);
-            }
-            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+            LoadInputDevices();
         }
 
         private void FtInterfaceOnInputValueChanged(object sender, InputValueChangedEventArgs inputValueChangedEventArgs)
         {
             foreach (int inputPort in inputValueChangedEventArgs.InputPorts)
             {
-                _inputViewModels[inputPort].InputValue = _ftInterface.GetInputValue(inputPort);
-                Activity?.RunOnUiThread(() =>
+                if (_inputViewModels.Count > inputPort)
                 {
-                    if (_inputViewModels.Count > inputPort)
-                    {
-                        UpdateListView(inputPort, _inputViewModels[inputPort]);
-                    }
-                });
+                    _inputViewModels[inputPort].InputValue =
+                        FtInterfaceInstanceProvider.Instance.GetInputValue(inputPort);
+                    Activity?.RunOnUiThread(() => { UpdateListView(inputPort, _inputViewModels[inputPort]); });
+                }
             }
         }
         
@@ -78,6 +80,26 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
 
             _inputViewModels.Clear();
+            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+        }
+
+        private void LoadInputDevices()
+        {
+            _inputViewModels.Clear();
+
+            for (int i = 0; i < FtInterfaceInstanceProvider.Instance.GetInputCount(); i++)
+            {
+                var inputViewModel = new InputViewModel
+                {
+                    Context = Activity,
+                    InputIndex = i,
+                    InputValue = 1
+                };
+
+                inputViewModel.ChangeInputDevice(GetInputDeviceFromPreferences(i));
+
+                _inputViewModels.Add(inputViewModel);
+            }
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
@@ -122,16 +144,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             progressBarValue.Progress = item.InputValue;
         }
-
-        public void SetFtInterface(IFtInterface ftInterface)
-        {
-            _ftInterface = ftInterface;
-
-            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
-            _ftInterface.InputValueChanged += FtInterfaceOnInputValueChanged;
-            _ftInterface.OnlineStopped += FtInterfaceOnOnlineStopped;
-        }
-
+        
         public string GetTitle(Context context)
         {
             return context.GetText(Resource.String.ControlTxtActivity_tabInputTitle);
@@ -148,6 +161,12 @@ namespace FtApp.Droid.Activities.ControllInterface
             _listAdapter = new ListAdapter(Activity, _inputViewModels);
 
             _listViewInputPorts.Adapter = _listAdapter;
+
+
+            if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.Online)
+            {
+                LoadInputDevices();
+            }
 
             return view;
         }
@@ -297,7 +316,6 @@ namespace FtApp.Droid.Activities.ControllInterface
         private class InputViewModel
         {
             private int _inputValue;
-            public IFtInterface FtInterface { get; set; }
             public int InputIndex { get; set; }
             
             public int InputMaxValue { get; set; }
@@ -305,6 +323,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             public bool IsDigital { get; set; }
             public InputDevices InputDevice { get; set; }
             public InputMode InputMode { get; set; }
+
             public int InputValue
             {
                 get { return _inputValue; }
@@ -415,7 +434,7 @@ namespace FtApp.Droid.Activities.ControllInterface
                     InputMaxValue = 1;
                 }
 
-                FtInterface.ConfigureInputMode(InputIndex, InputMode, IsDigital);
+                FtInterfaceInstanceProvider.Instance.ConfigureInputMode(InputIndex, InputMode, IsDigital);
             }
 
             private int NtcToCelsius(int ntc)

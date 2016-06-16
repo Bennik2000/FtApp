@@ -7,7 +7,7 @@ using FtApp.Fischertechnik.Txt.Events;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Android.Util;
+using System.Runtime.CompilerServices;
 using TXTCommunication.Fischertechnik;
 using Fragment = Android.Support.V4.App.Fragment;
 
@@ -19,6 +19,8 @@ namespace FtApp.Droid.Activities.ControllInterface
         
         private ListAdapter _listAdapter;
         private ListView _listViewInputPorts;
+        
+        private bool _eventsHooked;
 
         public InputFragment()
         {
@@ -31,16 +33,29 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            _eventsHooked = false;
             HookEvents();
         }
 
         private void HookEvents()
         {
-            if (FtInterfaceInstanceProvider.Instance != null)
+            if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
             {
                 FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
                 FtInterfaceInstanceProvider.Instance.InputValueChanged += FtInterfaceOnInputValueChanged;
                 FtInterfaceInstanceProvider.Instance.OnlineStopped += FtInterfaceOnOnlineStopped;
+                _eventsHooked = true;
+            }
+        }
+
+        private void UnhookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceInstanceProvider.Instance.OnlineStarted -= FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.InputValueChanged -= FtInterfaceOnInputValueChanged;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped -= FtInterfaceOnOnlineStopped;
+                _eventsHooked = false;
             }
         }
 
@@ -50,10 +65,18 @@ namespace FtApp.Droid.Activities.ControllInterface
             {
                 inputViewModel.Context = context;
             }
+            HookEvents();
 
             base.OnAttach(context);
         }
         
+        public override void OnDetach()
+        {
+            base.OnDetach();
+            UnhookEvents();
+        }
+
+
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
             LoadInputDevices();
@@ -74,10 +97,10 @@ namespace FtApp.Droid.Activities.ControllInterface
         
         private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
         {
-            for (int i = 0; i < _inputViewModels.Count; i++)
-            {
-                SetInputDeviceInPreferences(i, _inputViewModels[i].InputDevice);
-            }
+            //for (int i = 0; i < _inputViewModels.Count; i++)
+            //{
+            //    SetInputDeviceInPreferences(i, _inputViewModels[i].InputDevice);
+            //}
 
             _inputViewModels.Clear();
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
@@ -96,33 +119,32 @@ namespace FtApp.Droid.Activities.ControllInterface
                     InputValue = 1
                 };
 
-                inputViewModel.ChangeInputDevice(GetInputDeviceFromPreferences(i));
+                inputViewModel.ChangeInputDevice(InputDevices.Switch);
+                //inputViewModel.ChangeInputDevice(GetInputDeviceFromPreferences(i));
 
                 _inputViewModels.Add(inputViewModel);
             }
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
-        private InputDevices GetInputDeviceFromPreferences(int inputIndex)
-        {
-            ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
+        //private InputDevices GetInputDeviceFromPreferences(int inputIndex)
+        //{
+        //    ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
 
-            int value = settings.GetInt($"InputState_{inputIndex}", (int) InputDevices.Switch);
-            Console.WriteLine((InputDevices)value);
-            return (InputDevices) value;
-        }
+        //    int value = settings.GetInt($"InputState_{inputIndex}", (int) InputDevices.Switch);
+        //    Console.WriteLine((InputDevices)value);
+        //    return (InputDevices) value;
+        //}
 
-        private void SetInputDeviceInPreferences(int inputIndex, InputDevices inputDevice)
-        {
-            ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
-            ISharedPreferencesEditor editor = settings.Edit();
+        //private void SetInputDeviceInPreferences(int inputIndex, InputDevices inputDevice)
+        //{
+        //    ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
+        //    ISharedPreferencesEditor editor = settings.Edit();
 
-
-            Console.WriteLine(inputDevice);
-
-            editor.PutInt($"InputState_{inputIndex}", (int)inputDevice);
-            editor.Commit();
-        }
+            
+        //    editor.PutInt($"InputState_{inputIndex}", (int)inputDevice);
+        //    editor.Commit();
+        //}
 
         private void UpdateListView(int position, InputViewModel item)
         {

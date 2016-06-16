@@ -14,13 +14,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Java.Lang;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Utils;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
+using Debug = System.Diagnostics.Debug;
+using Exception = System.Exception;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
+using Object = Java.Lang.Object;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace FtApp.Droid.Activities.ControllInterface
@@ -43,21 +47,20 @@ namespace FtApp.Droid.Activities.ControllInterface
         private TabLayout _tabLayout;
         private ViewPager _viewPager;
 
-        
-        
+
+
         private IList<Fragment> _fragments;
         private JoystickFragment _joystickFragment;
 
         private bool _joystickVisibile;
         private bool _isActivityInFocus;
-        
+        private bool _eventsHooked;
+
         public ControllInterfaceActivity()
         {
             _connectionTaskQueue = new TaskQueue("Connection handler");
 
             FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
-
-            HookEvents();
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -69,8 +72,8 @@ namespace FtApp.Droid.Activities.ControllInterface
             _joystickFragment = FragmentManager.FindFragmentById<JoystickFragment>(Resource.Id.fragmentJoystick);
             _tabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
             _viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
-            
-            
+
+
             ExtractExtraData();
             InitializeDialogs();
 
@@ -78,11 +81,9 @@ namespace FtApp.Droid.Activities.ControllInterface
             SetupToolbar();
             SetupTabs();
 
-
             if (savedInstanceState == null)
             {
                 HideJoystick();
-                SetupFtInterface();
             }
             else
             {
@@ -93,6 +94,14 @@ namespace FtApp.Droid.Activities.ControllInterface
         protected override void OnStart()
         {
             base.OnStart();
+
+            HookEvents();
+
+            if (FtInterfaceInstanceProvider.Instance == null)
+            {
+                SetupFtInterface();
+            }
+
             ConnectToFtInterface();
         }
         
@@ -124,6 +133,13 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _connectionTaskQueue?.Dispose();
+            UnhookEvents();
+        }
+
         protected override void OnSaveInstanceState(Bundle outState)
         {
             base.OnSaveInstanceState(outState);
@@ -131,6 +147,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             outState.PutBoolean(JoystickVisibleDataId, _joystickVisibile);
             outState.PutInt(ActiveTabDataId, _tabLayout.SelectedTabPosition);
         }
+
 
         public override void OnWindowFocusChanged(bool hasFocus)
         {
@@ -184,13 +201,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             _viewPager.SetCurrentItem(savedInstanceState.GetInt(ActiveTabDataId, 0), false);
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            FtInterfaceInstanceProvider.Instance?.Dispose();
-        }
+        
 
         private void ExtractExtraData()
         {
@@ -232,8 +243,6 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void SetupTabs()
         {
-            var controlInterfaceTabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
-
             _fragments = new List<Fragment>
             {
                 new InputFragment(),
@@ -263,24 +272,24 @@ namespace FtApp.Droid.Activities.ControllInterface
                     title = ((IFtInterfaceFragment)fragment).GetTitle(this);
                 }
                 
-                var tab = controlInterfaceTabLayout.NewTab();
+                var tab = _tabLayout.NewTab();
 
                 tab.SetText(title);
-                
-                controlInterfaceTabLayout.AddTab(tab);
+
+                _tabLayout.AddTab(tab);
             }
 
             PagerAdapter adapter = new TabPagerAdapter(SupportFragmentManager, _fragments.ToArray());
-            var viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
-            viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit to the tab count. Otherwise the fragments would be restored
-            viewPager.Adapter = adapter;
+            _viewPager.Adapter = adapter;
+            _viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit to the tab count. Otherwise the fragments would be restored
+            _viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(_tabLayout));
+            _viewPager.PageSelected -= ViewPagerOnPageSelected;
+            _viewPager.PageSelected += ViewPagerOnPageSelected;
 
-            viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(controlInterfaceTabLayout));
-            viewPager.PageSelected += ViewPagerOnPageSelected;
 
-
-            controlInterfaceTabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+            _tabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(_viewPager));
         }
+        
 
         private void SetupFtInterface()
         {
@@ -366,16 +375,31 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            _eventsHooked = false;
             HookEvents();
         }
 
         private void HookEvents()
         {
-            if (FtInterfaceInstanceProvider.Instance != null)
+            if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
             {
                 FtInterfaceInstanceProvider.Instance.ConnectionLost += FtInterfaceOnConnectionLost;
                 FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
                 FtInterfaceInstanceProvider.Instance.Connected += FtInterfaceOnConnected;
+
+                _eventsHooked = true;
+            }
+        }
+
+        private void UnhookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceInstanceProvider.Instance.ConnectionLost -= FtInterfaceOnConnectionLost;
+                FtInterfaceInstanceProvider.Instance.OnlineStarted -= FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.Connected -= FtInterfaceOnConnected;
+
+                _eventsHooked = false;
             }
         }
 
@@ -417,12 +441,16 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             _connectionTaskQueue.DoWorkInQueue(() =>
             {
-                if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
+                if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.CanSendCommand())
                 {
                     FtInterfaceInstanceProvider.Instance.StopOnlineMode();
                     FtInterfaceInstanceProvider.Instance.Disconnect();
+
+                    FtInterfaceInstanceProvider.Instance.Dispose();
+                    FtInterfaceInstanceProvider.Instance = null;
                 }
             }, true);
+
         }
 
 
@@ -432,7 +460,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             RunOnUiThread(() => { Toast.MakeText(this, GetString(Resource.String.ControlTxtActivity_interfaceConnectionLostMessage), ToastLength.Short).Show(); });
         }
 
-        private class TabPagerAdapter : FragmentStatePagerAdapter
+        private class TabPagerAdapter : FragmentPagerAdapter
         {
             private readonly Fragment[] _fragments;
 
@@ -442,6 +470,16 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
 
             public override int Count => _fragments.Length;
+            
+
+            public override IParcelable SaveState()
+            {
+                return null;
+            }
+
+            public override void RestoreState(IParcelable state, ClassLoader loader)
+            {
+            }
 
             public override Fragment GetItem(int position)
             {

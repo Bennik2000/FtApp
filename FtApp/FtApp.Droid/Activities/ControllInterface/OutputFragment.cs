@@ -18,6 +18,8 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private readonly List<OutputViewModel> _outputViewModels;
 
+        private bool _eventsHooked;
+        
         public OutputFragment()
         {
             _outputViewModels = new List<OutputViewModel>();
@@ -29,16 +31,42 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            _eventsHooked = false;
             HookEvents();
         }
 
         private void HookEvents()
         {
-            if (FtInterfaceInstanceProvider.Instance != null)
+            if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
             {
                 FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
                 FtInterfaceInstanceProvider.Instance.OnlineStopped += FtInterfaceOnOnlineStopped;
+
+                _eventsHooked = true;
             }
+        }
+
+        private void UnhookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceInstanceProvider.Instance.OnlineStarted -= FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped -= FtInterfaceOnOnlineStopped;
+
+                _eventsHooked = false;
+            }
+        }
+
+        public override void OnAttach(Context context)
+        {
+            base.OnAttach(context);
+            HookEvents();
+        }
+
+        public override void OnDetach()
+        {
+            base.OnDetach();
+            UnhookEvents();
         }
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)

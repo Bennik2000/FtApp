@@ -29,7 +29,6 @@ namespace TXTCommunication.Fischertechnik.Txt
         // We do all the network communication in one thread with this queue
         private readonly TaskQueue _networkingTaskQueue;
 
-
         public TxtCommunication(TxtInterface txtInterface)
         {
             TxtInterface = txtInterface;
@@ -60,14 +59,15 @@ namespace TXTCommunication.Fischertechnik.Txt
                         ReceiveTimeout = TxtInterface.TcpTimeout
                     };
                     _socket.Connect(ipEndPoint);
+                    Connected = _socket.Connected;
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e.Message);
                     exception = e;
                     Connected = false;
                 }
 
-                Connected = _socket.Connected;
             }, true);
 
             if (exception != null)
@@ -98,6 +98,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 }
                 catch (SocketException e)
                 {
+                    Console.WriteLine(e.Message);
                     exception = e;
                     Connected = false;
                 }
@@ -146,6 +147,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     exception = ex;
                 }
 

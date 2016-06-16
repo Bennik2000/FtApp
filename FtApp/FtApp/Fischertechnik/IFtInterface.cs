@@ -143,7 +143,7 @@ namespace TXTCommunication.Fischertechnik
         /// <param name="extension">The extension where the value should be set</param>
         /// ReSharper disable once UnusedParameter.Global
         void ConfigureInputMode(int inputIndex, InputMode inputMode, bool digital, int extension = 0);
-        
+
         /// <summary>
         /// This event is fired when the input valus have changed
         /// </summary>

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using TXTCommunication.Fischertechnik;
 
@@ -12,7 +10,7 @@ namespace FtApp.Fischertechnik.Simulation
 
         public void Connect(string adress)
         {
-            Thread.Sleep(100);
+            Thread.Sleep(500);
             Connected?.Invoke(this, EventArgs.Empty);
         }
 
@@ -24,7 +22,7 @@ namespace FtApp.Fischertechnik.Simulation
 
         public void StartOnlineMode()
         {
-            Thread.Sleep(100);
+            Thread.Sleep(300);
             OnlineStarted?.Invoke(this, EventArgs.Empty);
         }
 

@@ -90,6 +90,7 @@
     <Compile Include="Activities\About\AboutActivity.cs" />
     <Compile Include="Activities\ControllInterface\CameraFragment.cs" />
     <Compile Include="Activities\ControllInterface\ControllInterfaceActivity.cs" />
+    <Compile Include="Activities\ControllInterface\FtInterfaceCameraProxy.cs" />
     <Compile Include="Activities\ControllInterface\FtInterfaceInstanceProvider.cs" />
     <Compile Include="Activities\ControllInterface\IFtInterfaceFragment.cs" />
     <Compile Include="Activities\ControllInterface\InputFragment.cs" />
@@ -152,6 +153,8 @@
     <AndroidResource Include="Resources\layout\FragmentJoystick.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout-land\FragmentJoystick.axml" />
+    <AndroidResource Include="Resources\layout-port\FragmentJoystick.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml">

@@ -1946,8 +1946,8 @@ namespace FtApp.Droid
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f060099
-			public const int action0 = 2131099801;
+			// aapt resource value: 0x7f06009a
+			public const int action0 = 2131099802;
 			
 			// aapt resource value: 0x7f06005a
 			public const int action_bar = 2131099738;
@@ -1973,8 +1973,8 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06005b
 			public const int action_context_bar = 2131099739;
 			
-			// aapt resource value: 0x7f06009d
-			public const int action_divider = 2131099805;
+			// aapt resource value: 0x7f06009e
+			public const int action_divider = 2131099806;
 			
 			// aapt resource value: 0x7f060003
 			public const int action_menu_divider = 2131099651;
@@ -2012,11 +2012,11 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060044
 			public const int buttonPanel = 2131099716;
 			
-			// aapt resource value: 0x7f06009a
-			public const int cancel_action = 2131099802;
+			// aapt resource value: 0x7f06009b
+			public const int cancel_action = 2131099803;
 			
-			// aapt resource value: 0x7f060093
-			public const int cardView = 2131099795;
+			// aapt resource value: 0x7f060094
+			public const int cardView = 2131099796;
 			
 			// aapt resource value: 0x7f06002b
 			public const int center = 2131099691;
@@ -2030,8 +2030,8 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060052
 			public const int checkbox = 2131099730;
 			
-			// aapt resource value: 0x7f0600a0
-			public const int chronometer = 2131099808;
+			// aapt resource value: 0x7f0600a1
+			public const int chronometer = 2131099809;
 			
 			// aapt resource value: 0x7f060033
 			public const int clip_horizontal = 2131099699;
@@ -2093,8 +2093,8 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06001c
 			public const int end = 2131099676;
 			
-			// aapt resource value: 0x7f0600a5
-			public const int end_padder = 2131099813;
+			// aapt resource value: 0x7f0600a6
+			public const int end_padder = 2131099814;
 			
 			// aapt resource value: 0x7f060023
 			public const int enterAlways = 2131099683;
@@ -2147,20 +2147,23 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060081
 			public const int imageViewCameraStream = 2131099777;
 			
-			// aapt resource value: 0x7f06008d
-			public const int imageViewContextualMenu = 2131099789;
+			// aapt resource value: 0x7f06008e
+			public const int imageViewContextualMenu = 2131099790;
 			
-			// aapt resource value: 0x7f060095
-			public const int imageViewContollerIcon = 2131099797;
+			// aapt resource value: 0x7f060096
+			public const int imageViewContollerIcon = 2131099798;
 			
 			// aapt resource value: 0x7f060073
 			public const int imageViewListEmpty = 2131099763;
 			
-			// aapt resource value: 0x7f0600a4
-			public const int info = 2131099812;
+			// aapt resource value: 0x7f0600a5
+			public const int info = 2131099813;
 			
 			// aapt resource value: 0x7f060000
 			public const int item_touch_helper_previous_elevation = 2131099648;
+			
+			// aapt resource value: 0x7f060085
+			public const int joystickCameraView = 2131099781;
 			
 			// aapt resource value: 0x7f060083
 			public const int joystickLeft = 2131099779;
@@ -2174,23 +2177,23 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06002f
 			public const int left = 2131099695;
 			
-			// aapt resource value: 0x7f06009e
-			public const int line1 = 2131099806;
+			// aapt resource value: 0x7f06009f
+			public const int line1 = 2131099807;
 			
-			// aapt resource value: 0x7f0600a2
-			public const int line3 = 2131099810;
+			// aapt resource value: 0x7f0600a3
+			public const int line3 = 2131099811;
 			
-			// aapt resource value: 0x7f060088
-			public const int linearLayout1 = 2131099784;
+			// aapt resource value: 0x7f060089
+			public const int linearLayout1 = 2131099785;
 			
-			// aapt resource value: 0x7f06008b
-			public const int linearLayoutContextMenu = 2131099787;
+			// aapt resource value: 0x7f06008c
+			public const int linearLayoutContextMenu = 2131099788;
 			
-			// aapt resource value: 0x7f060094
-			public const int linearLayoutProgressBar = 2131099796;
+			// aapt resource value: 0x7f060095
+			public const int linearLayoutProgressBar = 2131099797;
 			
-			// aapt resource value: 0x7f06008e
-			public const int linearLayoutTextViewOutput = 2131099790;
+			// aapt resource value: 0x7f06008f
+			public const int linearLayoutTextViewOutput = 2131099791;
 			
 			// aapt resource value: 0x7f06000b
 			public const int listMode = 2131099659;
@@ -2201,44 +2204,44 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060082
 			public const int listViewInputPorts = 2131099778;
 			
-			// aapt resource value: 0x7f060085
-			public const int listViewOutputPorts = 2131099781;
+			// aapt resource value: 0x7f060086
+			public const int listViewOutputPorts = 2131099782;
 			
 			// aapt resource value: 0x7f060041
 			public const int list_item = 2131099713;
 			
-			// aapt resource value: 0x7f06009c
-			public const int media_actions = 2131099804;
-			
-			// aapt resource value: 0x7f0600ab
-			public const int menuInputModeAnalogR = 2131099819;
-			
-			// aapt resource value: 0x7f0600ad
-			public const int menuInputModeAnalogU = 2131099821;
-			
-			// aapt resource value: 0x7f0600aa
-			public const int menuInputModeDigitalR = 2131099818;
+			// aapt resource value: 0x7f06009d
+			public const int media_actions = 2131099805;
 			
 			// aapt resource value: 0x7f0600ac
-			public const int menuInputModeDigitalU = 2131099820;
-			
-			// aapt resource value: 0x7f0600a7
-			public const int menuInputModeNtc = 2131099815;
-			
-			// aapt resource value: 0x7f0600a6
-			public const int menuInputModeSwitch = 2131099814;
-			
-			// aapt resource value: 0x7f0600a8
-			public const int menuInputModeTrailSensor = 2131099816;
-			
-			// aapt resource value: 0x7f0600a9
-			public const int menuInputModeUltrasonic = 2131099817;
+			public const int menuInputModeAnalogR = 2131099820;
 			
 			// aapt resource value: 0x7f0600ae
-			public const int menuOutpuModeMotor = 2131099822;
+			public const int menuInputModeAnalogU = 2131099822;
+			
+			// aapt resource value: 0x7f0600ab
+			public const int menuInputModeDigitalR = 2131099819;
+			
+			// aapt resource value: 0x7f0600ad
+			public const int menuInputModeDigitalU = 2131099821;
+			
+			// aapt resource value: 0x7f0600a8
+			public const int menuInputModeNtc = 2131099816;
+			
+			// aapt resource value: 0x7f0600a7
+			public const int menuInputModeSwitch = 2131099815;
+			
+			// aapt resource value: 0x7f0600a9
+			public const int menuInputModeTrailSensor = 2131099817;
+			
+			// aapt resource value: 0x7f0600aa
+			public const int menuInputModeUltrasonic = 2131099818;
 			
 			// aapt resource value: 0x7f0600af
-			public const int menuOutpuModeOutputs = 2131099823;
+			public const int menuOutpuModeMotor = 2131099823;
+			
+			// aapt resource value: 0x7f0600b0
+			public const int menuOutpuModeOutputs = 2131099824;
 			
 			// aapt resource value: 0x7f06001d
 			public const int middle = 2131099677;
@@ -2261,17 +2264,17 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06000c
 			public const int normal = 2131099660;
 			
-			// aapt resource value: 0x7f0600b2
-			public const int optionsMenuItemAbout = 2131099826;
-			
 			// aapt resource value: 0x7f0600b3
-			public const int optionsMenuItemHelp = 2131099827;
+			public const int optionsMenuItemAbout = 2131099827;
 			
-			// aapt resource value: 0x7f0600b0
-			public const int optionsMenuItemJoystick = 2131099824;
+			// aapt resource value: 0x7f0600b4
+			public const int optionsMenuItemHelp = 2131099828;
 			
 			// aapt resource value: 0x7f0600b1
-			public const int optionsMenuItemSimulate = 2131099825;
+			public const int optionsMenuItemJoystick = 2131099825;
+			
+			// aapt resource value: 0x7f0600b2
+			public const int optionsMenuItemSimulate = 2131099826;
 			
 			// aapt resource value: 0x7f060028
 			public const int parallax = 2131099688;
@@ -2282,14 +2285,14 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060029
 			public const int pin = 2131099689;
 			
-			// aapt resource value: 0x7f060098
-			public const int progressBarNameLoading = 2131099800;
+			// aapt resource value: 0x7f060099
+			public const int progressBarNameLoading = 2131099801;
 			
 			// aapt resource value: 0x7f060071
 			public const int progressBarScanning = 2131099761;
 			
-			// aapt resource value: 0x7f06008c
-			public const int progressBarValue = 2131099788;
+			// aapt resource value: 0x7f06008d
+			public const int progressBarValue = 2131099789;
 			
 			// aapt resource value: 0x7f060006
 			public const int progress_circular = 2131099654;
@@ -2351,11 +2354,11 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060067
 			public const int search_voice_btn = 2131099751;
 			
-			// aapt resource value: 0x7f060090
-			public const int seekBarOutput1 = 2131099792;
+			// aapt resource value: 0x7f060091
+			public const int seekBarOutput1 = 2131099793;
 			
-			// aapt resource value: 0x7f060092
-			public const int seekBarOutput2 = 2131099794;
+			// aapt resource value: 0x7f060093
+			public const int seekBarOutput2 = 2131099795;
 			
 			// aapt resource value: 0x7f060068
 			public const int select_dialog_listview = 2131099752;
@@ -2402,8 +2405,8 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060031
 			public const int start = 2131099697;
 			
-			// aapt resource value: 0x7f06009b
-			public const int status_bar_latest_event_content = 2131099803;
+			// aapt resource value: 0x7f06009c
+			public const int status_bar_latest_event_content = 2131099804;
 			
 			// aapt resource value: 0x7f060065
 			public const int submit_area = 2131099749;
@@ -2411,32 +2414,32 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06000d
 			public const int tabMode = 2131099661;
 			
-			// aapt resource value: 0x7f0600a3
-			public const int text = 2131099811;
+			// aapt resource value: 0x7f0600a4
+			public const int text = 2131099812;
 			
-			// aapt resource value: 0x7f0600a1
-			public const int text2 = 2131099809;
+			// aapt resource value: 0x7f0600a2
+			public const int text2 = 2131099810;
 			
 			// aapt resource value: 0x7f06004d
 			public const int textSpacerNoButtons = 2131099725;
 			
-			// aapt resource value: 0x7f060097
-			public const int textViewContollerAdress = 2131099799;
+			// aapt resource value: 0x7f060098
+			public const int textViewContollerAdress = 2131099800;
 			
-			// aapt resource value: 0x7f060096
-			public const int textViewContollerName = 2131099798;
+			// aapt resource value: 0x7f060097
+			public const int textViewContollerName = 2131099799;
+			
+			// aapt resource value: 0x7f060088
+			public const int textViewFaqAnswer = 2131099784;
 			
 			// aapt resource value: 0x7f060087
-			public const int textViewFaqAnswer = 2131099783;
-			
-			// aapt resource value: 0x7f060086
-			public const int textViewFaqQuestion = 2131099782;
-			
-			// aapt resource value: 0x7f060089
-			public const int textViewInputIndex = 2131099785;
+			public const int textViewFaqQuestion = 2131099783;
 			
 			// aapt resource value: 0x7f06008a
-			public const int textViewInputValue = 2131099786;
+			public const int textViewInputIndex = 2131099786;
+			
+			// aapt resource value: 0x7f06008b
+			public const int textViewInputValue = 2131099787;
 			
 			// aapt resource value: 0x7f060074
 			public const int textViewListEmpty = 2131099764;
@@ -2444,14 +2447,14 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060069
 			public const int textViewMoreInformation = 2131099753;
 			
-			// aapt resource value: 0x7f06008f
-			public const int textViewOutputIndex1 = 2131099791;
+			// aapt resource value: 0x7f060090
+			public const int textViewOutputIndex1 = 2131099792;
 			
-			// aapt resource value: 0x7f060091
-			public const int textViewOutputIndex2 = 2131099793;
+			// aapt resource value: 0x7f060092
+			public const int textViewOutputIndex2 = 2131099794;
 			
-			// aapt resource value: 0x7f06009f
-			public const int time = 2131099807;
+			// aapt resource value: 0x7f0600a0
+			public const int time = 2131099808;
 			
 			// aapt resource value: 0x7f060043
 			public const int title = 2131099715;

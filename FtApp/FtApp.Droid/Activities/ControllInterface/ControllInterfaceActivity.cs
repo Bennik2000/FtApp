@@ -61,6 +61,9 @@ namespace FtApp.Droid.Activities.ControllInterface
             _connectionTaskQueue = new TaskQueue("Connection handler");
 
             FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+
+            // We have to use the FtInterfaceCameraProxy one time to call the static constructor
+            bool b = FtInterfaceCameraProxy.FirstFrame;
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -385,11 +388,13 @@ namespace FtApp.Droid.Activities.ControllInterface
             {
                 FtInterfaceInstanceProvider.Instance.ConnectionLost += FtInterfaceOnConnectionLost;
                 FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped += InstanceOnOnlineStopped;
                 FtInterfaceInstanceProvider.Instance.Connected += FtInterfaceOnConnected;
 
                 _eventsHooked = true;
             }
         }
+
 
         private void UnhookEvents()
         {
@@ -406,6 +411,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         private void FtInterfaceOnConnected(object sender, EventArgs eventArgs)
         {
+            FtInterfaceCameraProxy.StartCameraStream();
         }
         
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
@@ -422,6 +428,10 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
         }
 
+        private void InstanceOnOnlineStopped(object sender, EventArgs eventArgs)
+        {
+            FtInterfaceCameraProxy.StopCameraStream();
+        }
 
         private void ConnectToFtInterface()
         {

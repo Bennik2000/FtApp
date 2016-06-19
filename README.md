@@ -19,10 +19,13 @@ or higher.
 ## Testing
 Tested on these devices:  
 
-* Samsung Galaxy J5 (Android 5.1)
-* Samsung Galaxy S4 mini (Android 4.4)
-* Samsung Galaxy S2 (Android 4.2)
-* Samsung Galaxy S3 mini (Android 4.1.2)
+| Device                    |Android Version| Result|
+|---------------------------|---------------|------ |
+| Samsung Galaxy J5         |Android 5.1    |Working|
+| Samsung Galaxy S4 mini    |Android 4.4    |Working|
+| Samsung Galaxy S3 mini    |Android 4.1.2  |Working|
+| Samsung Galaxy S2         |Android 4.2    |Working|
+
 
 Feel free to test on more devices and report your result!
 

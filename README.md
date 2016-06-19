@@ -3,7 +3,29 @@ With this app you can control the fischertechnik ROBOTICS TXT Controller and ROB
 It allows you to control the output ports and read the input ports.
 Moreover you can view the camera stream of the TXT Controller.  
 The communication part is written in C# and Xamarin and does not depend on any Android specific apis.
-You can use it to write a separate desktop application or an app for Windows Phone or iOS.
+You can use it to write a separate desktop application or an app for Windows Phone or iOS.  
+If you want to write an own application using this code, you can look at the InterfaceTest project.
+It shows how to connect to an interface and how to configure and read the I/O.
+
+## Installation
+This app is listed in the [Google Play Store](https://play.google.com/store/apps/details?id=de.bennik2000.ftapp). 
+You can install it directly from there.
+If you want to install an older version you can download the files from the [Releases page](https://github.com/Bennik2000/FtApp/releases).
+The `.apk` and the related souce code of every release is listed there.
+
+Note: Your Android version must be *Android 4.0.3 (Ice Cream Sandwich)* 
+or higher.
+
+## Testing
+Tested on these devices:  
+
+* Samsung Galaxy J5 (Android 5.1)
+* Samsung Galaxy S4 mini (Android 4.4)
+* Samsung Galaxy S2 (Android 4.2)
+* Samsung Galaxy S3 mini (Android 4.1.2)
+
+Feel free to test on more devices and report your result!
+
 
 ### Screenshots
 The screen to select a fischertechnik interface:  
@@ -23,17 +45,18 @@ The app is divided into two parts. The first part is responsible for the communi
 interface and the second part is the Android UI.  
 
 #### Communication part
-`IFtInterface` is the main interface to control a fischertechnik interface.   
-`TxtInterface` is the implementation for the ROBOTICS TXT Controller protocol.  
-`TxInterface` is the implementation for the ROBO TX Controller protocol.
+There are a few classes which are necessary to connect to an interface:  
 
-## Installation
-This app is listed in the Google Play Store. You can install it from the Store or 
-you can download the `de.bennik2000.ftapp.apk` file and install it manually on your 
-android phone. Note: Your Android version must be *Android 4.0.3 (Ice Cream Sandwich)* 
-or higher.
+* `IFtInterface` is the main interface to control a fischertechnik interface.   
+* `TxtInterface` is the implementation for the ROBOTICS TXT Controller protocol.  
+* `TxInterface` is the implementation for the ROBO TX Controller protocol.  
+* `SimulatedFtInterface` is a simulation of an interface.
+
+#### Android UI
+The android app is a simple unser interface for `IFtInterface`.
 
 ## TODO
+* Adapt for tablets
 * Upload and play audio files to TXT Controller
 * Multiple extensions
 * Overal status page (connection status, firmware version, ...)
@@ -41,22 +64,12 @@ or higher.
 * Add translations for more languages?
 * Add Windows Phone and iOS support? (I can't do this because i do not have a WP or Mac)
 
-## Testing
-Tested on these devices:  
-
-* Samsung J5 (Android 5.1)
-* Samsung Galaxy S4 mini (Android 4.4)
-* Samsung Galaxy S2 (Android 4.2)
-* Samsung Galaxy S3 mini (Android 4.1.2)
-
-Feel free to test on more devices and report your result!
-
 ## Contributing
 If you want to work on this app you have to install Visual Studio 2015 Community Edition
 with the Xamarin package.  
 
 * If you have an idea for an awesome new feature let me know!
-* Please report any bugs which you can find (Use the *Issues* tab).
+* Please report any bugs which you can find (Use the *Issues* tab and create a new issue).
 * You own a cell phone which is not listed in the list above: Test the app and report the result
 * You can try to work on the things which are listed in the TODO list. (Checkout the actual code 
   from the development branch and create a new branch with the name of the feature)

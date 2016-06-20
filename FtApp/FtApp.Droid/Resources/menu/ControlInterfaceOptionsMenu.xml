@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+  <item
+    android:id="@+id/optionsMenuItemJoystick"
+    android:icon="@drawable/ic_videogame_asset_white_24dp"
+    android:title="@string/ControlInterfaceOptionsMenuJoystick"
+    app:showAsAction="ifRoom" />
+</menu>

@@ -47,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\Packets\RequestInfoResponsePacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\TxCommunication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fischertechnik\Tx\TxInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\MathUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\NetworkUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\TaskQueue.cs" />
   </ItemGroup>

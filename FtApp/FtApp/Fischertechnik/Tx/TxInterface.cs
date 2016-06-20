@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
 using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Txt.Events;
 using TXCommunication.Packets;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
+// ReSharper disable InconsistentNaming
 
 namespace TXCommunication
 {
     class TxInterface : IFtInterface
     {
-        public bool IsDebugEnabled { get; set; }
+#if DEBUG
+        public bool IsDebugEnabled { get; set; } = true;
+#else
+        public bool IsDebugEnabled { get; set; } = false;
+#endif
 
         #region Constants
 
@@ -78,7 +84,7 @@ namespace TXCommunication
             _masterInterface.ResetValues();
 
             LogMessage("Connected");
-            Connected?.Invoke(this, new EventArgs());
+            _connected?.Invoke(this, new EventArgs());
         }
 
         public void Disconnect()
@@ -98,11 +104,12 @@ namespace TXCommunication
                 HandleException(e);
             }
 
-            Disconnected?.Invoke(this, new EventArgs());
-
             TxCommunication.Dispose();
             TxCommunication = null;
-            
+
+
+            _disconnected?.Invoke(this, new EventArgs());
+
             LogMessage("Disconnected");
             _masterInterface.ResetValues();
         }
@@ -133,7 +140,7 @@ namespace TXCommunication
                 _updateValuesTimer.Start();
 
                 // Fire event to notify that online mode has started
-                OnlineStarted?.Invoke(this, new EventArgs());
+                _onlineStarted?.Invoke(this, new EventArgs());
 
                 // Fire InputValueChanged event with default values
                 List<int> inputPorts = new List<int>();
@@ -143,7 +150,7 @@ namespace TXCommunication
                 }
                 InputValueChangedEventArgs eventArgs = new InputValueChangedEventArgs(inputPorts);
 
-                InputValueChanged?.Invoke(this, eventArgs);
+                _inputValueChanged?.Invoke(this, eventArgs);
             }
             catch (Exception e)
             {
@@ -171,8 +178,7 @@ namespace TXCommunication
 
             try
             {
-                // TODO: Stop all motors
-                OnlineStopped?.Invoke(this, new EventArgs());
+                _onlineStopped?.Invoke(this, new EventArgs());
 
                 Connection = ConnectionStatus.Connected;
             }
@@ -322,14 +328,103 @@ namespace TXCommunication
             _configurationChanged = true;
         }
         
-        public event InputValueChangedEventHandler InputValueChanged;
-        
 
-        public event ConnectedEventHandler Connected;
-        public event ConnectionLostEventHandler ConnectionLost;
-        public event DisconnectedEventHandler Disconnected;
-        public event OnlineStartedEventHandler OnlineStarted;
-        public event OnlineStoppedEventHandler OnlineStopped;
+
+        private event InputValueChangedEventHandler _inputValueChanged;
+        public event InputValueChangedEventHandler InputValueChanged
+        {
+            add
+            {
+                if (_inputValueChanged == null || !_inputValueChanged.GetInvocationList().Contains(value))
+                {
+                    _inputValueChanged += value;
+                }
+            }
+            remove
+            {
+                _inputValueChanged -= value;
+            }
+        }
+
+        private event ConnectedEventHandler _connected;
+        public event ConnectedEventHandler Connected
+        {
+            add
+            {
+                if (_connected == null || !_connected.GetInvocationList().Contains(value))
+                {
+                    _connected += value;
+                }
+            }
+            remove
+            {
+                _connected -= value;
+            }
+        }
+
+        private event ConnectionLostEventHandler _connectionLost;
+        public event ConnectionLostEventHandler ConnectionLost
+        {
+            add
+            {
+                if (_connectionLost == null || !_connectionLost.GetInvocationList().Contains(value))
+                {
+                    _connectionLost += value;
+                }
+            }
+            remove
+            {
+                _connectionLost -= value;
+            }
+        }
+
+        private event DisconnectedEventHandler _disconnected;
+        public event DisconnectedEventHandler Disconnected
+        {
+            add
+            {
+                if (_disconnected == null || !_disconnected.GetInvocationList().Contains(value))
+                {
+                    _disconnected += value;
+                }
+            }
+            remove
+            {
+                _disconnected -= value;
+            }
+        }
+
+        private event OnlineStartedEventHandler _onlineStarted;
+        public event OnlineStartedEventHandler OnlineStarted
+        {
+            add
+            {
+                if (_onlineStarted == null || !_onlineStarted.GetInvocationList().Contains(value))
+                {
+                    _onlineStarted += value;
+                }
+            }
+            remove
+            {
+                _onlineStarted -= value;
+            }
+        }
+
+        private event OnlineStoppedEventHandler _onlineStopped;
+        public event OnlineStoppedEventHandler OnlineStopped
+        {
+            add
+            {
+                if (_onlineStopped == null || !_onlineStopped.GetInvocationList().Contains(value))
+                {
+                    _onlineStopped += value;
+                }
+            }
+            remove
+            {
+                _onlineStopped -= value;
+            }
+        }
 
         public void Dispose()
         {
@@ -339,6 +434,11 @@ namespace TXCommunication
             {
                 TxCommunication.Dispose();
                 TxCommunication = null;
+            }
+
+            if (SerialAdapter != null)
+            {
+                SerialAdapter.Dispose();
             }
             
             _masterInterface.ResetValues();
@@ -396,7 +496,7 @@ namespace TXCommunication
             {
                 // Fire an event when an input value has changed
                 InputValueChangedEventArgs eventArgs = new InputValueChangedEventArgs(valueChanged);
-                InputValueChanged?.Invoke(this, eventArgs);
+                _inputValueChanged?.Invoke(this, eventArgs);
             }
         }
 
@@ -472,7 +572,7 @@ namespace TXCommunication
         {
             Connection = ConnectionStatus.Invalid;
 
-            ConnectionLost?.Invoke(this, new EventArgs());
+            _connectionLost?.Invoke(this, new EventArgs());
         }
 
         internal void LogMessage(string message)

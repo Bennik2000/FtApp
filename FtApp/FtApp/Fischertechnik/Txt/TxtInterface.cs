@@ -4,16 +4,22 @@ using FtApp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Timers;
+using System.Linq;
 using TXTCommunication.Fischertechnik.Txt.Camera;
 using TXTCommunication.Fischertechnik.Txt.Command;
 using TXTCommunication.Fischertechnik.Txt.Response;
 using Timer = System.Timers.Timer;
+// ReSharper disable InconsistentNaming
 
 namespace TXTCommunication.Fischertechnik.Txt
 {
     class TxtInterface : IFtInterface
     {
-        public bool IsDebugEnabled { get; set; }
+#if DEBUG
+        public bool IsDebugEnabled { get; set; } = true;
+#else
+        public bool IsDebugEnabled { get; set; } = false;
+#endif
 
         #region Constants
 
@@ -35,7 +41,7 @@ namespace TXTCommunication.Fischertechnik.Txt
         public const int IrChannels = 4;
 
 
-        #region Command Ids
+#region Command Ids
         public const uint CommandIdQueryStatus = 0xDC21219A;
         public const uint CommandIdStartOnline = 0x163FF61D;
         public const uint CommandIdUpdateConfig = 0x060EF27E;
@@ -46,9 +52,9 @@ namespace TXTCommunication.Fischertechnik.Txt
         public const uint CommandIdStopCameraOnline = 0x17C31F2F;
 
         public const uint AcknowledgeIdCameraOnlineFrame = 0xADA09FBA;
-        #endregion
+#endregion
         
-        #region Response Ids
+#region Response Ids
         public const uint ResponseIdQueryStatus = 0xBAC9723E;
         public const uint ResponseIdStartOnline = 0xCA689F75;
         public const uint ResponseIdUpdateConfig = 0x9689A68C;
@@ -59,8 +65,8 @@ namespace TXTCommunication.Fischertechnik.Txt
         public const uint ResponseIdStopCameraOnline = 0x4B3C1EB6;
 
         public const uint DataIdCameraOnlineFrame = 0xBDC2D7A1;
-        #endregion
-        #endregion
+#endregion
+#endregion
         
         private readonly FtExtension _masterInterface;
 
@@ -79,8 +85,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         private int _soundPlayIndex;
         private int _configurationIndex;
-
-
+        
         public TxtInterface()
         {
             Connection = ConnectionStatus.NotConnected;
@@ -119,7 +124,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             _masterInterface.ResetValues();
 
             LogMessage("Connected");
-            Connected?.Invoke(this, new EventArgs());
+            _connected?.Invoke(this, new EventArgs());
         }
 
         public void Disconnect()
@@ -139,7 +144,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 HandleException(e);
             }
 
-            Disconnected?.Invoke(this, new EventArgs());
+            _disconnected?.Invoke(this, new EventArgs());
 
             TxtCommunication.Dispose();
             TxtCommunication = null;
@@ -177,7 +182,7 @@ namespace TXTCommunication.Fischertechnik.Txt
 
                 _updateValuesTimer.Start();
 
-                OnlineStarted?.Invoke(this, new EventArgs());
+                _onlineStarted?.Invoke(this, new EventArgs());
 
                 List<int> inputPorts = new List<int>();
                 for (int i = 0; i < UniversalInputs; i++)
@@ -186,7 +191,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 }
                 InputValueChangedEventArgs eventArgs = new InputValueChangedEventArgs(inputPorts);
 
-                InputValueChanged?.Invoke(this, eventArgs);
+                _inputValueChanged?.Invoke(this, eventArgs);
             }
             catch (Exception e)
             {
@@ -215,9 +220,11 @@ namespace TXTCommunication.Fischertechnik.Txt
             try
             {
                 var responseStopOnline = new ResponseStopOnline();
+
                 TxtCommunication.SendCommand(new CommandStopOnline(), responseStopOnline);
 
-                OnlineStopped?.Invoke(this, new EventArgs());
+                _onlineStopped?.Invoke(this, new EventArgs());
+
 
                 Connection = ConnectionStatus.Connected;
             }
@@ -379,36 +386,8 @@ namespace TXTCommunication.Fischertechnik.Txt
             _configurationChanged = true;
         }
         
-        public event InputValueChangedEventHandler InputValueChanged;
         
         public delegate void SoundPlaybackFinishedEventHandler(object sender, EventArgs e);
-
-        public event SoundPlaybackFinishedEventHandler SoundPlaybackFinished;
-
-        public event ConnectedEventHandler Connected;
-        public event ConnectionLostEventHandler ConnectionLost;
-        public event DisconnectedEventHandler Disconnected;
-        public event OnlineStartedEventHandler OnlineStarted;
-        public event OnlineStoppedEventHandler OnlineStopped;
-
-        public void Dispose()
-        {
-            Connection = ConnectionStatus.NotConnected;
-
-            if (TxtCommunication != null)
-            {
-                TxtCommunication.Dispose();
-                TxtCommunication = null;
-            }
-
-            if (TxtCamera != null)
-            {
-                TxtCamera.Dispose();
-                TxtCamera = null;
-            }
-
-            _masterInterface.ResetValues();
-        }
 
         // ReSharper disable once UnusedParameter.Global
         public void PlaySound(ushort soundIndex, ushort repeatCount, int extension = 0)
@@ -488,7 +467,7 @@ namespace TXTCommunication.Fischertechnik.Txt
             {
                 // Fire an event when an input value has changed
                 InputValueChangedEventArgs eventArgs = new InputValueChangedEventArgs(valueChanged);
-                InputValueChanged?.Invoke(this, eventArgs);
+                _inputValueChanged?.Invoke(this, eventArgs);
             }
 
 
@@ -497,7 +476,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 _soundPlaying = false;
 
                 // Fire an event when the sound playback has finished
-                SoundPlaybackFinished?.Invoke(this, new EventArgs());
+                _soundPlaybackFinished?.Invoke(this, new EventArgs());
             }
         }
 
@@ -580,7 +559,7 @@ namespace TXTCommunication.Fischertechnik.Txt
         {
             Connection = ConnectionStatus.Invalid;
             
-            ConnectionLost?.Invoke(this, new EventArgs());
+            _connectionLost?.Invoke(this, new EventArgs());
         }
 
         internal void LogMessage(string message)
@@ -599,5 +578,140 @@ namespace TXTCommunication.Fischertechnik.Txt
 
             _updateValuesTimer.Start();
         }
+
+
+
+        private event SoundPlaybackFinishedEventHandler _soundPlaybackFinished;
+        public event SoundPlaybackFinishedEventHandler SoundPlaybackFinished
+        {
+            add
+            {
+                if (_soundPlaybackFinished == null || !_soundPlaybackFinished.GetInvocationList().Contains(value))
+                {
+                    _soundPlaybackFinished += value;
+                }
+            }
+            remove
+            {
+                _soundPlaybackFinished -= value;
+            }
+        }
+
+        private event InputValueChangedEventHandler _inputValueChanged;
+        public event InputValueChangedEventHandler InputValueChanged
+        {
+            add
+            {
+                if (_inputValueChanged == null || !_inputValueChanged.GetInvocationList().Contains(value))
+                {
+                    _inputValueChanged += value;
+                }
+            }
+            remove
+            {
+                _inputValueChanged -= value;
+            }
+        }
+
+        private event ConnectedEventHandler _connected;
+        public event ConnectedEventHandler Connected
+        {
+            add
+            {
+                if (_connected == null || !_connected.GetInvocationList().Contains(value))
+                {
+                    _connected += value;
+                }
+            }
+            remove
+            {
+                _connected -= value;
+            }
+        }
+
+        private event ConnectionLostEventHandler _connectionLost;
+        public event ConnectionLostEventHandler ConnectionLost
+        {
+            add
+            {
+                if (_connectionLost == null || !_connectionLost.GetInvocationList().Contains(value))
+                {
+                    _connectionLost += value;
+                }
+            }
+            remove
+            {
+                _connectionLost -= value;
+            }
+        }
+
+        private event DisconnectedEventHandler _disconnected;
+        public event DisconnectedEventHandler Disconnected
+        {
+            add
+            {
+                if (_disconnected == null || !_disconnected.GetInvocationList().Contains(value))
+                {
+                    _disconnected += value;
+                }
+            }
+            remove
+            {
+                _disconnected -= value;
+            }
+        }
+
+        private event OnlineStartedEventHandler _onlineStarted;
+        public event OnlineStartedEventHandler OnlineStarted
+        {
+            add
+            {
+                if (_onlineStarted == null || !_onlineStarted.GetInvocationList().Contains(value))
+                {
+                    _onlineStarted += value;
+                }
+            }
+            remove
+            {
+                _onlineStarted -= value;
+            }
+        }
+
+        private event OnlineStoppedEventHandler _onlineStopped;
+        public event OnlineStoppedEventHandler OnlineStopped
+        {
+            add
+            {
+                if (_onlineStopped == null || !_onlineStopped.GetInvocationList().Contains(value))
+                {
+                    _onlineStopped += value;
+                }
+            }
+            remove
+            {
+                _onlineStopped -= value;
+            }
+        }
+
+
+        public void Dispose()
+        {
+            Connection = ConnectionStatus.NotConnected;
+
+            if (TxtCommunication != null)
+            {
+                TxtCommunication.Dispose();
+                TxtCommunication = null;
+            }
+
+            if (TxtCamera != null)
+            {
+                TxtCamera.Dispose();
+                TxtCamera = null;
+            }
+
+            _masterInterface.ResetValues();
+        }
+
     }
 }

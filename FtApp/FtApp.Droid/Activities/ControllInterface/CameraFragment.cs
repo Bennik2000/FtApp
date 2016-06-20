@@ -1,40 +1,36 @@
-using System;
 using Android.Content;
-using Android.Graphics;
 using Android.OS;
 using Android.Provider;
-using Android.Support.Design.Widget;
 using Android.Views;
 using Android.Widget;
-using TXTCommunication.Fischertechnik;
-using TXTCommunication.Fischertechnik.Txt;
-using TXTCommunication.Fischertechnik.Txt.Camera;
+using System;
+using System.ComponentModel;
 using Fragment = Android.Support.V4.App.Fragment;
 
 namespace FtApp.Droid.Activities.ControllInterface
 {
     public class CameraFragment : Fragment, IFtInterfaceFragment
     {
-        private TxtInterface _ftInterface;
-
         private ImageView _imageViewCameraStream;
         private ImageButton _imageButtonTakePicture;
-        private View _rootView;
-
-        private Bitmap _frameBitmap;
-
-        private bool _firstFrameReceived;
         
-        private readonly BitmapFactory.Options _bitmapOptions;
+        private bool _eventsHooked;
+        private bool _firstFrame;
+        
 
-        public bool DisplayFrames { get; set; }
+        public bool DisplayFrames { get; } = true;
 
         public CameraFragment()
         {
-            _bitmapOptions = new BitmapFactory.Options
-            {
-                InMutable = true
-            };
+            FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+
+            RetainInstance = true;
+        }
+
+        private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            _eventsHooked = false;
+            HookEvents();
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -43,89 +39,116 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
             _imageButtonTakePicture = view.FindViewById<ImageButton>(Resource.Id.imageButtonTakePicture);
-            _rootView = view.FindViewById<CoordinatorLayout>(Resource.Id.snackbarCoordinatorLayout);
 
+            _firstFrame = true;
             _imageButtonTakePicture.Click += ImageButtonTakePictureOnClick;
-
+            
             return view;
         }
-
-        public override void OnDestroyView()
+        
+        public override void OnDetach()
         {
-            base.OnDestroyView();
-
-            // Cleanup the frame memory
-            _frameBitmap?.Recycle();
-
-            _firstFrameReceived = false;
+            base.OnDetach();
+            UnhookEvents();
         }
+
+        public override void OnAttach(Context context)
+        {
+            base.OnAttach(context);
+
+            _firstFrame = true;
+
+            HookEvents();
+        }
+        
+
+        private void HookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
+            {
+                FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
+                FtInterfaceCameraProxy.CameraFrameDecoded += FtInterfaceCameraProxyOnCameraFrameDecoded;
+
+                FtInterfaceCameraProxy.ImageBitmapCleanup -= FtInterfaceCameraProxyOnImageBitmapCleanup;
+                FtInterfaceCameraProxy.ImageBitmapCleanup += FtInterfaceCameraProxyOnImageBitmapCleanup;
+
+                FtInterfaceCameraProxy.ImageBitmapInitialized -= FtInterfaceCameraProxyOnImageBitmapInitialized;
+                FtInterfaceCameraProxy.ImageBitmapInitialized += FtInterfaceCameraProxyOnImageBitmapInitialized;
+
+                _eventsHooked = true;
+            }
+        }
+
+        private void UnhookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
+                FtInterfaceCameraProxy.ImageBitmapCleanup -= FtInterfaceCameraProxyOnImageBitmapCleanup;
+                FtInterfaceCameraProxy.ImageBitmapInitialized -= FtInterfaceCameraProxyOnImageBitmapInitialized;
+
+                _eventsHooked = false;
+            }
+        }
+
+        private void InitializeCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
+                _imageViewCameraStream?.Invalidate();
+                _firstFrame = false;
+            });
+        }
+
+        private void CleanupCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(null);
+                _imageViewCameraStream?.Invalidate();
+            });
+        }
+
+
+        private void FtInterfaceCameraProxyOnImageBitmapCleanup(object sender, EventArgs eventArgs)
+        {
+            CleanupCameraView();
+        }
+
+        private void FtInterfaceCameraProxyOnImageBitmapInitialized(object sender, EventArgs eventArgs)
+        {
+            InitializeCameraView();
+        }
+
+        private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
+        {
+            Activity?.RunOnUiThread(() =>
+            {
+                if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
+                {
+                    if (_firstFrame && !FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
+                    {
+                        InitializeCameraView();
+                    }
+                    else if (!FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
+                    {
+                        _imageViewCameraStream?.Invalidate();
+                    }
+                }
+            });
+        }
+
 
         private void ImageButtonTakePictureOnClick(object sender, EventArgs eventArgs)
         {
             var imageName = DateTime.Now.ToString("MM/dd/yyyy_HH_mm_ss") + ".jpg";
 
-            MediaStore.Images.Media.InsertImage(Context.ContentResolver, _frameBitmap, imageName, imageName);
+            MediaStore.Images.Media.InsertImage(Context.ContentResolver, FtInterfaceCameraProxy.ImageBitmap, imageName, imageName);
 
             Toast.MakeText(Activity, Resource.String.ControlTxtActivity_pictureTakenToast, ToastLength.Short).Show();
         }
-
-        public void SetFtInterface(IFtInterface ftInterface)
-        {
-            TxtInterface txtInterface = ftInterface as TxtInterface;
-            if (txtInterface != null)
-            {
-                _ftInterface = txtInterface;
-                _ftInterface.Connected += FtInterfaceOnConnected;
-                _ftInterface.OnlineStopped += FtInterfaceOnOnlineStopped;
-            }
-        }
-
-        private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
-        {
-            StopCameraStream();
-        }
-
-        private void FtInterfaceOnConnected(object sender, EventArgs eventArgs)
-        {
-            _ftInterface.TxtCamera.FrameReceived += TxtCameraOnFrameReceived;
-            StartCameraStream();
-        }
-
-        public void StartCameraStream()
-        {
-            _ftInterface.TxtCamera.StartCamera();
-        }
-
-        public void StopCameraStream()
-        {
-            _ftInterface.TxtCamera.StopCamera();
-            
-            _firstFrameReceived = false;
-        }
-
-        private void TxtCameraOnFrameReceived(object sender, FrameReceivedEventArgs frameReceivedEventArgs)
-        {
-            if (DisplayFrames)
-            {
-                if (_frameBitmap != null && !_frameBitmap.IsRecycled)
-                {
-                    _bitmapOptions.InBitmap = _frameBitmap;
-                }
-
-                _frameBitmap = BitmapFactory.DecodeByteArray(frameReceivedEventArgs.FrameData, 0,
-                    frameReceivedEventArgs.DataLength, _bitmapOptions);
-
-                if (!_firstFrameReceived)
-                {
-                    _imageViewCameraStream.SetImageBitmap(_frameBitmap);
-                }
-                Activity.RunOnUiThread(_imageViewCameraStream.Invalidate);
-
-                _firstFrameReceived = true;
-
-            }
-        }
-
+        
         public string GetTitle(Context context)
         {
             return context.GetString(Resource.String.ControlTxtActivity_tabCameraTitle);

@@ -65,7 +65,7 @@
   <string name="ControlTxtActivity_outputModeOutuput">Einzelne Ausgänge</string>
 
   <string name="ControlTxtActivity_pictureTakenToast">Foto aufgenommen</string>
-
+  <string name="ControlTxtActivity_noCamera">Keine Kamera ist verfügbar!</string>
 
   <string name="RateReminderDialog_title">FtApp Bewerten</string>
   <string name="RateReminderDialog_Message">Wenn dir diese App gefällt, nimm dir einen Moment Zeit und bewerte sie.</string>

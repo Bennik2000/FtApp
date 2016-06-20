@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -12,26 +13,82 @@ namespace FtApp.Droid.Activities.ControllInterface
 {
     public class OutputFragment : Fragment, IFtInterfaceFragment
     {
-        private IFtInterface _ftInterface;
-
         private ListAdapter _listAdapter;
         private ListView _listViewOutputPorts;
 
         private readonly List<OutputViewModel> _outputViewModels;
 
+        private bool _eventsHooked;
+        
         public OutputFragment()
         {
             _outputViewModels = new List<OutputViewModel>();
+
+            FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+
+            HookEvents();
+        }
+
+        private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            _eventsHooked = false;
+            HookEvents();
+        }
+
+        private void HookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
+            {
+                FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped += FtInterfaceOnOnlineStopped;
+
+                _eventsHooked = true;
+            }
+        }
+
+        private void UnhookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceInstanceProvider.Instance.OnlineStarted -= FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped -= FtInterfaceOnOnlineStopped;
+
+                _eventsHooked = false;
+            }
+        }
+
+        public override void OnAttach(Context context)
+        {
+            base.OnAttach(context);
+            HookEvents();
+        }
+
+        public override void OnDetach()
+        {
+            base.OnDetach();
+            UnhookEvents();
         }
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
+            LoadOutputDevices();
+        }
+
+        private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
+        {
+            _outputViewModels.Clear();
+            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+        }
+
+
+        private void LoadOutputDevices()
+        {
             _outputViewModels.Clear();
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
 
-            for (int i = 0; i < _ftInterface.GetMotorCount(); i++)
+            for (int i = 0; i < FtInterfaceInstanceProvider.Instance.GetMotorCount(); i++)
             {
-                var outputModel = new OutputViewModel(_ftInterface);
+                var outputModel = new OutputViewModel();
 
                 outputModel.SetIndexes(i * 2, i * 2 + 1, i);
                 outputModel.SetIsMotor(true);
@@ -41,11 +98,6 @@ namespace FtApp.Droid.Activities.ControllInterface
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
-        private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
-        {
-            _outputViewModels.Clear();
-            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
-        }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -60,15 +112,16 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             _listViewOutputPorts.Adapter = _listAdapter;
 
+
+
+            if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.Online)
+            {
+                LoadOutputDevices();
+            }
+
             return view;
         }
-
-        public void SetFtInterface(IFtInterface ftInterface)
-        {
-            _ftInterface = ftInterface;
-            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
-            _ftInterface.OnlineStopped += FtInterfaceOnOnlineStopped;
-        }
+        
 
         public string GetTitle(Context context)
         {
@@ -270,14 +323,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             public bool IsMotor { get; private set; }
             public int IndexMotor { get; private set; }
-
-            public IFtInterface FtInterface { get; set; }
-
-            public OutputViewModel(IFtInterface ftInterface)
-            {
-                FtInterface = ftInterface;
-            }
-
+            
             public string GetDecoratedIndex1()
             {
                 if (IsMotor)
@@ -311,9 +357,9 @@ namespace FtApp.Droid.Activities.ControllInterface
                         absoluteValue = MaxOutput1;
                     }
 
-                    if (FtInterface.CanSendCommand())
+                    if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                     {
-                        FtInterface.SetMotorValue(IndexMotor, absoluteValue, direction);
+                        FtInterfaceInstanceProvider.Instance.SetMotorValue(IndexMotor, absoluteValue, direction);
                     }
                 }
                 else
@@ -323,9 +369,9 @@ namespace FtApp.Droid.Activities.ControllInterface
                         value = MaxOutput1;
                     }
 
-                    if (FtInterface.CanSendCommand())
+                    if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                     {
-                        FtInterface.SetOutputValue(IndexOutput1, value);
+                        FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput1, value);
                     }
                 }
             }
@@ -339,9 +385,9 @@ namespace FtApp.Droid.Activities.ControllInterface
 
                 if (!IsMotor)
                 {
-                    if (FtInterface.CanSendCommand())
+                    if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                     {
-                        FtInterface.SetOutputValue(IndexOutput2, value);
+                        FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput2, value);
                     }
                 }
             }
@@ -350,23 +396,23 @@ namespace FtApp.Droid.Activities.ControllInterface
             {
                 if (isMotor)
                 {
-                    MaxOutput1 = FtInterface.GetMaxOutputValue() * 2;
+                    MaxOutput1 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue() * 2;
                     MaxOutput2 = 0;
 
-                    ValueOutput1 = FtInterface.GetMaxOutputValue();
+                    ValueOutput1 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue();
                     ValueOutput2 = 0;
                 }
                 else
                 {
-                    MaxOutput1 = FtInterface.GetMaxOutputValue();
-                    MaxOutput2 = FtInterface.GetMaxOutputValue();
+                    MaxOutput1 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue();
+                    MaxOutput2 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue();
 
                     ValueOutput1 = 0;
                     ValueOutput2 = 0;
                 }
 
-                FtInterface.ConfigureOutputMode(IndexOutput1, isMotor);
-                FtInterface.ConfigureOutputMode(IndexOutput2, isMotor);
+                FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput1, isMotor);
+                FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput2, isMotor);
 
 
                 IsMotor = isMotor;

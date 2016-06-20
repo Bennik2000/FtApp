@@ -91,8 +91,11 @@
     <Compile Include="Activities\AppRating\RatingDialog.cs" />
     <Compile Include="Activities\ControllInterface\CameraFragment.cs" />
     <Compile Include="Activities\ControllInterface\ControllInterfaceActivity.cs" />
+    <Compile Include="Activities\ControllInterface\FtInterfaceCameraProxy.cs" />
+    <Compile Include="Activities\ControllInterface\FtInterfaceInstanceProvider.cs" />
     <Compile Include="Activities\ControllInterface\IFtInterfaceFragment.cs" />
     <Compile Include="Activities\ControllInterface\InputFragment.cs" />
+    <Compile Include="Activities\ControllInterface\JoystickFragment.cs" />
     <Compile Include="Activities\ControllInterface\OutputFragment.cs" />
     <Compile Include="Activities\Help\FaqListAdapter.cs" />
     <Compile Include="Activities\Help\FaqViewModel.cs" />
@@ -103,9 +106,11 @@
     <Compile Include="Activities\SelectDevice\InterfaceSearcher.cs" />
     <Compile Include="Activities\SelectDevice\InterfaceViewModel.cs" />
     <Compile Include="Native\BluetoothAdapter.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Activities\SelectDevice\SelectDeviceActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="Views\JoystickView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -146,6 +151,11 @@
     <AndroidResource Include="Resources\layout\ListViewItemFaqLayout.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\FragmentJoystick.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout-land\FragmentJoystick.axml" />
+    <AndroidResource Include="Resources\layout-port\FragmentJoystick.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml">
@@ -281,6 +291,57 @@
     <AndroidResource Include="Resources\values-de\Arrays.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_videogame_asset_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\ic_videogame_asset_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_videogame_asset_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_videogame_asset_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_videogame_asset_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\menu\ControlInterfaceOptionsMenu.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\FadeIn.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\FadeOut.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\JoystickBackground.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\JoystickThumb.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_videocam_off_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\ic_videocam_off_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_videocam_off_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_videocam_off_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_videocam_off_black_24dp.png" />
   </ItemGroup>
   <Import Project="..\FtApp\FtApp.projitems" Label="Shared" Condition="Exists('..\FtApp\FtApp.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

@@ -65,7 +65,7 @@
   <string name="ControlTxtActivity_outputModeOutuput">Single outputs</string>
   
   <string name="ControlTxtActivity_pictureTakenToast">Picture taken</string>
-  
+  <string name="ControlTxtActivity_noCamera">No camera is available!</string>
   
   <string name="RateReminderDialog_title">Rate FtApp</string>
   <string name="RateReminderDialog_Message">If you enjoy using this app, please take a moment to rate it.</string>

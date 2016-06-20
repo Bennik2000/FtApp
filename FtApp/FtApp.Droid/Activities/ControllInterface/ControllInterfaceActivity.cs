@@ -9,6 +9,7 @@ using Android.Support.V4.App;
 using Android.Support.V4.View;
 using Android.Support.V7.App;
 using Android.Widget;
+using FtApp.Droid.Activities.AppRating;
 using FtApp.Droid.Native;
 using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Simulation;
@@ -239,6 +240,8 @@ namespace FtApp.Droid.Activities.ControllInterface
                 interfaceFragment?.SetFtInterface(_ftInterface);
             }
         }
+
+        
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {

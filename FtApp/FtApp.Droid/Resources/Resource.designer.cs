@@ -2814,6 +2814,30 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f090028
 			public const int ControlTxtActivity_toolbarTitle = 2131296296;
 			
+			// aapt resource value: 0x7f09004a
+			public const int RateReminderDialog_DoNotShowAgainKey = 2131296330;
+			
+			// aapt resource value: 0x7f09004c
+			public const int RateReminderDialog_FirstLaunchKey = 2131296332;
+			
+			// aapt resource value: 0x7f09004b
+			public const int RateReminderDialog_LaunchCountKey = 2131296331;
+			
+			// aapt resource value: 0x7f090046
+			public const int RateReminderDialog_Message = 2131296326;
+			
+			// aapt resource value: 0x7f090049
+			public const int RateReminderDialog_Negative = 2131296329;
+			
+			// aapt resource value: 0x7f090048
+			public const int RateReminderDialog_Neutral = 2131296328;
+			
+			// aapt resource value: 0x7f090047
+			public const int RateReminderDialog_Positive = 2131296327;
+			
+			// aapt resource value: 0x7f090045
+			public const int RateReminderDialog_title = 2131296325;
+			
 			// aapt resource value: 0x7f090024
 			public const int SelectDeviceActivity_NotInterfaceFound = 2131296292;
 			

@@ -1,8 +1,7 @@
 using Android.App;
 using Android.Content;
-using Java.Lang;
-using Uri = Android.Net.Uri;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
+using Uri = Android.Net.Uri;
 
 namespace FtApp.Droid.Activities.AppRating
 {

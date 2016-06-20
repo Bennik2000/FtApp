@@ -64,6 +64,8 @@
   <string name="ControlTxtActivity_outputModeMotor">Motor</string>
   <string name="ControlTxtActivity_outputModeOutuput">Einzelne Ausgänge</string>
 
+  <string name="ControlInterfaceOptionsMenuJoystick">Joystick</string>
+
   <string name="ControlTxtActivity_pictureTakenToast">Foto aufgenommen</string>
   <string name="ControlTxtActivity_noCamera">Keine Kamera ist verfügbar!</string>
 

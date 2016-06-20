@@ -6,7 +6,7 @@ using Android.Support.V4.View;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using FtApp.Droid.Activities.AppRating;
+using FtApp.Droid.Activities.SelectDevice;
 using FtApp.Droid.Native;
 using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Simulation;
@@ -105,26 +105,22 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             ConnectToFtInterface();
         }
-        
+
         protected override void OnPause()
         {
-            if (_ftInterface != null &&
-                (_ftInterface.Connection == ConnectionStatus.Online ||
-                 _ftInterface.Connection == ConnectionStatus.Connected))
+            try
             {
-                try
-                {
-                    _connectingDialog.Dismiss();
-                }
-                catch (Exception) { }
-
-                try
-                {
-                    _notAvailableDialog.Dismiss();
-                }
-                catch (Exception) { }
+                _connectingDialog.Dismiss();
             }
-            
+            catch (Exception) { }
+
+            try
+            {
+                _notAvailableDialog.Dismiss();
+            }
+            catch (Exception) { }
+
+
             base.OnPause();
         }
 
@@ -206,7 +202,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             _viewPager.SetCurrentItem(savedInstanceState.GetInt(ActiveTabDataId, 0), false);
         }
-        
+
 
         private void ExtractExtraData()
         {
@@ -240,9 +236,9 @@ namespace FtApp.Droid.Activities.ControllInterface
         private void SetupToolbar()
         {
             var toolbar = FindViewById<Toolbar>(Resource.Id.controlTxtToolbar);
-            
+
             SetSupportActionBar(toolbar);
-            
+
             SupportActionBar.Title = FtInterfaceInstanceProvider.ControllerName;
         }
 
@@ -276,7 +272,7 @@ namespace FtApp.Droid.Activities.ControllInterface
                 {
                     title = ((IFtInterfaceFragment)fragment).GetTitle(this);
                 }
-                
+
                 var tab = _tabLayout.NewTab();
 
                 tab.SetText(title);
@@ -294,7 +290,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             _tabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(_viewPager));
         }
-        
+
 
         private void SetupFtInterface()
         {
@@ -410,14 +406,12 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
         }
 
-        
-
 
         private void FtInterfaceOnConnected(object sender, EventArgs eventArgs)
         {
             FtInterfaceCameraProxy.StartCameraStream();
         }
-        
+
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
             if (_connectingDialog.IsShowing)
@@ -484,7 +478,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
 
             public override int Count => _fragments.Length;
-            
+
 
             public override IParcelable SaveState()
             {

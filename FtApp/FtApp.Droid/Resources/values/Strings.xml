@@ -65,6 +65,7 @@
   <string name="ControlTxtActivity_outputModeOutuput">Single outputs</string>
   
   <string name="ControlTxtActivity_pictureTakenToast">Picture taken</string>
+  <string name="ControlTxtActivity_noCamera">No camera is available!</string>
   
   <string name="ControlInterfaceOptionsMenuJoystick">Joystick</string>
 </resources>

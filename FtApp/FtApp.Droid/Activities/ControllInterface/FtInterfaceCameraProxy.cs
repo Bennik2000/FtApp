@@ -21,6 +21,13 @@ namespace FtApp.Droid.Activities.ControllInterface
         public delegate void CameraFrameDecodedEventHandler(object sender, FrameDecodedEventArgs eventArgs);
         public static event CameraFrameDecodedEventHandler CameraFrameDecoded;
 
+        public delegate void ImageBitmapCleanupEventHandler(object sender, EventArgs eventArgs);
+        public static event ImageBitmapCleanupEventHandler ImageBitmapCleanup;
+
+        public delegate void ImageBitmapInitializedEventHandler(object sender, EventArgs eventArgs);
+        public static event ImageBitmapInitializedEventHandler ImageBitmapInitialized;
+
+
         private static TxtInterface Interface { get; set; }
 
 
@@ -29,7 +36,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         public static bool FirstFrame { get; private set; }
 
-        public static bool CameraPossible { get; private set; }
+        public static bool CameraAvailable { get; private set; }
 
         public static bool CameraStreaming { get; private set; }
 
@@ -48,7 +55,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
 
             Interface = FtInterfaceInstanceProvider.Instance as TxtInterface;
-            CameraPossible = Interface != null;
+            CameraAvailable = Interface != null;
         }
 
         private static void TxtCameraOnFrameReceived(object sender, FrameReceivedEventArgs frameReceivedEventArgs)
@@ -64,7 +71,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         public static void StartCameraStream()
         {
             // ReSharper disable once UseNullPropagation
-            if (CameraPossible && Interface != null && !CameraStreaming)
+            if (CameraAvailable && Interface != null && !CameraStreaming)
             {
                 if (Interface.TxtCamera != null)
                 {
@@ -82,7 +89,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         public static void StopCameraStream()
         {
-            if (CameraPossible && Interface != null && CameraStreaming)
+            if (CameraAvailable && Interface != null && CameraStreaming)
             {
                 if (Interface.TxtCamera != null)
                 {
@@ -109,8 +116,13 @@ namespace FtApp.Droid.Activities.ControllInterface
             {
                 ImageOptions.InBitmap = ImageBitmap;
             }
-            
+
             ImageBitmap = BitmapFactory.DecodeByteArray(bytes, 0, length, ImageOptions);
+
+            if (FirstFrame)
+            {
+                ImageBitmapInitialized?.Invoke(null, EventArgs.Empty);
+            }
         }
 
         private static void SetupBitmap()
@@ -126,6 +138,8 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             if (ImageBitmap != null)
             {
+                ImageBitmapCleanup?.Invoke(null, EventArgs.Empty);
+
                 if (!ImageBitmap.IsRecycled)
                 {
                     ImageBitmap.Recycle();

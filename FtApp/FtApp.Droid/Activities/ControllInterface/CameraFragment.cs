@@ -49,10 +49,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         public override void OnDetach()
         {
             base.OnDetach();
-
             UnhookEvents();
-
-            _imageViewCameraStream.SetImageBitmap(null);
         }
 
         public override void OnAttach(Context context)
@@ -69,27 +66,16 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
             {
+                FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
                 FtInterfaceCameraProxy.CameraFrameDecoded += FtInterfaceCameraProxyOnCameraFrameDecoded;
 
+                FtInterfaceCameraProxy.ImageBitmapCleanup -= FtInterfaceCameraProxyOnImageBitmapCleanup;
+                FtInterfaceCameraProxy.ImageBitmapCleanup += FtInterfaceCameraProxyOnImageBitmapCleanup;
+
+                FtInterfaceCameraProxy.ImageBitmapInitialized -= FtInterfaceCameraProxyOnImageBitmapInitialized;
+                FtInterfaceCameraProxy.ImageBitmapInitialized += FtInterfaceCameraProxyOnImageBitmapInitialized;
+
                 _eventsHooked = true;
-            }
-        }
-
-        private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
-        {
-            if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
-            {
-                Activity?.RunOnUiThread(() =>
-                {
-                    if (_firstFrame)
-                    {
-                        _imageViewCameraStream.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
-                    }
-
-                    _firstFrame = false;
-
-                    _imageViewCameraStream.Invalidate();
-                });
             }
         }
 
@@ -98,10 +84,61 @@ namespace FtApp.Droid.Activities.ControllInterface
             if (FtInterfaceInstanceProvider.Instance != null)
             {
                 FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
+                FtInterfaceCameraProxy.ImageBitmapCleanup -= FtInterfaceCameraProxyOnImageBitmapCleanup;
+                FtInterfaceCameraProxy.ImageBitmapInitialized -= FtInterfaceCameraProxyOnImageBitmapInitialized;
 
                 _eventsHooked = false;
             }
         }
+
+        private void InitializeCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
+                _imageViewCameraStream?.Invalidate();
+                _firstFrame = false;
+            });
+        }
+
+        private void CleanupCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(null);
+                _imageViewCameraStream?.Invalidate();
+            });
+        }
+
+
+        private void FtInterfaceCameraProxyOnImageBitmapCleanup(object sender, EventArgs eventArgs)
+        {
+            CleanupCameraView();
+        }
+
+        private void FtInterfaceCameraProxyOnImageBitmapInitialized(object sender, EventArgs eventArgs)
+        {
+            InitializeCameraView();
+        }
+
+        private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
+        {
+            Activity?.RunOnUiThread(() =>
+            {
+                if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
+                {
+                    if (_firstFrame && !FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
+                    {
+                        InitializeCameraView();
+                    }
+                    else if (!FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
+                    {
+                        _imageViewCameraStream?.Invalidate();
+                    }
+                }
+            });
+        }
+
 
         private void ImageButtonTakePictureOnClick(object sender, EventArgs eventArgs)
         {

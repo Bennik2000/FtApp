@@ -55,10 +55,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         public override void OnDetach()
         {
             base.OnDetach();
-
             UnhookEvents();
-
-            _imageViewCameraStream.SetImageBitmap(null);
         }
 
 
@@ -68,6 +65,12 @@ namespace FtApp.Droid.Activities.ControllInterface
             {
                 FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
                 FtInterfaceCameraProxy.CameraFrameDecoded += FtInterfaceCameraProxyOnCameraFrameDecoded;
+
+                FtInterfaceCameraProxy.ImageBitmapCleanup -= FtInterfaceCameraProxyOnImageBitmapCleanup;
+                FtInterfaceCameraProxy.ImageBitmapCleanup += FtInterfaceCameraProxyOnImageBitmapCleanup;
+
+                FtInterfaceCameraProxy.ImageBitmapInitialized -= FtInterfaceCameraProxyOnImageBitmapInitialized;
+                FtInterfaceCameraProxy.ImageBitmapInitialized += FtInterfaceCameraProxyOnImageBitmapInitialized;
             }
         }
 
@@ -76,9 +79,37 @@ namespace FtApp.Droid.Activities.ControllInterface
             if (FtInterfaceInstanceProvider.Instance != null)
             {
                 FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
+                FtInterfaceCameraProxy.ImageBitmapCleanup -= FtInterfaceCameraProxyOnImageBitmapCleanup;
+                FtInterfaceCameraProxy.ImageBitmapInitialized -= FtInterfaceCameraProxyOnImageBitmapInitialized;
             }
         }
 
+        private void InitializeCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
+                _imageViewCameraStream?.Invalidate();
+                _firstFrame = false;
+
+
+                View noCameraView = View.FindViewById(Resource.Id.noCameraStateLayout);
+
+                if (noCameraView != null)
+                {
+                    noCameraView.Visibility = ViewStates.Gone;
+                }
+            });
+        }
+
+        private void CleanupCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(null);
+                _imageViewCameraStream?.Invalidate();
+            });
+        }
 
         private void JoystickViewLeftOnValuesChanged(object sender, EventArgs eventArgs)
         {
@@ -129,24 +160,35 @@ namespace FtApp.Droid.Activities.ControllInterface
             HookEvents();
         }
 
-        private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
+        private void FtInterfaceCameraProxyOnImageBitmapCleanup(object sender, EventArgs eventArgs)
         {
-            if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
-            {
-                Activity?.RunOnUiThread(() =>
-                {
-                    if (_firstFrame)
-                    {
-                        _imageViewCameraStream.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
-                    }
-
-                    _firstFrame = false;
-
-                    _imageViewCameraStream.Invalidate();
-                });
-            }
+            CleanupCameraView();
+        }
+        
+        private void FtInterfaceCameraProxyOnImageBitmapInitialized(object sender, EventArgs eventArgs)
+        {
+            InitializeCameraView();
         }
 
+
+        private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
+        {
+            Activity?.RunOnUiThread(() =>
+            {
+                if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
+                {
+                    if (_firstFrame && !FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
+                    {
+                        InitializeCameraView();
+                    }
+                    else if (!FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
+                    {
+                        _imageViewCameraStream?.Invalidate();
+                    }
+                }
+            });
+        }
+        
 
         private void SetMotor(int motorIndex, float percentage)
         {

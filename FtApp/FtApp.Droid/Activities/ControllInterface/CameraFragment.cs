@@ -15,7 +15,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         private ImageButton _imageButtonTakePicture;
         
         private bool _eventsHooked;
-        private bool _attached;
+        private bool _firstFrame;
         
 
         public bool DisplayFrames { get; } = true;
@@ -40,20 +40,14 @@ namespace FtApp.Droid.Activities.ControllInterface
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
             _imageButtonTakePicture = view.FindViewById<ImageButton>(Resource.Id.imageButtonTakePicture);
 
+            _firstFrame = true;
             _imageButtonTakePicture.Click += ImageButtonTakePictureOnClick;
             
             return view;
         }
-
-        public override void OnDestroyView()
-        {
-            base.OnDestroyView();
-        }
-
+        
         public override void OnDetach()
         {
-            _attached = false;
-
             base.OnDetach();
 
             UnhookEvents();
@@ -64,12 +58,10 @@ namespace FtApp.Droid.Activities.ControllInterface
         public override void OnAttach(Context context)
         {
             base.OnAttach(context);
-            
+
+            _firstFrame = true;
 
             HookEvents();
-
-
-            _attached = true;
         }
         
 
@@ -89,10 +81,12 @@ namespace FtApp.Droid.Activities.ControllInterface
             {
                 Activity?.RunOnUiThread(() =>
                 {
-                    if (eventArgs.FirstFrame)
+                    if (_firstFrame)
                     {
                         _imageViewCameraStream.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
                     }
+
+                    _firstFrame = false;
 
                     _imageViewCameraStream.Invalidate();
                 });

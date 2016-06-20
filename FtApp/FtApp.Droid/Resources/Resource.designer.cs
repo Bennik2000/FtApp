@@ -2162,14 +2162,14 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060000
 			public const int item_touch_helper_previous_elevation = 2131099648;
 			
-			// aapt resource value: 0x7f060085
-			public const int joystickCameraView = 2131099781;
-			
 			// aapt resource value: 0x7f060083
-			public const int joystickLeft = 2131099779;
+			public const int joystickCameraView = 2131099779;
 			
 			// aapt resource value: 0x7f060084
-			public const int joystickRight = 2131099780;
+			public const int joystickLeft = 2131099780;
+			
+			// aapt resource value: 0x7f060085
+			public const int joystickRight = 2131099781;
 			
 			// aapt resource value: 0x7f060072
 			public const int layoutInterfaceListEmpty = 2131099762;

@@ -10,21 +10,19 @@ using FtApp.Droid.Activities.SelectDevice;
 using FtApp.Droid.Native;
 using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Simulation;
+using Java.Lang;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Java.Lang;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Utils;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
-using Debug = System.Diagnostics.Debug;
 using Exception = System.Exception;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
-using Object = Java.Lang.Object;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace FtApp.Droid.Activities.ControllInterface

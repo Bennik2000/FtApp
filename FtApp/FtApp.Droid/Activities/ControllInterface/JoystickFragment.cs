@@ -5,6 +5,8 @@ using Android.Views;
 using FtApp.Droid.Views;
 using FtApp.Utils;
 using System;
+using System.ComponentModel;
+using Android.Widget;
 using TXTCommunication.Fischertechnik;
 
 namespace FtApp.Droid.Activities.ControllInterface
@@ -15,11 +17,22 @@ namespace FtApp.Droid.Activities.ControllInterface
         private JoystickView _joystickViewLeft;
         private JoystickView _joystickViewRight;
 
+        private ImageView _imageViewCameraStream;
+
+        bool _firstFrame = true;
+
+        public JoystickFragment()
+        {
+            FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+        }
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.FragmentJoystick, container, false);
 
             view.Touch += (sender, args) => { args.Handled = true; };
+
+            _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.joystickCameraView);
 
             _joystickViewLeft = view.FindViewById<JoystickView>(Resource.Id.joystickLeft);
             _joystickViewRight = view.FindViewById<JoystickView>(Resource.Id.joystickRight);
@@ -28,6 +41,42 @@ namespace FtApp.Droid.Activities.ControllInterface
             _joystickViewRight.ValuesChanged += JoystickViewRightOnValuesChanged;
 
             return view;
+        }
+
+        public override void OnAttach(Activity activity)
+        {
+            base.OnAttach(activity);
+
+            HookEvents();
+
+            _firstFrame = true;
+        }
+
+        public override void OnDetach()
+        {
+            base.OnDetach();
+
+            UnhookEvents();
+
+            _imageViewCameraStream.SetImageBitmap(null);
+        }
+
+
+        private void HookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
+                FtInterfaceCameraProxy.CameraFrameDecoded += FtInterfaceCameraProxyOnCameraFrameDecoded;
+            }
+        }
+
+        private void UnhookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
+            }
         }
 
 
@@ -73,6 +122,31 @@ namespace FtApp.Droid.Activities.ControllInterface
             SetMotor(0, motor1);
             SetMotor(1, motor2);
         }
+
+
+        private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            HookEvents();
+        }
+
+        private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
+        {
+            if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
+            {
+                Activity?.RunOnUiThread(() =>
+                {
+                    if (_firstFrame)
+                    {
+                        _imageViewCameraStream.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
+                    }
+
+                    _firstFrame = false;
+
+                    _imageViewCameraStream.Invalidate();
+                });
+            }
+        }
+
 
         private void SetMotor(int motorIndex, float percentage)
         {

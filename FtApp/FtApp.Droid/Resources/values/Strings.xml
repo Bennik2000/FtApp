@@ -65,4 +65,14 @@
   <string name="ControlTxtActivity_outputModeOutuput">Single outputs</string>
   
   <string name="ControlTxtActivity_pictureTakenToast">Picture taken</string>
+  
+  
+  <string name="RateReminderDialog_title">Rate FtApp</string>
+  <string name="RateReminderDialog_Message">If you enjoy using this app, please take a moment to rate it.</string>
+  <string name="RateReminderDialog_Positive">Rate</string>
+  <string name="RateReminderDialog_Neutral">Later</string>
+  <string name="RateReminderDialog_Negative">No, thanks!</string>
+  
+  <string name="RateReminderDialog_DoNotShowAgainKey">DoNotShowAgain</string>
+  <string name="RateReminderDialog_LaunchCountKey">LaunchCount</string>
 </resources>

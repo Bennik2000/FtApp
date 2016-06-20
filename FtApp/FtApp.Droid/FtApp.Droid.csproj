@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\About\AboutActivity.cs" />
+    <Compile Include="Activities\AppRating\RatingDialog.cs" />
     <Compile Include="Activities\ControllInterface\CameraFragment.cs" />
     <Compile Include="Activities\ControllInterface\ControllInterfaceActivity.cs" />
     <Compile Include="Activities\ControllInterface\IFtInterfaceFragment.cs" />

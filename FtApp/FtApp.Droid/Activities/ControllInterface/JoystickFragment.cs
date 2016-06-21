@@ -7,6 +7,7 @@ using FtApp.Droid.Views;
 using FtApp.Utils;
 using System;
 using System.ComponentModel;
+using Newtonsoft.Json;
 using TXTCommunication.Fischertechnik;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
 
@@ -29,6 +30,8 @@ namespace FtApp.Droid.Activities.ControllInterface
         private const int LeftJoystickIndex = 0;
         private const int RightJoystickIndex = 1;
 
+        private const string LeftJoystickPreferenceKey = "LeftJoystick";
+        private const string RightJoystickPreferenceKey = "RightJoystick";
 
         bool _firstFrame = true;
 
@@ -47,6 +50,7 @@ namespace FtApp.Droid.Activities.ControllInterface
                 MotorIndexes = new[] {2, 3}
             };
         }
+
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -83,10 +87,12 @@ namespace FtApp.Droid.Activities.ControllInterface
             return view;
         }
 
+
         public override void OnAttach(Activity activity)
         {
             base.OnAttach(activity);
-            
+
+            LoadJoystickConfiguration();
             HookEvents();
 
             _firstFrame = true;
@@ -95,8 +101,10 @@ namespace FtApp.Droid.Activities.ControllInterface
         public override void OnDetach()
         {
             base.OnDetach();
+            SaveJoystickConfiguration();
             UnhookEvents();
         }
+
 
         public void ShowJoystickConfigurationOptionsMenu(ImageView view, int joystickIndex)
         {
@@ -110,7 +118,6 @@ namespace FtApp.Droid.Activities.ControllInterface
             };
         }
 
-
         private void ConfigureJoystickPopupOnMenuItemClick(int menuItemId, int joystickId)
         {
             switch (menuItemId)
@@ -123,7 +130,6 @@ namespace FtApp.Droid.Activities.ControllInterface
                     break;
             }
         }
-
 
         private void ShowMotorConfigurationDialog(int joystickId, int joystickAxis)
         {
@@ -185,8 +191,7 @@ namespace FtApp.Droid.Activities.ControllInterface
                 ApplyJoystickConfiguration(configuration, joystickId);
             }
         }
-
-
+        
         private void ShowModeConfigurationDialog(int joystickId)
         {
             AlertDialog modeConfigurationDialog = null;
@@ -232,6 +237,54 @@ namespace FtApp.Droid.Activities.ControllInterface
         }
 
 
+        private void LoadJoystickConfiguration()
+        {
+            ISharedPreferences sharedPreferences = Activity.GetSharedPreferences(typeof(JoystickConfiguration).FullName, 0);
+
+            string leftJoystickJson = sharedPreferences.GetString(LeftJoystickPreferenceKey, string.Empty);
+            string rightJoystickJson = sharedPreferences.GetString(RightJoystickPreferenceKey, string.Empty);
+
+
+            if (!string.IsNullOrEmpty(leftJoystickJson))
+            {
+                try
+                {
+                    _leftJoystickConfiguration = JsonConvert.DeserializeObject<JoystickConfiguration>(leftJoystickJson);
+                }
+                catch (JsonException) { }
+            }
+            if (!string.IsNullOrEmpty(rightJoystickJson))
+            {
+                try
+                {
+                    _rightJoystickConfiguration = JsonConvert.DeserializeObject<JoystickConfiguration>(rightJoystickJson);
+                }
+                catch (JsonException) { }
+            }
+        }
+
+        private void SaveJoystickConfiguration()
+        {
+            // Serialite both joysticks to json strings
+            string leftJoystickJson = JsonConvert.SerializeObject(_leftJoystickConfiguration);
+            string rightJoystickJson = JsonConvert.SerializeObject(_rightJoystickConfiguration);
+
+            
+            // Store the strings in shared preferences
+            ISharedPreferences sharedPreferences = Activity.GetSharedPreferences(typeof(JoystickConfiguration).FullName, 0);
+            
+            ISharedPreferencesEditor editor = sharedPreferences.Edit();
+
+            if (editor != null)
+            {
+                editor.PutString(LeftJoystickPreferenceKey, leftJoystickJson);
+                editor.PutString(RightJoystickPreferenceKey, rightJoystickJson);
+
+                editor.Commit();
+            }
+        }
+
+
         private JoystickConfiguration GetRelatedJoystickConfiguration(int joystickId)
         {
             switch (joystickId)
@@ -271,22 +324,6 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
         }
 
-        private string[] GetMotorList()
-        {
-            if (FtInterfaceInstanceProvider.Instance != null)
-            {
-                string[] motors = new string[FtInterfaceInstanceProvider.Instance.GetMotorCount()];
-
-                for (int i = 0; i < motors.Length; i++)
-                {
-                    motors[i] = $"M{i + 1}";
-                }
-
-                return motors;
-            }
-            return new string[0];
-        }
-
 
         private void HookEvents()
         {
@@ -313,32 +350,6 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
         }
 
-        private void InitializeCameraView()
-        {
-            Activity.RunOnUiThread(() =>
-            {
-                _imageViewCameraStream?.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
-                _imageViewCameraStream?.Invalidate();
-                _firstFrame = false;
-
-
-                View noCameraView = View.FindViewById(Resource.Id.noCameraStateLayout);
-
-                if (noCameraView != null)
-                {
-                    noCameraView.Visibility = ViewStates.Gone;
-                }
-            });
-        }
-
-        private void CleanupCameraView()
-        {
-            Activity.RunOnUiThread(() =>
-            {
-                _imageViewCameraStream?.SetImageBitmap(null);
-                _imageViewCameraStream?.Invalidate();
-            });
-        }
 
         private void JoystickViewOnValuesChanged(int joystickId)
         {
@@ -362,7 +373,6 @@ namespace FtApp.Droid.Activities.ControllInterface
             SetMotor(configuration.MotorIndexes[0], motor1);
             SetMotor(configuration.MotorIndexes[1], motor2);
         }
-
 
         private void CalculateSyncronValues(float thumbAngle, float thumbDistance, out float value1, out float value2)
         {
@@ -399,11 +409,40 @@ namespace FtApp.Droid.Activities.ControllInterface
         }
         
 
+
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             HookEvents();
         }
 
+
+        private void InitializeCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
+                _imageViewCameraStream?.Invalidate();
+                _firstFrame = false;
+
+
+                View noCameraView = View.FindViewById(Resource.Id.noCameraStateLayout);
+
+                if (noCameraView != null)
+                {
+                    noCameraView.Visibility = ViewStates.Gone;
+                }
+            });
+        }
+
+        private void CleanupCameraView()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                _imageViewCameraStream?.SetImageBitmap(null);
+                _imageViewCameraStream?.Invalidate();
+            });
+        }
+        
         private void FtInterfaceCameraProxyOnImageBitmapCleanup(object sender, EventArgs eventArgs)
         {
             CleanupCameraView();
@@ -413,8 +452,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             InitializeCameraView();
         }
-
-
+        
         private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
         {
             Activity?.RunOnUiThread(() =>
@@ -446,6 +484,22 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
 
             FtInterfaceInstanceProvider.Instance.SetMotorValue(motorIndex, value, direction);
+        }
+
+        private string[] GetMotorList()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                string[] motors = new string[FtInterfaceInstanceProvider.Instance.GetMotorCount()];
+
+                for (int i = 0; i < motors.Length; i++)
+                {
+                    motors[i] = $"M{i + 1}";
+                }
+
+                return motors;
+            }
+            return new string[0];
         }
 
         public void Activate()

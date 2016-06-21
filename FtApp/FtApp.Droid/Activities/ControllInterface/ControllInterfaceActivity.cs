@@ -1,31 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Android.App;
-using Android.Content.PM;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.View;
 using Android.Support.V7.App;
+using Android.Views;
 using Android.Widget;
+using FtApp.Droid.Activities.SelectDevice;
 using FtApp.Droid.Native;
 using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Simulation;
+using Java.Lang;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Utils;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
+using Exception = System.Exception;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace FtApp.Droid.Activities.ControllInterface
 {
-    [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base", ScreenOrientation = ScreenOrientation.Portrait)]
+    [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base"/*, ScreenOrientation = ScreenOrientation.Portrait*/)]
     public class ControllInterfaceActivity : AppCompatActivity
     {
+        private const string JoystickVisibleDataId = "JoystickVisible";
+        private const string ActiveTabDataId = "ActiveTab";
+
         public const string AdressExtraDataId = "Adress";
         public const string ControllerNameExtraDataId = "ControllerName";
         public const string ControllerTypeExtraDataId = "ControllerType";
@@ -35,18 +42,26 @@ namespace FtApp.Droid.Activities.ControllInterface
         private ProgressDialog _connectingDialog;
         private AlertDialog _notAvailableDialog;
 
-        private string _ip;
-        private string _controllerName;
-        private ControllerType _controllerType;
+        private TabLayout _tabLayout;
+        private ViewPager _viewPager;
 
-        private IFtInterface _ftInterface;
 
-        
+
         private IList<Fragment> _fragments;
-        
+        private JoystickFragment _joystickFragment;
+
+        private bool _joystickVisibile;
+        private bool _isActivityInFocus;
+        private bool _eventsHooked;
+
         public ControllInterfaceActivity()
         {
             _connectionTaskQueue = new TaskQueue("Connection handler");
+
+            FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
+
+            // We have to use the FtInterfaceCameraProxy one time to call the static constructor
+            bool b = FtInterfaceCameraProxy.FirstFrame;
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -55,58 +70,147 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             SetContentView(Resource.Layout.ActivityControllInterfaceLayout);
 
-            ExtractExtraData();
+            _joystickFragment = FragmentManager.FindFragmentById<JoystickFragment>(Resource.Id.fragmentJoystick);
+            _tabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
+            _viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
 
+
+            ExtractExtraData();
             InitializeDialogs();
+
+
             SetupToolbar();
             SetupTabs();
+
+            if (savedInstanceState == null)
+            {
+                HideJoystick();
+            }
+            else
+            {
+                RetreiveSavedState(savedInstanceState);
+            }
         }
 
         protected override void OnStart()
         {
             base.OnStart();
-            SetupFtInterface();
+
+            HookEvents();
+
+            if (FtInterfaceInstanceProvider.Instance == null)
+            {
+                SetupFtInterface();
+            }
+
             ConnectToFtInterface();
         }
-        
+
         protected override void OnPause()
         {
-            if (_ftInterface != null &&
-                (_ftInterface.Connection == ConnectionStatus.Online ||
-                 _ftInterface.Connection == ConnectionStatus.Connected))
+            try
             {
-                DisconnectFromInterface();
-
-                try
-                {
-                    _connectingDialog.Dismiss();
-                }
-                catch (Exception) { }
-
-                try
-                {
-                    _notAvailableDialog.Dismiss();
-                }
-                catch (Exception) { }
+                _connectingDialog.Dismiss();
             }
-            
+            catch (Exception) { }
+
+            try
+            {
+                _notAvailableDialog.Dismiss();
+            }
+            catch (Exception) { }
+
+
             base.OnPause();
         }
-        
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
 
-            _ftInterface.Dispose();
+        protected override void OnStop()
+        {
+            base.OnStop();
+
+            if (!_isActivityInFocus)
+            {
+                DisconnectFromInterface();
+            }
         }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _connectionTaskQueue?.Dispose();
+            UnhookEvents();
+        }
+
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+
+            outState.PutBoolean(JoystickVisibleDataId, _joystickVisibile);
+            outState.PutInt(ActiveTabDataId, _tabLayout.SelectedTabPosition);
+        }
+
+
+        public override void OnWindowFocusChanged(bool hasFocus)
+        {
+            base.OnWindowFocusChanged(hasFocus);
+            _isActivityInFocus = hasFocus;
+        }
+
+
+        public override bool OnPrepareOptionsMenu(IMenu menu)
+        {
+            if (menu.Size() == 0)
+            {
+                MenuInflater.Inflate(Resource.Menu.ControlInterfaceOptionsMenu, menu);
+            }
+            return true;
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch (item.ItemId)
+            {
+                case Resource.Id.optionsMenuItemJoystick:
+                    ToggleJoystickVisibility();
+                    return true;
+            }
+            return base.OnOptionsItemSelected(item);
+        }
+
+        public override void OnBackPressed()
+        {
+            if (_joystickVisibile)
+            {
+                HideJoystick();
+            }
+            else
+            {
+                Finish();
+            }
+        }
+
+        private void RetreiveSavedState(Bundle savedInstanceState)
+        {
+            if (savedInstanceState.GetBoolean(JoystickVisibleDataId))
+            {
+                ShowJoystick();
+            }
+            else
+            {
+                HideJoystick();
+            }
+
+            _viewPager.SetCurrentItem(savedInstanceState.GetInt(ActiveTabDataId, 0), false);
+        }
+
 
         private void ExtractExtraData()
         {
             Bundle extras = Intent.Extras;
 
-            _controllerType = extras != null ? (ControllerType)extras.GetInt(ControllerTypeExtraDataId) : ControllerType.Unknown;
-            _controllerName = extras != null ? extras.GetString(ControllerNameExtraDataId) : string.Empty;
-            _ip = extras != null ? extras.GetString(AdressExtraDataId) : string.Empty;
+            FtInterfaceInstanceProvider.ControllerType = extras != null ? (ControllerType)extras.GetInt(ControllerTypeExtraDataId) : ControllerType.Unknown;
+            FtInterfaceInstanceProvider.ControllerName = extras != null ? extras.GetString(ControllerNameExtraDataId) : string.Empty;
+            FtInterfaceInstanceProvider.Ip = extras != null ? extras.GetString(AdressExtraDataId) : string.Empty;
         }
 
         private void InitializeDialogs()
@@ -132,17 +236,14 @@ namespace FtApp.Droid.Activities.ControllInterface
         private void SetupToolbar()
         {
             var toolbar = FindViewById<Toolbar>(Resource.Id.controlTxtToolbar);
-            
+
             SetSupportActionBar(toolbar);
-            
-            //SupportActionBar.Title = Resources.GetString(Resource.String.ControlTxtActivity_toolbarTitle);
-            SupportActionBar.Title = _controllerName;
+
+            SupportActionBar.Title = FtInterfaceInstanceProvider.ControllerName;
         }
 
         private void SetupTabs()
         {
-            var controlInterfaceTabLayout = FindViewById<TabLayout>(Resource.Id.controlTxtTabLayout);
-
             _fragments = new List<Fragment>
             {
                 new InputFragment(),
@@ -150,7 +251,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             };
 
 
-            switch (_controllerType)
+            switch (FtInterfaceInstanceProvider.ControllerType)
             {
                 case ControllerType.Tx:
                     break;
@@ -171,73 +272,144 @@ namespace FtApp.Droid.Activities.ControllInterface
                 {
                     title = ((IFtInterfaceFragment)fragment).GetTitle(this);
                 }
-                
-                var tab = controlInterfaceTabLayout.NewTab();
+
+                var tab = _tabLayout.NewTab();
 
                 tab.SetText(title);
-                
-                controlInterfaceTabLayout.AddTab(tab);
+
+                _tabLayout.AddTab(tab);
             }
 
             PagerAdapter adapter = new TabPagerAdapter(SupportFragmentManager, _fragments.ToArray());
-            var viewPager = FindViewById<ViewPager>(Resource.Id.controlTxtViewPager);
-            viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit to the tab count. Otherwise the fragments would be restored
-            viewPager.Adapter = adapter;
+            _viewPager.Adapter = adapter;
+            _viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit to the tab count. Otherwise the fragments would be restored
+            _viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(_tabLayout));
+            _viewPager.PageSelected -= ViewPagerOnPageSelected;
+            _viewPager.PageSelected += ViewPagerOnPageSelected;
 
-            viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(controlInterfaceTabLayout));
-            viewPager.PageSelected += ViewPagerOnPageSelected;
+
+            _tabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(_viewPager));
+        }
 
 
-            controlInterfaceTabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+        private void SetupFtInterface()
+        {
+            switch (FtInterfaceInstanceProvider.ControllerType)
+            {
+                case ControllerType.Tx:
+                    FtInterfaceInstanceProvider.Instance = new TxInterface(new BluetoothAdapter(this));
+                    break;
+                case ControllerType.Txt:
+                    FtInterfaceInstanceProvider.Instance = new TxtInterface();
+                    break;
+                case ControllerType.Simulate:
+                    FtInterfaceInstanceProvider.Instance = new SimulatedFtInterface();
+                    break;
+                case ControllerType.Unknown:
+                    Finish();
+                    return;
+            }
+        }
+
+        private void ShowJoystick()
+        {
+            _joystickFragment.Activate();
+
+            _joystickVisibile = true;
+            _tabLayout.Animate().Alpha(0).SetDuration(200).Start();
+            _viewPager.Animate().Alpha(0).SetDuration(200).Start();
+
+            FragmentManager.BeginTransaction()
+                .SetCustomAnimations(Resource.Animation.FadeIn, Resource.Animation.FadeOut)
+                .Show(_joystickFragment)
+                .Commit();
+        }
+
+        private void HideJoystick()
+        {
+            _joystickVisibile = false;
+            _tabLayout.Visibility = ViewStates.Visible;
+            _tabLayout.Animate().Alpha(1).SetDuration(200).SetListener(new HideOnFinishedAnimationListener(_tabLayout)).Start();
+
+            _viewPager.Visibility = ViewStates.Visible;
+            _viewPager.Animate().Alpha(1).SetDuration(200).SetListener(new HideOnFinishedAnimationListener(_viewPager)).Start();
+
+            FragmentManager.BeginTransaction()
+                .SetCustomAnimations(Resource.Animation.FadeIn, Resource.Animation.FadeOut)
+                .Hide(_joystickFragment)
+                .Commit();
+        }
+
+        private void ToggleJoystickVisibility()
+        {
+            if (_joystickVisibile)
+            {
+                HideJoystick();
+            }
+            else
+            {
+                ShowJoystick();
+            }
         }
 
         private void ViewPagerOnPageSelected(object sender, ViewPager.PageSelectedEventArgs pageSelectedEventArgs)
         {
             // Control the camera preview of the TXT Controller.
             // When the camera fragment is not visible we stop decoding the jpeg stream to save ressources
-            var fragment = _fragments[pageSelectedEventArgs.Position];
+            //var fragment = _fragments[pageSelectedEventArgs.Position];
 
-            if (fragment is CameraFragment)
-            {
-                ((CameraFragment) fragment).DisplayFrames = true;
-            }
-            else
-            {
-                var cameraFragment = _fragments.FirstOrDefault(f => f is CameraFragment) as CameraFragment;
+            //if (fragment is CameraFragment)
+            //{
+            //    ((CameraFragment) fragment).DisplayFrames = true;
+            //}
+            //else
+            //{
+            //    var cameraFragment = _fragments.FirstOrDefault(f => f is CameraFragment) as CameraFragment;
 
-                if (cameraFragment != null)
-                {
-                    cameraFragment.DisplayFrames = false;
-                }
+            //    if (cameraFragment != null)
+            //    {
+            //        cameraFragment.DisplayFrames = false;
+            //    }
+            //}
+        }
+
+
+        private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            _eventsHooked = false;
+            HookEvents();
+        }
+
+        private void HookEvents()
+        {
+            if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
+            {
+                FtInterfaceInstanceProvider.Instance.ConnectionLost += FtInterfaceOnConnectionLost;
+                FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.OnlineStopped += InstanceOnOnlineStopped;
+                FtInterfaceInstanceProvider.Instance.Connected += FtInterfaceOnConnected;
+
+                _eventsHooked = true;
             }
         }
 
-        private void SetupFtInterface()
+
+        private void UnhookEvents()
         {
-            switch (_controllerType)
+            if (FtInterfaceInstanceProvider.Instance != null)
             {
-                case ControllerType.Tx:
-                    _ftInterface = new TxInterface(new BluetoothAdapter(this));
-                    break;
-                case ControllerType.Txt:
-                    _ftInterface = new TxtInterface();
-                    break;
-                case ControllerType.Simulate:
-                    _ftInterface = new SimulatedFtInterface();
-                    break;
-                case ControllerType.Unknown:
-                    Finish();
-                    return;
-            }
+                FtInterfaceInstanceProvider.Instance.ConnectionLost -= FtInterfaceOnConnectionLost;
+                FtInterfaceInstanceProvider.Instance.OnlineStarted -= FtInterfaceOnOnlineStarted;
+                FtInterfaceInstanceProvider.Instance.Connected -= FtInterfaceOnConnected;
 
-            _ftInterface.ConnectionLost += FtInterfaceOnConnectionLost;
-            _ftInterface.OnlineStarted += FtInterfaceOnOnlineStarted;
-
-            foreach (Fragment fragment in _fragments)
-            {
-                IFtInterfaceFragment interfaceFragment = fragment as IFtInterfaceFragment;
-                interfaceFragment?.SetFtInterface(_ftInterface);
+                _eventsHooked = false;
             }
+        }
+
+
+        private void FtInterfaceOnConnected(object sender, EventArgs eventArgs)
+        {
+            FtInterfaceCameraProxy.StartCameraStream();
         }
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
@@ -254,28 +426,39 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
         }
 
+        private void InstanceOnOnlineStopped(object sender, EventArgs eventArgs)
+        {
+            FtInterfaceCameraProxy.StopCameraStream();
+        }
 
         private void ConnectToFtInterface()
         {
-            _connectingDialog.Show();
-
-            _connectionTaskQueue.DoWorkInQueue(() =>
+            if (FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.NotConnected)
             {
-                _ftInterface.Connect(_ip);
-                _ftInterface.StartOnlineMode();
-            }, false);
+                _connectingDialog.Show();
+
+                _connectionTaskQueue.DoWorkInQueue(() =>
+                {
+                    FtInterfaceInstanceProvider.Instance?.Connect(FtInterfaceInstanceProvider.Ip);
+                    FtInterfaceInstanceProvider.Instance?.StartOnlineMode();
+                }, false);
+            }
         }
 
         private void DisconnectFromInterface()
         {
             _connectionTaskQueue.DoWorkInQueue(() =>
             {
-                if (_ftInterface.CanSendCommand())
+                if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.CanSendCommand())
                 {
-                    _ftInterface.StopOnlineMode();
-                    _ftInterface.Disconnect();
+                    FtInterfaceInstanceProvider.Instance.StopOnlineMode();
+                    FtInterfaceInstanceProvider.Instance.Disconnect();
+
+                    FtInterfaceInstanceProvider.Instance.Dispose();
+                    FtInterfaceInstanceProvider.Instance = null;
                 }
             }, true);
+
         }
 
 
@@ -285,7 +468,7 @@ namespace FtApp.Droid.Activities.ControllInterface
             RunOnUiThread(() => { Toast.MakeText(this, GetString(Resource.String.ControlTxtActivity_interfaceConnectionLostMessage), ToastLength.Short).Show(); });
         }
 
-        private class TabPagerAdapter : FragmentStatePagerAdapter
+        private class TabPagerAdapter : FragmentPagerAdapter
         {
             private readonly Fragment[] _fragments;
 
@@ -295,6 +478,16 @@ namespace FtApp.Droid.Activities.ControllInterface
             }
 
             public override int Count => _fragments.Length;
+
+
+            public override IParcelable SaveState()
+            {
+                return null;
+            }
+
+            public override void RestoreState(IParcelable state, ClassLoader loader)
+            {
+            }
 
             public override Fragment GetItem(int position)
             {

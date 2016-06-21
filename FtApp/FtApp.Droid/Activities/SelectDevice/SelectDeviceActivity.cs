@@ -8,6 +8,7 @@ using Android.Widget;
 using FtApp.Droid.Activities.ControllInterface;
 using System.Collections.Generic;
 using FtApp.Droid.Activities.About;
+using FtApp.Droid.Activities.AppRating;
 using FtApp.Droid.Activities.Help;
 using FtApp.Fischertechnik;
 using BluetoothAdapter = Android.Bluetooth.BluetoothAdapter;
@@ -52,6 +53,12 @@ namespace FtApp.Droid.Activities.SelectDevice
 
             _layoutListEmpty.Visibility = ViewStates.Gone;
 
+
+            if (savedInstanceState == null)
+            {
+                RatingDialog.RequestRatingReminder(this);
+            }
+
             SetupToolbar();
             SetupListView();
         }
@@ -81,7 +88,7 @@ namespace FtApp.Droid.Activities.SelectDevice
                 }
                 if (resultCode == Result.Canceled)
                 {
-                    Toast.MakeText(this, "Bluetooth has to be enabled!", ToastLength.Short).Show();
+                    Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
                 }
             }
         }

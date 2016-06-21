@@ -111,6 +111,19 @@ namespace FtApp.Droid.Native
 
         public void Dispose()
         {
+            if (_bluetoothSocket != null)
+            {
+                if (_bluetoothSocket.IsConnected)
+                {
+                    _bluetoothSocket.InputStream.Close();
+                    _bluetoothSocket.OutputStream.Close();
+                    _bluetoothSocket.Close();
+                }
+
+                _bluetoothSocket.Dispose();
+            }
+
+
             _bluetoothAdapter?.CancelDiscovery();
         }
 

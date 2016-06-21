@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">Ft App</string>
-  <string name="app_version">Version 1.1.2</string>
+  <string name="app_name">Ft App</string>
+  <string name="app_version">Version 1.2</string>
 
-  
+
   <string name="AboutActivity_developedBy">Developed by Bennik2000</string>
   <string name="AboutActivity_moreInformation">The source code and more information is provided here: <a href="https://github.com/Bennik2000/FtApp/blob/master/README.md">GitHub</a></string>
 
-  
+
   <string name="SelectDeviceActivity_toolbarTitle">FtApp</string>
   <string name="SelectDeviceActivity_connectToTxtController">Connect to ROBOTICS TXT Controller</string>
   <string name="SelectDeviceActivity_ipAdress_Hint">Ip adress</string>
@@ -19,24 +19,26 @@
   <string name="SelectDeviceActivity_noIp">No ip is avaliable</string>
   <string name="SelectDeviceActivity_NotInterfaceFound">No fischertechnik Interfaces was found</string>
 
+  <string name="SelectDeviceActivity_bluetoothHasToBeEnabled">Bluetooth has to be enabled!</string>
+
   <string name="SelectDeviceOptionsMenuSimulate">Simulate</string>
   <string name="SelectDeviceOptionsMenuAbout">About</string>
   <string name="SelectDeviceOptionsMenuHelp">Help</string>
 
   <string name="ControlTxtActivity_toolbarTitle">ROBOTICS TXT Controller</string>
-  
+
   <string name="ControlTxtActivity_SimulatedInterfaceName">Simulated interface</string>
-  
+
   <string name="ControlTxtActivity_tabStatusTitle">Status</string>
   <string name="ControlTxtActivity_tabInputTitle">Input</string>
   <string name="ControlTxtActivity_tabOutputTitle">Output</string>
   <string name="ControlTxtActivity_tabCameraTitle">Camera</string>
-  
+
   <string name="ControlTxtActivity_interfaceNotAvaliableTitle">Interface not available</string>
   <string name="ControlTxtActivity_interfaceNotAvaliable">Interface not available. Please check the connection</string>
   <string name="ControlTxtActivity_interfaceNotAvaliablePositive">Ok</string>
-  
-  
+
+
   <string name="ControlTxtActivity_interfaceConnecting">Connecting...</string>
   <string name="ControlTxtActivity_interfaceConnectingTitle">Please wait...</string>
 
@@ -47,22 +49,47 @@
 
   <string name="ControlTxtActivity_inputDigitalOne">Pressed</string>
   <string name="ControlTxtActivity_inputDigitalZero">Not pressed</string>
-  
+
   <string name="ControlTxtActivity_inputDigitalTrail">Traill</string>
   <string name="ControlTxtActivity_inputDigitalNoTrail">No trail</string>
-  
+
   <string name="ControlTxtActivity_inputModeSwitch">Switch</string>
   <string name="ControlTxtActivity_inputModeNtc">NTC</string>
   <string name="ControlTxtActivity_inputModeTrailSensor">Trail sensor</string>
-  <!--string name="ControlTxtActivity_inputModeAnalogU">Analog 10V (Color sensor, ...)</string-->
   <string name="ControlTxtActivity_inputModeUltrasonic">Ultrasonic</string>
   <string name="ControlTxtActivity_inputModeDigitalR">Digital 5kΩ</string>
   <string name="ControlTxtActivity_inputModeAnalogR">Analog 5kΩ</string>
   <string name="ControlTxtActivity_inputModeDigitalU">Digital 10V</string>
   <string name="ControlTxtActivity_inputModeAnalogU">Analog 10V</string>
-  
+
   <string name="ControlTxtActivity_outputModeMotor">Motor</string>
   <string name="ControlTxtActivity_outputModeOutuput">Single outputs</string>
-  
+
   <string name="ControlTxtActivity_pictureTakenToast">Picture taken</string>
+  <string name="ControlTxtActivity_noCamera">No camera is available!</string>
+
+  <string name="ControlTxtActivity_joystickModeSingle">Single motor</string>
+  <string name="ControlTxtActivity_joystickModeSyncron">Syncron</string>
+
+  <string name="ControlTxtActivity_configureJoystickOptionsMenuMode">Modus</string>
+  <string name="ControlTxtActivity_configureJoystickOptionsMenuMotors">Motoren</string>
+
+  <string name="ControlTxtActivity_configureJoystickModeDialogTitle">Joystick mode</string>
+  <string name="ControlTxtActivity_configureJoystickModeDialogPositive">Ok</string>
+
+  <string name="ControlTxtActivity_configureJoystickMotor1DialogTitle">Motor 1</string>
+  <string name="ControlTxtActivity_configureJoystickMotor1DialogPositive">Ok</string>
+
+  <string name="ControlTxtActivity_configureJoystickMotor2DialogTitle">Motor 2</string>
+
+  <string name="ControlInterfaceOptionsMenuJoystick">Joystick</string>
+
+  <string name="RateReminderDialog_title">Rate FtApp</string>
+  <string name="RateReminderDialog_Message">If you enjoy using this app, please take a moment to rate it.</string>
+  <string name="RateReminderDialog_Positive">Rate</string>
+  <string name="RateReminderDialog_Neutral">Later</string>
+  <string name="RateReminderDialog_Negative">No, thanks!</string>
+
+  <string name="RateReminderDialog_DoNotShowAgainKey">DoNotShowAgain</string>
+  <string name="RateReminderDialog_LaunchCountKey">LaunchCount</string>
 </resources>

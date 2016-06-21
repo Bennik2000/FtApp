@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Threading;
 using TXTCommunication.Fischertechnik.Txt.Command;
@@ -43,12 +44,13 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
             _frameProcessingTaskQueue = new TaskQueue(ThreadPriority.AboveNormal, "TXT Camera frame processing", false);
         }
         
-        public void StartCamera()
+        public void StartCamera([CallerMemberName]string memberName = "")
         {
-            TxtCommunication.TxtInterface.LogMessage("Starting camera");
+            TxtCommunication.TxtInterface.LogMessage("Starting camera" + memberName);
             if (Connected)
             {
-                throw new InvalidOperationException("Already connected!");
+                //throw new InvalidOperationException("Already connected!");
+                return;
             }
 
             RequestedStop = false;
@@ -58,12 +60,13 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
             _networkingTaskQueue.DoWorkInQueue(ConnectToCameraServerMethod, true);
             _networkingTaskQueue.DoWorkInQueue(CameraReceiverMethod, false);
         }
-
+        
         public void StopCamera()
         {
             if (!Connected)
             {
-                throw new InvalidOperationException("Not connected!");
+                //throw new InvalidOperationException("Not connected!");
+                return;
             }
             
             TxtCommunication.SendCommand(new CommandStopCamera(), new ResponseStopCamera());

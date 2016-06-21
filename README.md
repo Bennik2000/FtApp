@@ -86,6 +86,11 @@ desctibed [here](https://help.github.com/articles/using-pull-requests/).
 
 
 ## History
+#### Version 1.2
+* Added two joysticks
+* Rotating the screen is now possible
+* Added rating reminder
+
 #### Version 1.1.2
 * Fixed display bug where no I/O elements were displayed when not paired before
 

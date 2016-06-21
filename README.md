@@ -86,6 +86,9 @@ desctibed [here](https://help.github.com/articles/using-pull-requests/).
 
 
 ## History
+#### Version 1.2.1
+* Fixed the not working left joystick
+
 #### Version 1.2
 * Added two joysticks
 * Rotating the screen is now possible

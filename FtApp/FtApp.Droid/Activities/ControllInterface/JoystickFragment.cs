@@ -362,8 +362,8 @@ namespace FtApp.Droid.Activities.ControllInterface
             switch (configuration.JoystickMode)
             {
                 case JoystickConfiguration.JoystickModes.Single:
-                    motor1 = _joystickViewLeft.ThumbX;
-                    motor2 = _joystickViewLeft.ThumbY;
+                    motor1 = joystick.ThumbX;
+                    motor2 = joystick.ThumbY;
                     break;
                 case JoystickConfiguration.JoystickModes.Syncron:
                     CalculateSyncronValues(joystick.ThumbAngle, joystick.ThumbDistance, out motor1, out motor2);

@@ -40,17 +40,39 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_alignParentBottom="true">
-        <FtApp.Droid.Views.JoystickView
-            android:id="@+id/joystickLeft"
-            android:layout_margin="5dp"
+        <RelativeLayout
             android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <FtApp.Droid.Views.JoystickView
-            android:id="@+id/joystickRight"
             android:layout_margin="5dp"
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+            <FtApp.Droid.Views.JoystickView
+                android:id="@+id/joystickLeft"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/imageViewContextualMenuJoystickLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_settings_black_24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <FtApp.Droid.Views.JoystickView
+                android:id="@+id/joystickRight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/imageViewContextualMenuJoystickRight"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_settings_black_24dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

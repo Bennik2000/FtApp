@@ -16,4 +16,10 @@
     <item>If this is the case you should try to restart your TXT Controller</item>
     <item>The source code of this app is hosted on GitHub.</item>
   </string-array>
+
+
+  <string-array name="JoystickModes">
+    <item>@string/ControlTxtActivity_joystickModeSingle</item>
+    <item>@string/ControlTxtActivity_joystickModeSyncron</item>
+  </string-array>
 </resources>

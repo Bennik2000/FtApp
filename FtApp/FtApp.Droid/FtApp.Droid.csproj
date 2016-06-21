@@ -53,6 +53,10 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -95,6 +99,7 @@
     <Compile Include="Activities\ControllInterface\FtInterfaceInstanceProvider.cs" />
     <Compile Include="Activities\ControllInterface\IFtInterfaceFragment.cs" />
     <Compile Include="Activities\ControllInterface\InputFragment.cs" />
+    <Compile Include="Activities\ControllInterface\JoystickConfiguration.cs" />
     <Compile Include="Activities\ControllInterface\JoystickFragment.cs" />
     <Compile Include="Activities\ControllInterface\OutputFragment.cs" />
     <Compile Include="Activities\Help\FaqListAdapter.cs" />
@@ -186,6 +191,10 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
+    <XamarinComponentReference Include="json.net">
+      <Visible>False</Visible>
+      <Version>7.0.1</Version>
+    </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportdesign">
       <Visible>False</Visible>
       <Version>23.1.1.1</Version>
@@ -228,7 +237,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
-    <Folder Include="Screenshots\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values-de\Strings.xml">
@@ -342,6 +350,24 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_videocam_off_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\menu\ConfigureJoystickPopupMenu.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\ic_settings_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_settings_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_settings_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_settings_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_settings_black_24dp.png" />
   </ItemGroup>
   <Import Project="..\FtApp\FtApp.projitems" Label="Shared" Condition="Exists('..\FtApp\FtApp.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

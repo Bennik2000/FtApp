@@ -1,25 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <FtApp.Droid.Views.JoystickView
-        android:id="@+id/joystickLeft"
+    android:layout_height="match_parent"
+    android:weightSum="5">
+    <RelativeLayout
         android:layout_margin="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true" />
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2">
+        <FtApp.Droid.Views.JoystickView
+            android:id="@+id/joystickLeft"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+        <ImageView
+            android:id="@+id/imageViewContextualMenuJoystickLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_settings_black_24dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
     <ImageView
         android:id="@+id/joystickCameraView"
-        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:scaleType="fitStart"
         android:layout_toLeftOf="@+id/joystickRight"
         android:layout_toRightOf="@+id/joystickLeft" />
-    <FtApp.Droid.Views.JoystickView
-        android:id="@+id/joystickRight"
+    <RelativeLayout
         android:layout_margin="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true" />
-</RelativeLayout>
+        android:layout_weight="2"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content">
+        <FtApp.Droid.Views.JoystickView
+            android:id="@+id/joystickRight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+        <ImageView
+            android:id="@+id/imageViewContextualMenuJoystickRight"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_settings_black_24dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+</LinearLayout>

@@ -19,6 +19,8 @@
   <string name="SelectDeviceActivity_noIp">Keine Ip adresse ist abgegeben</string>
   <string name="SelectDeviceActivity_NotInterfaceFound">Kein fischertechnik Interface wurde gefunden</string>
 
+  <string name="SelectDeviceActivity_bluetoothHasToBeEnabled">Bluetooth muss aktiviert sein!</string>
+
   <string name="SelectDeviceOptionsMenuSimulate">Simulieren</string>
   <string name="SelectDeviceOptionsMenuAbout">Über</string>
   <string name="SelectDeviceOptionsMenuHelp">Hilfe</string>
@@ -54,7 +56,6 @@
   <string name="ControlTxtActivity_inputModeSwitch">Taster</string>
   <string name="ControlTxtActivity_inputModeNtc">NTC</string>
   <string name="ControlTxtActivity_inputModeTrailSensor">Spursensor</string>
-  <!--string name="ControlTxtActivity_inputModeAnalogU">Analog 10V (Color sensor, ...)</string-->
   <string name="ControlTxtActivity_inputModeUltrasonic">Ultraschallsensor</string>
   <string name="ControlTxtActivity_inputModeDigitalR">Digital 5kΩ</string>
   <string name="ControlTxtActivity_inputModeAnalogR">Analog 5kΩ</string>
@@ -64,14 +65,31 @@
   <string name="ControlTxtActivity_outputModeMotor">Motor</string>
   <string name="ControlTxtActivity_outputModeOutuput">Einzelne Ausgänge</string>
 
-  <string name="ControlInterfaceOptionsMenuJoystick">Joystick</string>
+  <string name="ControlTxtActivity_pictureTakenToast">Bild gespeichert!</string>
+  <string name="ControlTxtActivity_noCamera">Kamera ist nicht verfügbar</string>
 
-  <string name="ControlTxtActivity_pictureTakenToast">Foto aufgenommen</string>
-  <string name="ControlTxtActivity_noCamera">Keine Kamera ist verfügbar!</string>
+  <string name="ControlTxtActivity_joystickModeSingle">Einzelner Motor</string>
+  <string name="ControlTxtActivity_joystickModeSyncron">Syncron</string>
+
+  <string name="ControlTxtActivity_configureJoystickOptionsMenuMode">Modus</string>
+  <string name="ControlTxtActivity_configureJoystickOptionsMenuMotors">Motoren</string>
+
+  <string name="ControlTxtActivity_configureJoystickModeDialogTitle">Joystick Modus</string>
+  <string name="ControlTxtActivity_configureJoystickModeDialogPositive">Ok</string>
+
+  <string name="ControlTxtActivity_configureJoystickMotor1DialogTitle">Motor 1</string>
+  <string name="ControlTxtActivity_configureJoystickMotor1DialogPositive">Ok</string>
+
+  <string name="ControlTxtActivity_configureJoystickMotor2DialogTitle">Motor 2</string>
+
+  <string name="ControlInterfaceOptionsMenuJoystick">Joystick</string>
 
   <string name="RateReminderDialog_title">FtApp Bewerten</string>
   <string name="RateReminderDialog_Message">Wenn dir diese App gefällt, nimm dir einen Moment Zeit und bewerte sie.</string>
   <string name="RateReminderDialog_Positive">Bewerten</string>
   <string name="RateReminderDialog_Neutral">Später</string>
   <string name="RateReminderDialog_Negative">Nein, danke!</string>
+
+  <string name="RateReminderDialog_DoNotShowAgainKey">DoNotShowAgain</string>
+  <string name="RateReminderDialog_LaunchCountKey">LaunchCount</string>
 </resources>

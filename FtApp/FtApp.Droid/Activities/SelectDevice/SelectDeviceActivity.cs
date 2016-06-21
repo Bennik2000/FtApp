@@ -88,7 +88,7 @@ namespace FtApp.Droid.Activities.SelectDevice
                 }
                 if (resultCode == Result.Canceled)
                 {
-                    Toast.MakeText(this, "Bluetooth has to be enabled!", ToastLength.Short).Show();
+                    Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
                 }
             }
         }

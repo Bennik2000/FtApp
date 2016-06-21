@@ -32,16 +32,19 @@ Feel free to test on more devices and report your result!
 
 ### Screenshots
 The screen to select a fischertechnik interface:  
-<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_SelectDevice.png" height="300">  
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_SelectDevice.png" height="500">  
   
 Here you can view the input values:  
-<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Inputs.png" height="300">  
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Inputs.png" height="500">  
   
 You are able to set the output values here:  
-<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Outputs.png" height="300">  
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Outputs.png" height="500">  
+  
+To control a car it is easier to use a joystick:  
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/development/FtApp/FtApp.Droid/Screenshots/Screenshot_Joystick.png" width="500">  
   
 When you are connected to an ROBOTICS TXT Controller you can view the camera stream here:  
-<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png" height="300">  
+<img src="https://raw.githubusercontent.com/Bennik2000/FtApp/master/FtApp/FtApp.Droid/Screenshots/Screenshot_Camera.png" height="500">  
 
 ## Application architecture
 The app is divided into two parts. The first part is responsible for the communication to the
@@ -75,7 +78,12 @@ with the Xamarin package.
 * Please report any bugs which you can find (Use the *Issues* tab and create a new issue).
 * You own a cell phone which is not listed in the list above: Test the app and report the result
 * You can try to work on the things which are listed in the TODO list. (Checkout the actual code 
-  from the development branch and create a new branch with the name of the feature)
+  from the development branch and create a new branch with the name of the feature)  
+
+Note: When you want to contribute you have to follow the coding style of the other code files!  
+In order to help you have to fork this project and create a pull request. It is 
+desctibed [here](https://help.github.com/articles/using-pull-requests/).
+
 
 ## History
 #### Version 1.1.2

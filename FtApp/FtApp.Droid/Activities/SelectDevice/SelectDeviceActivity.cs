@@ -204,26 +204,28 @@ namespace FtApp.Droid.Activities.SelectDevice
             if (BluetoothAdapter.DefaultAdapter.IsEnabled)
             {
                 _imageViewNoBluetooth.Visibility = ViewStates.Gone;
-                _interfaceSearchAsyncTask = new InterfaceSearchAsyncTask(this);
-
-                _interfaceSearchAsyncTask.ProgressUpdated += InterfaceSearchAsyncTaskOnProgressUpdated;
-                _interfaceSearchAsyncTask.SearchFinished += InterfaceSearchAsyncTaskOnSearchFinished;
-
-                _interfaceSearchAsyncTask.Execute(string.Empty);
-
-
-                HideEmptyStateImage();
-                _progressBarScanning.Visibility = ViewStates.Visible;
-
-                _foundDevices.Clear();
-
-                _foundDevicesListAdapter.NotifyDataSetChanged();
 
             }
             else
             {
                 _imageViewNoBluetooth.Visibility = ViewStates.Visible;
             }
+
+
+            _interfaceSearchAsyncTask = new InterfaceSearchAsyncTask(this);
+
+            _interfaceSearchAsyncTask.ProgressUpdated += InterfaceSearchAsyncTaskOnProgressUpdated;
+            _interfaceSearchAsyncTask.SearchFinished += InterfaceSearchAsyncTaskOnSearchFinished;
+
+            _interfaceSearchAsyncTask.Execute(string.Empty);
+
+
+            HideEmptyStateImage();
+            _progressBarScanning.Visibility = ViewStates.Visible;
+
+            _foundDevices.Clear();
+
+            _foundDevicesListAdapter.NotifyDataSetChanged();
         }
 
 

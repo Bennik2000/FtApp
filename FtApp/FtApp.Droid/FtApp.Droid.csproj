@@ -197,15 +197,15 @@
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportdesign">
       <Visible>False</Visible>
-      <Version>23.1.1.1</Version>
+      <Version>23.2.1</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportv7appcompat">
       <Visible>False</Visible>
-      <Version>23.1.1.1</Version>
+      <Version>23.2.1</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportv7cardview">
       <Visible>False</Visible>
-      <Version>23.1.1.1</Version>
+      <Version>23.2.1</Version>
     </XamarinComponentReference>
   </ItemGroup>
   <ItemGroup>

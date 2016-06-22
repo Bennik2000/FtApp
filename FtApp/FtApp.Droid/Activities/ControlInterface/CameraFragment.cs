@@ -1,13 +1,13 @@
+using System;
+using System.ComponentModel;
 using Android.Content;
 using Android.OS;
 using Android.Provider;
 using Android.Views;
 using Android.Widget;
-using System;
-using System.ComponentModel;
 using Fragment = Android.Support.V4.App.Fragment;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     public class CameraFragment : Fragment, IFtInterfaceFragment
     {
@@ -146,12 +146,12 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             MediaStore.Images.Media.InsertImage(Context.ContentResolver, FtInterfaceCameraProxy.ImageBitmap, imageName, imageName);
 
-            Toast.MakeText(Activity, Resource.String.ControlTxtActivity_pictureTakenToast, ToastLength.Short).Show();
+            Toast.MakeText(Activity, Resource.String.ControlInterfaceActivity_pictureTakenToast, ToastLength.Short).Show();
         }
         
         public string GetTitle(Context context)
         {
-            return context.GetString(Resource.String.ControlTxtActivity_tabCameraTitle);
+            return context.GetString(Resource.String.ControlInterfaceActivity_tabCameraTitle);
         }
     }
 }

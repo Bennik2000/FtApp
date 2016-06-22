@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_videocam_off_black_24dp" />
             <TextView
-                android:text="@string/ControlTxtActivity_noCamera"
+                android:text="@string/ControlInterfaceActivity_noCamera"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"

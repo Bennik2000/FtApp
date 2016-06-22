@@ -1,6 +1,6 @@
 ﻿using Android.Content;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     public interface IFtInterfaceFragment
     {

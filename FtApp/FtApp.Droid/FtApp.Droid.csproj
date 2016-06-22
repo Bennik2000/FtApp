@@ -93,15 +93,15 @@
   <ItemGroup>
     <Compile Include="Activities\About\AboutActivity.cs" />
     <Compile Include="Activities\AppRating\RatingDialog.cs" />
-    <Compile Include="Activities\ControllInterface\CameraFragment.cs" />
-    <Compile Include="Activities\ControllInterface\ControllInterfaceActivity.cs" />
-    <Compile Include="Activities\ControllInterface\FtInterfaceCameraProxy.cs" />
-    <Compile Include="Activities\ControllInterface\FtInterfaceInstanceProvider.cs" />
-    <Compile Include="Activities\ControllInterface\IFtInterfaceFragment.cs" />
-    <Compile Include="Activities\ControllInterface\InputFragment.cs" />
-    <Compile Include="Activities\ControllInterface\JoystickConfiguration.cs" />
-    <Compile Include="Activities\ControllInterface\JoystickFragment.cs" />
-    <Compile Include="Activities\ControllInterface\OutputFragment.cs" />
+    <Compile Include="Activities\ControlInterface\CameraFragment.cs" />
+    <Compile Include="Activities\ControlInterface\ControlInterfaceActivity.cs" />
+    <Compile Include="Activities\ControlInterface\FtInterfaceCameraProxy.cs" />
+    <Compile Include="Activities\ControlInterface\FtInterfaceInstanceProvider.cs" />
+    <Compile Include="Activities\ControlInterface\IFtInterfaceFragment.cs" />
+    <Compile Include="Activities\ControlInterface\InputFragment.cs" />
+    <Compile Include="Activities\ControlInterface\JoystickConfiguration.cs" />
+    <Compile Include="Activities\ControlInterface\JoystickFragment.cs" />
+    <Compile Include="Activities\ControlInterface\OutputFragment.cs" />
     <Compile Include="Activities\Help\FaqListAdapter.cs" />
     <Compile Include="Activities\Help\FaqViewModel.cs" />
     <Compile Include="Activities\Help\HelpActivity.cs" />

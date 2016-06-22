@@ -5,10 +5,10 @@ using Android.OS;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using FtApp.Droid.Activities.ControllInterface;
 using System.Collections.Generic;
 using FtApp.Droid.Activities.About;
 using FtApp.Droid.Activities.AppRating;
+using FtApp.Droid.Activities.ControlInterface;
 using FtApp.Droid.Activities.Help;
 using FtApp.Fischertechnik;
 using BluetoothAdapter = Android.Bluetooth.BluetoothAdapter;
@@ -107,7 +107,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             switch (item.ItemId)
             {
                 case Resource.Id.optionsMenuItemSimulate:
-                    OpenControlActivity(".", GetString(Resource.String.ControlTxtActivity_SimulatedInterfaceName), ControllerType.Simulate);
+                    OpenControlActivity(".", GetString(Resource.String.ControlInterfaceActivity_simulatedInterfaceName), ControllerType.Simulate);
                     return true;
 
                 case Resource.Id.optionsMenuItemAbout:
@@ -157,11 +157,11 @@ namespace FtApp.Droid.Activities.SelectDevice
             _interfaceSearchAsyncTask?.CancelSearch();
 
             // Open the control activity and pass the extra data
-            Intent intent = new Intent(this, typeof(ControllInterfaceActivity));
+            Intent intent = new Intent(this, typeof(ControlInterfaceActivity));
 
-            intent.PutExtra(ControllInterfaceActivity.AdressExtraDataId, address);
-            intent.PutExtra(ControllInterfaceActivity.ControllerNameExtraDataId, name);
-            intent.PutExtra(ControllInterfaceActivity.ControllerTypeExtraDataId, (int)type);
+            intent.PutExtra(ControlInterfaceActivity.AdressExtraDataId, address);
+            intent.PutExtra(ControlInterfaceActivity.ControllerNameExtraDataId, name);
+            intent.PutExtra(ControlInterfaceActivity.ControllerTypeExtraDataId, (int)type);
 
             StartActivity(intent);
         }

@@ -1,20 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
 using Android.Graphics;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Fischertechnik.Txt.Camera;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     internal static class FtInterfaceCameraProxy
     {

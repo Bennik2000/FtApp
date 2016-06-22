@@ -3,9 +3,9 @@
   <group>
     <item
         android:id="@+id/menuJoystickMode"
-        android:title="@string/ControlTxtActivity_configureJoystickOptionsMenuMode" />
+        android:title="@string/ControlInterfaceActivity_configureJoystickOptionsMenuMode" />
     <item
         android:id="@+id/menuJoystickMotors"
-        android:title="@string/ControlTxtActivity_configureJoystickOptionsMenuMotors" />
+        android:title="@string/ControlInterfaceActivity_configureJoystickOptionsMenuMotors" />
   </group>
 </menu>

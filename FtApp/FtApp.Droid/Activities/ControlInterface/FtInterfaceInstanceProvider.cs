@@ -1,10 +1,8 @@
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using FtApp.Droid.Annotations;
 using FtApp.Fischertechnik;
 using TXTCommunication.Fischertechnik;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     internal static class FtInterfaceInstanceProvider
     {

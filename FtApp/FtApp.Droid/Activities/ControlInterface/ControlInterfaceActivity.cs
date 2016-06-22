@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
@@ -11,10 +15,6 @@ using FtApp.Droid.Native;
 using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Simulation;
 using Java.Lang;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
@@ -25,10 +25,10 @@ using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base"/*, ScreenOrientation = ScreenOrientation.Portrait*/)]
-    public class ControllInterfaceActivity : AppCompatActivity
+    public class ControlInterfaceActivity : AppCompatActivity
     {
         private const string JoystickVisibleDataId = "JoystickVisible";
         private const string ActiveTabDataId = "ActiveTab";
@@ -54,7 +54,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         private bool _isActivityInFocus;
         private bool _eventsHooked;
 
-        public ControllInterfaceActivity()
+        public ControlInterfaceActivity()
         {
             _connectionTaskQueue = new TaskQueue("Connection handler");
 
@@ -217,17 +217,17 @@ namespace FtApp.Droid.Activities.ControllInterface
         {
             _connectingDialog = new ProgressDialog(this);
 
-            _connectingDialog.SetTitle(GetString(Resource.String.ControlTxtActivity_interfaceConnectingTitle));
-            _connectingDialog.SetMessage(GetString(Resource.String.ControlTxtActivity_interfaceConnecting));
+            _connectingDialog.SetTitle(GetString(Resource.String.ControlInterfaceActivity_interfaceConnectingTitle));
+            _connectingDialog.SetMessage(GetString(Resource.String.ControlInterfaceActivity_interfaceConnecting));
             _connectingDialog.SetCancelable(false);
             _connectingDialog.Indeterminate = true;
 
             var notAvailableBuilder = new AlertDialog.Builder(this, Resource.Style.AlertDialogStyle);
 
-            notAvailableBuilder.SetTitle(GetString(Resource.String.ControlTxtActivity_interfaceNotAvaliableTitle));
-            notAvailableBuilder.SetMessage(GetString(Resource.String.ControlTxtActivity_interfaceNotAvaliable));
+            notAvailableBuilder.SetTitle(GetString(Resource.String.ControlInterfaceActivity_interfaceNotAvaliableTitle));
+            notAvailableBuilder.SetMessage(GetString(Resource.String.ControlInterfaceActivity_interfaceNotAvaliable));
             notAvailableBuilder.SetCancelable(false);
-            notAvailableBuilder.SetPositiveButton(Resource.String.ControlTxtActivity_interfaceNotAvaliablePositive,
+            notAvailableBuilder.SetPositiveButton(Resource.String.ControlInterfaceActivity_interfaceNotAvaliablePositive,
                 delegate { Finish(); });
 
             _notAvailableDialog = notAvailableBuilder.Create();
@@ -465,7 +465,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         private void FtInterfaceOnConnectionLost(object sender, EventArgs eventArgs)
         {
             Finish();
-            RunOnUiThread(() => { Toast.MakeText(this, GetString(Resource.String.ControlTxtActivity_interfaceConnectionLostMessage), ToastLength.Short).Show(); });
+            RunOnUiThread(() => { Toast.MakeText(this, GetString(Resource.String.ControlInterfaceActivity_interfaceConnectionLostMessage), ToastLength.Short).Show(); });
         }
 
         private class TabPagerAdapter : FragmentPagerAdapter

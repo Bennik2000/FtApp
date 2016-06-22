@@ -1,4 +1,4 @@
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     class JoystickConfiguration
     {

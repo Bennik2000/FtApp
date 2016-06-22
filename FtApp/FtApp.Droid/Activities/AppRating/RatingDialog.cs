@@ -18,7 +18,7 @@ namespace FtApp.Droid.Activities.AppRating
         {
             ISharedPreferences sharedPreferences = context.GetSharedPreferences(typeof(RatingDialog).FullName, 0);
 
-            string preferenceKeyDontShowAgain = context.GetString(Resource.String.RateReminderDialog_DoNotShowAgainKey);
+            string preferenceKeyDontShowAgain = context.GetString(Resource.String.RateReminderDialog_doNotShowAgainKey);
 
 
             if (sharedPreferences.GetBoolean(preferenceKeyDontShowAgain, false))
@@ -30,7 +30,7 @@ namespace FtApp.Droid.Activities.AppRating
 
             if (editor != null)
             {
-                string preferenceKeyLaunchCount = context.GetString(Resource.String.RateReminderDialog_LaunchCountKey);
+                string preferenceKeyLaunchCount = context.GetString(Resource.String.RateReminderDialog_launchCountKey);
 
                 long launchCount = sharedPreferences.GetLong(preferenceKeyLaunchCount, 0);
                 editor.PutLong(preferenceKeyLaunchCount, launchCount + 1);
@@ -50,10 +50,10 @@ namespace FtApp.Droid.Activities.AppRating
             var rateReminderDialogBuilder = new AlertDialog.Builder(context, Resource.Style.AlertDialogStyle);
 
             rateReminderDialogBuilder.SetTitle(context.GetString(Resource.String.RateReminderDialog_title));
-            rateReminderDialogBuilder.SetMessage(context.GetString(Resource.String.RateReminderDialog_Message));
+            rateReminderDialogBuilder.SetMessage(context.GetString(Resource.String.RateReminderDialog_message));
             rateReminderDialogBuilder.SetCancelable(true);
 
-            rateReminderDialogBuilder.SetPositiveButton(Resource.String.RateReminderDialog_Positive,
+            rateReminderDialogBuilder.SetPositiveButton(Resource.String.RateReminderDialog_positive,
                 delegate
                 {
                     OpenAppStore(context);
@@ -61,13 +61,13 @@ namespace FtApp.Droid.Activities.AppRating
                     _rateDialog?.Dismiss();
                 });
 
-            rateReminderDialogBuilder.SetNeutralButton(Resource.String.RateReminderDialog_Neutral,
+            rateReminderDialogBuilder.SetNeutralButton(Resource.String.RateReminderDialog_neutral,
                 delegate
                 {
                     _rateDialog?.Dismiss();
                 });
 
-            rateReminderDialogBuilder.SetNegativeButton(Resource.String.RateReminderDialog_Negative,
+            rateReminderDialogBuilder.SetNegativeButton(Resource.String.RateReminderDialog_negative,
                 delegate
                 {
                     SetDoNotShowAgain(context, true);
@@ -88,7 +88,7 @@ namespace FtApp.Droid.Activities.AppRating
         {
             ISharedPreferences sharedPreferences = context.GetSharedPreferences(typeof(RatingDialog).FullName, 0);
 
-            string preferenceKey = context.GetString(Resource.String.RateReminderDialog_DoNotShowAgainKey);
+            string preferenceKey = context.GetString(Resource.String.RateReminderDialog_doNotShowAgainKey);
             
 
             ISharedPreferencesEditor editor = sharedPreferences.Edit();

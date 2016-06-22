@@ -2799,149 +2799,146 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f09001a
 			public const int AboutActivity_moreInformation = 2131296282;
 			
-			// aapt resource value: 0x7f090050
-			public const int ControlInterfaceOptionsMenuJoystick = 2131296336;
-			
-			// aapt resource value: 0x7f09002a
-			public const int ControlTxtActivity_SimulatedInterfaceName = 2131296298;
-			
 			// aapt resource value: 0x7f09004c
-			public const int ControlTxtActivity_configureJoystickModeDialogPositive = 2131296332;
+			public const int ControlInterfaceActivity_configureJoystickModeDialogPositive = 2131296332;
 			
 			// aapt resource value: 0x7f09004b
-			public const int ControlTxtActivity_configureJoystickModeDialogTitle = 2131296331;
+			public const int ControlInterfaceActivity_configureJoystickModeDialogTitle = 2131296331;
 			
 			// aapt resource value: 0x7f09004e
-			public const int ControlTxtActivity_configureJoystickMotor1DialogPositive = 2131296334;
+			public const int ControlInterfaceActivity_configureJoystickMotor1DialogPositive = 2131296334;
 			
 			// aapt resource value: 0x7f09004d
-			public const int ControlTxtActivity_configureJoystickMotor1DialogTitle = 2131296333;
+			public const int ControlInterfaceActivity_configureJoystickMotor1DialogTitle = 2131296333;
 			
 			// aapt resource value: 0x7f09004f
-			public const int ControlTxtActivity_configureJoystickMotor2DialogTitle = 2131296335;
+			public const int ControlInterfaceActivity_configureJoystickMotor2DialogTitle = 2131296335;
 			
 			// aapt resource value: 0x7f090049
-			public const int ControlTxtActivity_configureJoystickOptionsMenuMode = 2131296329;
+			public const int ControlInterfaceActivity_configureJoystickOptionsMenuMode = 2131296329;
 			
 			// aapt resource value: 0x7f09004a
-			public const int ControlTxtActivity_configureJoystickOptionsMenuMotors = 2131296330;
+			public const int ControlInterfaceActivity_configureJoystickOptionsMenuMotors = 2131296330;
 			
 			// aapt resource value: 0x7f09003a
-			public const int ControlTxtActivity_inputDigitalNoTrail = 2131296314;
+			public const int ControlInterfaceActivity_inputDigitalNoTrail = 2131296314;
 			
 			// aapt resource value: 0x7f090037
-			public const int ControlTxtActivity_inputDigitalOne = 2131296311;
+			public const int ControlInterfaceActivity_inputDigitalOne = 2131296311;
 			
 			// aapt resource value: 0x7f090039
-			public const int ControlTxtActivity_inputDigitalTrail = 2131296313;
+			public const int ControlInterfaceActivity_inputDigitalTrail = 2131296313;
 			
 			// aapt resource value: 0x7f090038
-			public const int ControlTxtActivity_inputDigitalZero = 2131296312;
+			public const int ControlInterfaceActivity_inputDigitalZero = 2131296312;
 			
 			// aapt resource value: 0x7f090040
-			public const int ControlTxtActivity_inputModeAnalogR = 2131296320;
+			public const int ControlInterfaceActivity_inputModeAnalogR = 2131296320;
 			
 			// aapt resource value: 0x7f090042
-			public const int ControlTxtActivity_inputModeAnalogU = 2131296322;
+			public const int ControlInterfaceActivity_inputModeAnalogU = 2131296322;
 			
 			// aapt resource value: 0x7f09003f
-			public const int ControlTxtActivity_inputModeDigitalR = 2131296319;
+			public const int ControlInterfaceActivity_inputModeDigitalR = 2131296319;
 			
 			// aapt resource value: 0x7f090041
-			public const int ControlTxtActivity_inputModeDigitalU = 2131296321;
+			public const int ControlInterfaceActivity_inputModeDigitalU = 2131296321;
 			
 			// aapt resource value: 0x7f09003c
-			public const int ControlTxtActivity_inputModeNtc = 2131296316;
+			public const int ControlInterfaceActivity_inputModeNtc = 2131296316;
 			
 			// aapt resource value: 0x7f09003b
-			public const int ControlTxtActivity_inputModeSwitch = 2131296315;
+			public const int ControlInterfaceActivity_inputModeSwitch = 2131296315;
 			
 			// aapt resource value: 0x7f09003d
-			public const int ControlTxtActivity_inputModeTrailSensor = 2131296317;
+			public const int ControlInterfaceActivity_inputModeTrailSensor = 2131296317;
 			
 			// aapt resource value: 0x7f09003e
-			public const int ControlTxtActivity_inputModeUltrasonic = 2131296318;
+			public const int ControlInterfaceActivity_inputModeUltrasonic = 2131296318;
 			
 			// aapt resource value: 0x7f090032
-			public const int ControlTxtActivity_interfaceConnecting = 2131296306;
+			public const int ControlInterfaceActivity_interfaceConnecting = 2131296306;
 			
 			// aapt resource value: 0x7f090033
-			public const int ControlTxtActivity_interfaceConnectingTitle = 2131296307;
+			public const int ControlInterfaceActivity_interfaceConnectingTitle = 2131296307;
 			
 			// aapt resource value: 0x7f090034
-			public const int ControlTxtActivity_interfaceConnectionLostMessage = 2131296308;
+			public const int ControlInterfaceActivity_interfaceConnectionLostMessage = 2131296308;
 			
 			// aapt resource value: 0x7f090036
-			public const int ControlTxtActivity_interfaceConnectionLostPositive = 2131296310;
+			public const int ControlInterfaceActivity_interfaceConnectionLostPositive = 2131296310;
 			
 			// aapt resource value: 0x7f090035
-			public const int ControlTxtActivity_interfaceConnectionLostTitle = 2131296309;
+			public const int ControlInterfaceActivity_interfaceConnectionLostTitle = 2131296309;
 			
 			// aapt resource value: 0x7f090030
-			public const int ControlTxtActivity_interfaceNotAvaliable = 2131296304;
+			public const int ControlInterfaceActivity_interfaceNotAvaliable = 2131296304;
 			
 			// aapt resource value: 0x7f090031
-			public const int ControlTxtActivity_interfaceNotAvaliablePositive = 2131296305;
+			public const int ControlInterfaceActivity_interfaceNotAvaliablePositive = 2131296305;
 			
 			// aapt resource value: 0x7f09002f
-			public const int ControlTxtActivity_interfaceNotAvaliableTitle = 2131296303;
+			public const int ControlInterfaceActivity_interfaceNotAvaliableTitle = 2131296303;
 			
 			// aapt resource value: 0x7f090047
-			public const int ControlTxtActivity_joystickModeSingle = 2131296327;
+			public const int ControlInterfaceActivity_joystickModeSingle = 2131296327;
 			
 			// aapt resource value: 0x7f090048
-			public const int ControlTxtActivity_joystickModeSyncron = 2131296328;
+			public const int ControlInterfaceActivity_joystickModeSyncron = 2131296328;
 			
 			// aapt resource value: 0x7f090046
-			public const int ControlTxtActivity_noCamera = 2131296326;
+			public const int ControlInterfaceActivity_noCamera = 2131296326;
 			
 			// aapt resource value: 0x7f090043
-			public const int ControlTxtActivity_outputModeMotor = 2131296323;
+			public const int ControlInterfaceActivity_outputModeMotor = 2131296323;
 			
 			// aapt resource value: 0x7f090044
-			public const int ControlTxtActivity_outputModeOutuput = 2131296324;
+			public const int ControlInterfaceActivity_outputModeOutuput = 2131296324;
 			
 			// aapt resource value: 0x7f090045
-			public const int ControlTxtActivity_pictureTakenToast = 2131296325;
+			public const int ControlInterfaceActivity_pictureTakenToast = 2131296325;
+			
+			// aapt resource value: 0x7f09002a
+			public const int ControlInterfaceActivity_simulatedInterfaceName = 2131296298;
 			
 			// aapt resource value: 0x7f09002e
-			public const int ControlTxtActivity_tabCameraTitle = 2131296302;
+			public const int ControlInterfaceActivity_tabCameraTitle = 2131296302;
 			
 			// aapt resource value: 0x7f09002c
-			public const int ControlTxtActivity_tabInputTitle = 2131296300;
+			public const int ControlInterfaceActivity_tabInputTitle = 2131296300;
 			
 			// aapt resource value: 0x7f09002d
-			public const int ControlTxtActivity_tabOutputTitle = 2131296301;
+			public const int ControlInterfaceActivity_tabOutputTitle = 2131296301;
 			
 			// aapt resource value: 0x7f09002b
-			public const int ControlTxtActivity_tabStatusTitle = 2131296299;
+			public const int ControlInterfaceActivity_tabStatusTitle = 2131296299;
 			
 			// aapt resource value: 0x7f090029
-			public const int ControlTxtActivity_toolbarTitle = 2131296297;
+			public const int ControlInterfaceActivity_toolbarTitle = 2131296297;
+			
+			// aapt resource value: 0x7f090050
+			public const int ControlInterfaceOptionsMenu_joystick = 2131296336;
 			
 			// aapt resource value: 0x7f090056
-			public const int RateReminderDialog_DoNotShowAgainKey = 2131296342;
+			public const int RateReminderDialog_doNotShowAgainKey = 2131296342;
 			
 			// aapt resource value: 0x7f090057
-			public const int RateReminderDialog_LaunchCountKey = 2131296343;
+			public const int RateReminderDialog_launchCountKey = 2131296343;
 			
 			// aapt resource value: 0x7f090052
-			public const int RateReminderDialog_Message = 2131296338;
+			public const int RateReminderDialog_message = 2131296338;
 			
 			// aapt resource value: 0x7f090055
-			public const int RateReminderDialog_Negative = 2131296341;
+			public const int RateReminderDialog_negative = 2131296341;
 			
 			// aapt resource value: 0x7f090054
-			public const int RateReminderDialog_Neutral = 2131296340;
+			public const int RateReminderDialog_neutral = 2131296340;
 			
 			// aapt resource value: 0x7f090053
-			public const int RateReminderDialog_Positive = 2131296339;
+			public const int RateReminderDialog_positive = 2131296339;
 			
 			// aapt resource value: 0x7f090051
 			public const int RateReminderDialog_title = 2131296337;
-			
-			// aapt resource value: 0x7f090024
-			public const int SelectDeviceActivity_NotInterfaceFound = 2131296292;
 			
 			// aapt resource value: 0x7f09001f
 			public const int SelectDeviceActivity_bluetooth = 2131296287;
@@ -2964,6 +2961,9 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f090023
 			public const int SelectDeviceActivity_noIp = 2131296291;
 			
+			// aapt resource value: 0x7f090024
+			public const int SelectDeviceActivity_notInterfaceFound = 2131296292;
+			
 			// aapt resource value: 0x7f090022
 			public const int SelectDeviceActivity_notValidIp = 2131296290;
 			
@@ -2974,13 +2974,13 @@ namespace FtApp.Droid
 			public const int SelectDeviceActivity_wifi = 2131296286;
 			
 			// aapt resource value: 0x7f090027
-			public const int SelectDeviceOptionsMenuAbout = 2131296295;
+			public const int SelectDeviceOptionsMenu_about = 2131296295;
 			
 			// aapt resource value: 0x7f090028
-			public const int SelectDeviceOptionsMenuHelp = 2131296296;
+			public const int SelectDeviceOptionsMenu_help = 2131296296;
 			
 			// aapt resource value: 0x7f090026
-			public const int SelectDeviceOptionsMenuSimulate = 2131296294;
+			public const int SelectDeviceOptionsMenu_simulate = 2131296294;
 			
 			// aapt resource value: 0x7f090000
 			public const int abc_action_bar_home_description = 2131296256;

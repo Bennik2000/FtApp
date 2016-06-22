@@ -4,27 +4,27 @@
     <item
         android:id="@+id/menuInputModeSwitch"
         android:checked="true"
-        android:title="@string/ControlTxtActivity_inputModeSwitch" />
+        android:title="@string/ControlInterfaceActivity_inputModeSwitch" />
     <item
         android:id="@+id/menuInputModeNtc"
-        android:title="@string/ControlTxtActivity_inputModeNtc" />
+        android:title="@string/ControlInterfaceActivity_inputModeNtc" />
     <item
         android:id="@+id/menuInputModeTrailSensor"
-        android:title="@string/ControlTxtActivity_inputModeTrailSensor" />
+        android:title="@string/ControlInterfaceActivity_inputModeTrailSensor" />
     <item
         android:id="@+id/menuInputModeUltrasonic"
-        android:title="@string/ControlTxtActivity_inputModeUltrasonic" />
+        android:title="@string/ControlInterfaceActivity_inputModeUltrasonic" />
     <item
         android:id="@+id/menuInputModeDigitalR"
-        android:title="@string/ControlTxtActivity_inputModeDigitalR" />
+        android:title="@string/ControlInterfaceActivity_inputModeDigitalR" />
     <item
         android:id="@+id/menuInputModeAnalogR"
-        android:title="@string/ControlTxtActivity_inputModeAnalogR" />
+        android:title="@string/ControlInterfaceActivity_inputModeAnalogR" />
     <item
         android:id="@+id/menuInputModeDigitalU"
-        android:title="@string/ControlTxtActivity_inputModeDigitalU" />
+        android:title="@string/ControlInterfaceActivity_inputModeDigitalU" />
     <item
         android:id="@+id/menuInputModeAnalogU"
-        android:title="@string/ControlTxtActivity_inputModeAnalogU" />
+        android:title="@string/ControlInterfaceActivity_inputModeAnalogU" />
   </group>
 </menu>

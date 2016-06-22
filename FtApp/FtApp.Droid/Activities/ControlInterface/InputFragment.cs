@@ -1,17 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
 using FtApp.Fischertechnik.Txt.Events;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using TXTCommunication.Fischertechnik;
 using Fragment = Android.Support.V4.App.Fragment;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     public class InputFragment : Fragment, IFtInterfaceFragment
     {
@@ -169,7 +168,7 @@ namespace FtApp.Droid.Activities.ControllInterface
         
         public string GetTitle(Context context)
         {
-            return context.GetText(Resource.String.ControlTxtActivity_tabInputTitle);
+            return context.GetText(Resource.String.ControlInterfaceActivity_tabInputTitle);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -368,16 +367,16 @@ namespace FtApp.Droid.Activities.ControllInterface
                 {
                     case InputDevices.Switch:
                         return InputValue == 1
-                            ? Context.GetString(Resource.String.ControlTxtActivity_inputDigitalOne)
-                            : Context.GetString(Resource.String.ControlTxtActivity_inputDigitalZero);
+                            ? Context.GetString(Resource.String.ControlInterfaceActivity_inputDigitalOne)
+                            : Context.GetString(Resource.String.ControlInterfaceActivity_inputDigitalZero);
 
                     case InputDevices.Ntc:
                         return $"{NtcToCelsius(InputValue)} {InputUnit}";
 
                     case InputDevices.TrailSensor:
                         return InputValue == 1
-                            ? Context.GetString(Resource.String.ControlTxtActivity_inputDigitalNoTrail)
-                            : Context.GetString(Resource.String.ControlTxtActivity_inputDigitalTrail);
+                            ? Context.GetString(Resource.String.ControlInterfaceActivity_inputDigitalNoTrail)
+                            : Context.GetString(Resource.String.ControlInterfaceActivity_inputDigitalTrail);
                         
                     default:
                         return $"{InputValue} {InputUnit}";

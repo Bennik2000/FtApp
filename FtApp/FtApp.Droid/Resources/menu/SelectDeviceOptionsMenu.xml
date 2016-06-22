@@ -3,13 +3,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
   <item
     android:id="@+id/optionsMenuItemSimulate"
-    android:title="@string/SelectDeviceOptionsMenuSimulate" />
+    android:title="@string/SelectDeviceOptionsMenu_simulate" />
   <item
     android:id="@+id/optionsMenuItemAbout"
-    android:title="@string/SelectDeviceOptionsMenuAbout" />
+    android:title="@string/SelectDeviceOptionsMenu_about" />
   <item
     android:id="@+id/optionsMenuItemHelp"
     android:icon="@drawable/ic_help_outline_white_24dp"
-    android:title="@string/SelectDeviceOptionsMenuHelp"
+    android:title="@string/SelectDeviceOptionsMenu_help"
     app:showAsAction="ifRoom"/>
 </menu>

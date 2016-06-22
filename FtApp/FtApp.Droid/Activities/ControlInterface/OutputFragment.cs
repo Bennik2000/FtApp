@@ -9,7 +9,7 @@ using Android.Widget;
 using TXTCommunication.Fischertechnik;
 using Fragment = Android.Support.V4.App.Fragment;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     public class OutputFragment : Fragment, IFtInterfaceFragment
     {
@@ -125,7 +125,7 @@ namespace FtApp.Droid.Activities.ControllInterface
 
         public string GetTitle(Context context)
         {
-            return context.GetText(Resource.String.ControlTxtActivity_tabOutputTitle);
+            return context.GetText(Resource.String.ControlInterfaceActivity_tabOutputTitle);
         }
 
         /// <summary>

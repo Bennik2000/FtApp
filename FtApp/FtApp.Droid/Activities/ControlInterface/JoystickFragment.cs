@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -5,13 +7,11 @@ using Android.Views;
 using Android.Widget;
 using FtApp.Droid.Views;
 using FtApp.Utils;
-using System;
-using System.ComponentModel;
 using Newtonsoft.Json;
 using TXTCommunication.Fischertechnik;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
 
-namespace FtApp.Droid.Activities.ControllInterface
+namespace FtApp.Droid.Activities.ControlInterface
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class JoystickFragment : Fragment, IFtInterfaceFragment
@@ -152,7 +152,7 @@ namespace FtApp.Droid.Activities.ControllInterface
                     }
                 });
 
-            builder.SetPositiveButton(Resource.String.ControlTxtActivity_configureJoystickMotor1DialogPositive,
+            builder.SetPositiveButton(Resource.String.ControlInterfaceActivity_configureJoystickMotor1DialogPositive,
                 delegate
                 {
                     // ReSharper disable once AccessToModifiedClosure
@@ -166,11 +166,11 @@ namespace FtApp.Droid.Activities.ControllInterface
 
             if (joystickAxis == 0)
             {
-                builder.SetTitle(Resource.String.ControlTxtActivity_configureJoystickMotor1DialogTitle);
+                builder.SetTitle(Resource.String.ControlInterfaceActivity_configureJoystickMotor1DialogTitle);
             }
             else if(joystickAxis == 1)
             {
-                builder.SetTitle(Resource.String.ControlTxtActivity_configureJoystickMotor2DialogTitle);
+                builder.SetTitle(Resource.String.ControlInterfaceActivity_configureJoystickMotor2DialogTitle);
             }
 
             builder.SetCancelable(false);
@@ -208,7 +208,7 @@ namespace FtApp.Droid.Activities.ControllInterface
                     modeConfigurationDialog?.Dismiss();
                 });
 
-            builder.SetPositiveButton(Resource.String.ControlTxtActivity_configureJoystickModeDialogPositive,
+            builder.SetPositiveButton(Resource.String.ControlInterfaceActivity_configureJoystickModeDialogPositive,
                 delegate
                 {
                     // ReSharper disable once AccessToModifiedClosure
@@ -216,7 +216,7 @@ namespace FtApp.Droid.Activities.ControllInterface
                 });
 
 
-            builder.SetTitle(Resource.String.ControlTxtActivity_configureJoystickModeDialogTitle);
+            builder.SetTitle(Resource.String.ControlInterfaceActivity_configureJoystickModeDialogTitle);
             builder.SetCancelable(false);
 
             modeConfigurationDialog = builder.Create();

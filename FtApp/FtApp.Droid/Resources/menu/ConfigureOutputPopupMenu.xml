@@ -5,9 +5,9 @@
     <item
       android:id="@+id/menuOutpuModeMotor"
       android:checked="true"
-      android:title="@string/ControlTxtActivity_outputModeMotor" />
+      android:title="@string/ControlInterfaceActivity_outputModeMotor" />
     <item
       android:id="@+id/menuOutpuModeOutputs"
-      android:title="@string/ControlTxtActivity_outputModeOutuput" />
+      android:title="@string/ControlInterfaceActivity_outputModeOutuput" />
   </group>
 </menu>

@@ -11,11 +11,11 @@ namespace InterfaceTest
         public bool Opened { get; private set; }
         public bool DumpToConsole { get; set; }
 
-        public void OpenConnection(string adress)
+        public void OpenConnection(string address)
         {
             if (!Opened)
             {
-                _serialPort = new SerialPort(adress);
+                _serialPort = new SerialPort(address);
                 _serialPort.Open();
 
                 Opened = true;
@@ -62,7 +62,7 @@ namespace InterfaceTest
             finished();
         }
 
-        public bool IsAvaliable(string adress)
+        public bool IsAvaliable(string address)
         {
             return true;
         }

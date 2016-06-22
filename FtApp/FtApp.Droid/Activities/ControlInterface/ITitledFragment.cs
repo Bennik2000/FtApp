@@ -2,7 +2,8 @@
 
 namespace FtApp.Droid.Activities.ControlInterface
 {
-    public interface IFtInterfaceFragment
+    // This interface provides a method to get the title of a fragment
+    public interface ITitledFragment
     {
         string GetTitle(Context context);
     }

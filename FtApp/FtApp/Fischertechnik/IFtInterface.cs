@@ -9,10 +9,10 @@ namespace TXTCommunication.Fischertechnik
         ConnectionStatus Connection { get; set; }
 
         /// <summary>
-        /// This function tries to connect to an interface with the given adress.
+        /// This function tries to connect to an interface with the given address.
         /// </summary>
-        /// <param name="adress">For the TXT Controller it is an ip adress and for the TX Controller it is the mac adress</param>
-        void Connect(string adress);
+        /// <param name="address">For the TXT Controller it is an ip address and for the TX Controller it is the mac address</param>
+        void Connect(string address);
 
         /// <summary>
         /// This function closes the connection
@@ -80,16 +80,16 @@ namespace TXTCommunication.Fischertechnik
         /// <summary>
         /// Reads the controller name without the need of connecting and disconnecting (This is done internally)
         /// </summary>
-        /// <param name="adress"></param>
+        /// <param name="address"></param>
         /// <returns></returns>
-        string RequestControllerName(string adress);
+        string RequestControllerName(string address);
 
         /// <summary>
         /// Checks if the interface at the given address is valid
         /// </summary>
-        /// <param name="adress">The adress to ckeck</param>
+        /// <param name="address">The address to ckeck</param>
         /// <returns>true, when the interface is valid otherwise false</returns>
-        bool IsValidInterface(string adress);
+        bool IsValidInterface(string address);
 
         /// <summary>
         /// Returns the index of the motor port. Output 5 => M3; Output 2 => M1

@@ -12,7 +12,10 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace FtApp.Droid.Activities.ControlInterface
 {
-    public class InputFragment : Fragment, IFtInterfaceFragment
+    /// <summary>
+    /// This fragment displays the actial input values of the sensors
+    /// </summary>
+    public class InputFragment : Fragment, ITitledFragment
     {
         private readonly List<InputViewModel> _inputViewModels;
         
@@ -27,17 +30,22 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
 
+            // Hook the events
             HookEvents();
         }
+
 
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             _eventsHooked = false;
+
+            // When the instance has changed we hook the events
             HookEvents();
         }
 
         private void HookEvents()
         {
+            // Hook all the needed events
             if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
             {
                 FtInterfaceInstanceProvider.Instance.OnlineStarted += FtInterfaceOnOnlineStarted;
@@ -49,6 +57,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void UnhookEvents()
         {
+            // Unhook all the used events
             if (FtInterfaceInstanceProvider.Instance != null)
             {
                 FtInterfaceInstanceProvider.Instance.OnlineStarted -= FtInterfaceOnOnlineStarted;
@@ -60,10 +69,13 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         public override void OnAttach(Context context)
         {
+            // Apply the context for every InputViewModel
             foreach (InputViewModel inputViewModel in _inputViewModels)
             {
                 inputViewModel.Context = context;
             }
+
+            // Hook the events
             HookEvents();
 
             base.OnAttach(context);
@@ -72,17 +84,21 @@ namespace FtApp.Droid.Activities.ControlInterface
         public override void OnDetach()
         {
             base.OnDetach();
+
+            // Unhook the events
             UnhookEvents();
         }
 
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
+            // Load the input devices when the online mode started
             LoadInputDevices();
         }
 
         private void FtInterfaceOnInputValueChanged(object sender, InputValueChangedEventArgs inputValueChangedEventArgs)
         {
+            // Go throught every changed input port and update the displayed value
             foreach (int inputPort in inputValueChangedEventArgs.InputPorts)
             {
                 if (_inputViewModels.Count > inputPort)
@@ -101,16 +117,19 @@ namespace FtApp.Droid.Activities.ControlInterface
             //    SetInputDeviceInPreferences(i, _inputViewModels[i].InputDevice);
             //}
 
+            // Clear the input view models
             _inputViewModels.Clear();
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
         private void LoadInputDevices()
         {
+            // Clear teh view model list
             _inputViewModels.Clear();
 
             for (int i = 0; i < FtInterfaceInstanceProvider.Instance.GetInputCount(); i++)
             {
+                // Instantiate a new InputViewModel and add it to the list
                 var inputViewModel = new InputViewModel
                 {
                     Context = Activity,
@@ -123,6 +142,8 @@ namespace FtApp.Droid.Activities.ControlInterface
 
                 _inputViewModels.Add(inputViewModel);
             }
+
+            // Update the list view
             Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
         }
 
@@ -147,6 +168,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void UpdateListView(int position, InputViewModel item)
         {
+            // Update one single item in the list view
             int first = _listViewInputPorts.FirstVisiblePosition;
             int last = _listViewInputPorts.LastVisiblePosition;
 
@@ -183,7 +205,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             _listViewInputPorts.Adapter = _listAdapter;
 
-
+            // When we are already connected we can load the intpu devices here
             if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.Online)
             {
                 LoadInputDevices();
@@ -197,8 +219,11 @@ namespace FtApp.Droid.Activities.ControlInterface
         /// </summary>
         private class ListAdapter : BaseAdapter<InputViewModel>
         {
-            private readonly List<InputViewModel> _items;
+            /// <summary>
+            /// We store the already inflated options menus in a dictionary
+            /// </summary>
             private readonly Dictionary<InputViewModel, PopupMenu> _popupMenus;
+            private readonly List<InputViewModel> _items;
             private readonly Activity _context;
 
             public ListAdapter(Activity context, List<InputViewModel> items)
@@ -230,15 +255,17 @@ namespace FtApp.Droid.Activities.ControlInterface
 
                     var imageViewContextualMenu = view.FindViewById<ImageView>(Resource.Id.imageViewContextualMenu);
 
+                    // Hook the click event to handle the context menu
                     imageViewContextualMenu.Click += delegate
                     {
                         ShowInputModeContextMenu(view.Context, imageViewContextualMenu, position);
                     };
 
+                    // When this is a new view we animate it
                     FadeInAnimation(view, position);
                 }
 
-
+                // Update the displayed value
                 var textViewInputIndex = view.FindViewById<TextView>(Resource.Id.textViewInputIndex);
                 var textViewInputValue = view.FindViewById<TextView>(Resource.Id.textViewInputValue);
 
@@ -265,12 +292,15 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             private void ShowInputModeContextMenu(Context context, ImageView imageView, int position)
             {
+                // Show the context menu
                 if (_popupMenus.ContainsKey(_items[position]))
                 {
+                    // When we already inflated a menu we display it
                     _popupMenus[_items[position]].Show();
                 }
                 else
                 {
+                    // We have to construct a new menu when we cannot reuse an existing
                     var popup = new PopupMenu(context, imageView);
                     popup.MenuInflater.Inflate(Resource.Menu.ConfigureInputPopupMenu, popup.Menu);
                     popup.Show();
@@ -292,6 +322,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
                 var item = _items[position];
 
+                // Change the input device depending on the pressed item
                 switch (id)
                 {
                     case Resource.Id.menuInputModeSwitch:

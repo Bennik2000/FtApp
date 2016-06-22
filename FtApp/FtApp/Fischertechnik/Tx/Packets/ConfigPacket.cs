@@ -2,6 +2,9 @@
 
 namespace TXCommunication.Packets
 {
+    /// <summary>
+    /// This packet updates the configuration of the outputs, inputs and counters
+    /// </summary>
     class ConfigPacket : Packet
     {
         public bool[] Motor { get; private set; }
@@ -35,12 +38,15 @@ namespace TXCommunication.Packets
             PayloadBytes = new byte[48];
 
 
+            // the first 4 bytes configure the output ports. Either motor or single output.
             int packetPosition = 0;
             foreach (bool b in Motor)
             {
                 PayloadBytes[packetPosition++] = b ? (byte) 1 : (byte) 0;
             }
 
+            // The next 16 bytes configure the input ports. Every input port uses 2 bytes for configuration. 
+            // The first is 0x8 when in digital mode and 0x0 when in analog mode.
             foreach (UniversalInputConfig universalInputConfig in UniversalInputs)
             {
                 // Digital|Input Mode
@@ -53,6 +59,7 @@ namespace TXCommunication.Packets
                 PayloadBytes[packetPosition++] = (byte) (digitalMask | inputMask);
             }
 
+            // The last 4 bytes configure the counter ports
             foreach (CounterConfig counterConfig in Counters)
             {
                 PayloadBytes[packetPosition++] = counterConfig.Mode ? (byte)0x01 : (byte) 0x00;
@@ -62,13 +69,18 @@ namespace TXCommunication.Packets
         }
     }
 
-
+    /// <summary>
+    /// Holds the input configuration of 1 universal input port.
+    /// </summary>
     class UniversalInputConfig
     {
         public InputMode Mode { get; set; } = InputMode.ModeR;
         public bool Digital { get; set; } = true;
     }
 
+    /// <summary>
+    /// Holds the configuration of one ounter port
+    /// </summary>
     class CounterConfig
     {
         public bool Mode { get; set; } = true;

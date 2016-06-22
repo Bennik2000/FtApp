@@ -2453,11 +2453,11 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06004d
 			public const int textSpacerNoButtons = 2131099725;
 			
-			// aapt resource value: 0x7f06009d
-			public const int textViewContollerAdress = 2131099805;
-			
 			// aapt resource value: 0x7f06009c
 			public const int textViewContollerName = 2131099804;
+			
+			// aapt resource value: 0x7f06009d
+			public const int textViewContolleraddress = 2131099805;
 			
 			// aapt resource value: 0x7f06008d
 			public const int textViewFaqAnswer = 2131099789;
@@ -2956,7 +2956,7 @@ namespace FtApp.Droid
 			public const int SelectDeviceActivity_custom = 2131296288;
 			
 			// aapt resource value: 0x7f09001d
-			public const int SelectDeviceActivity_ipAdress_Hint = 2131296285;
+			public const int SelectDeviceActivity_ipaddress_Hint = 2131296285;
 			
 			// aapt resource value: 0x7f090023
 			public const int SelectDeviceActivity_noIp = 2131296291;

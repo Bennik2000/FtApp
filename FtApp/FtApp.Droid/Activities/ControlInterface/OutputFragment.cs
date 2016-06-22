@@ -11,7 +11,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace FtApp.Droid.Activities.ControlInterface
 {
-    public class OutputFragment : Fragment, IFtInterfaceFragment
+    public class OutputFragment : Fragment, ITitledFragment
     {
         private ListAdapter _listAdapter;
         private ListView _listViewOutputPorts;

@@ -6,6 +6,9 @@ using Android.Text.Method;
 
 namespace FtApp.Droid.Activities.Help
 {
+    /// <summary>
+    /// Displays the FAQ questions and answers
+    /// </summary>
     class FaqListAdapter : BaseAdapter<FaqViewModel>
     {
         private readonly List<FaqViewModel> _items;

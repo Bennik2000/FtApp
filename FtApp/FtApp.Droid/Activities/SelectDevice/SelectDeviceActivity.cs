@@ -147,7 +147,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             {
                 var clickedItem = _foundDevices[(int)itemClickEventArgs.Id];
                 
-                OpenControlActivity(clickedItem.Adress, clickedItem.Name, clickedItem.ControllerType);
+                OpenControlActivity(clickedItem.address, clickedItem.Name, clickedItem.ControllerType);
             }
         }
 
@@ -159,7 +159,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             // Open the control activity and pass the extra data
             Intent intent = new Intent(this, typeof(ControlInterfaceActivity));
 
-            intent.PutExtra(ControlInterfaceActivity.AdressExtraDataId, address);
+            intent.PutExtra(ControlInterfaceActivity.AddressExtraDataId, address);
             intent.PutExtra(ControlInterfaceActivity.ControllerNameExtraDataId, name);
             intent.PutExtra(ControlInterfaceActivity.ControllerTypeExtraDataId, (int)type);
 

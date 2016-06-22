@@ -10,13 +10,13 @@
 
   <string name="SelectDeviceActivity_toolbarTitle">FtApp</string>
   <string name="SelectDeviceActivity_connectToTxtController">Mit dem ROBOTICS TXT Controller verbinden</string>
-  <string name="SelectDeviceActivity_ipAdress_Hint">Ip Adresse</string>
+  <string name="SelectDeviceActivity_ipaddress_Hint">Ip addresse</string>
   <string name="SelectDeviceActivity_wifi">WLAN</string>
   <string name="SelectDeviceActivity_bluetooth">Bluetooth</string>
   <string name="SelectDeviceActivity_custom">Andere Ip</string>
   <string name="SelectDeviceActivity_connect">Verbinden</string>
-  <string name="SelectDeviceActivity_notValidIp">"%1$s" Ist keine gültige Ip Adresse</string>
-  <string name="SelectDeviceActivity_noIp">Keine Ip adresse ist abgegeben</string>
+  <string name="SelectDeviceActivity_notValidIp">"%1$s" Ist keine gültige Ip addresse</string>
+  <string name="SelectDeviceActivity_noIp">Keine Ip addresse ist abgegeben</string>
   <string name="SelectDeviceActivity_notInterfaceFound">Kein fischertechnik Interface wurde gefunden</string>
 
   <string name="SelectDeviceActivity_bluetoothHasToBeEnabled">Bluetooth muss aktiviert sein!</string>

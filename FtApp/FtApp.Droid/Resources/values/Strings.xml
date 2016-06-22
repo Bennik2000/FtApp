@@ -10,12 +10,12 @@
 
   <string name="SelectDeviceActivity_toolbarTitle">FtApp</string>
   <string name="SelectDeviceActivity_connectToTxtController">Connect to ROBOTICS TXT Controller</string>
-  <string name="SelectDeviceActivity_ipAdress_Hint">Ip adress</string>
+  <string name="SelectDeviceActivity_ipaddress_Hint">Ip address</string>
   <string name="SelectDeviceActivity_wifi">Wifi</string>
   <string name="SelectDeviceActivity_bluetooth">Bluetooth</string>
   <string name="SelectDeviceActivity_custom">Custom Ip</string>
   <string name="SelectDeviceActivity_connect">Connect</string>
-  <string name="SelectDeviceActivity_notValidIp">"%1$s" is not a valid ip adress</string>
+  <string name="SelectDeviceActivity_notValidIp">"%1$s" is not a valid ip address</string>
   <string name="SelectDeviceActivity_noIp">No ip is avaliable</string>
   <string name="SelectDeviceActivity_notInterfaceFound">No fischertechnik Interfaces was found</string>
 

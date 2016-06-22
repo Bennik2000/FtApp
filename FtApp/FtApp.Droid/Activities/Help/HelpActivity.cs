@@ -15,6 +15,9 @@ using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace FtApp.Droid.Activities.Help
 {
+    /// <summary>
+    /// This activity displays FAQ's
+    /// </summary>
     [Activity(Label = "HelpActivity")]
     public class HelpActivity : AppCompatActivity
     {

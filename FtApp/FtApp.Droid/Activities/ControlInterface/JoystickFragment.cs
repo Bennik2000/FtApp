@@ -14,7 +14,10 @@ using AlertDialog = Android.Support.V7.App.AlertDialog;
 namespace FtApp.Droid.Activities.ControlInterface
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class JoystickFragment : Fragment, IFtInterfaceFragment
+    /// <summary>
+    /// This Fragment displays two joysticks which can be used to controll the output ports
+    /// </summary>
+    public class JoystickFragment : Fragment, ITitledFragment
     {
         private JoystickView _joystickViewLeft;
         private JoystickView _joystickViewRight;

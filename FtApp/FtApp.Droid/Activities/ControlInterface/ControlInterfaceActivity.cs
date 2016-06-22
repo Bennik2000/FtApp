@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
@@ -15,6 +11,10 @@ using FtApp.Droid.Native;
 using FtApp.Fischertechnik;
 using FtApp.Fischertechnik.Simulation;
 using Java.Lang;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
@@ -27,13 +27,16 @@ using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace FtApp.Droid.Activities.ControlInterface
 {
+    /// <summary>
+    /// This activity controls the interface. It hosts all the needed fragments
+    /// </summary>
     [Activity(Label = "Ft App", Icon = "@drawable/icon", Theme = "@style/FtApp.Base"/*, ScreenOrientation = ScreenOrientation.Portrait*/)]
     public class ControlInterfaceActivity : AppCompatActivity
     {
         private const string JoystickVisibleDataId = "JoystickVisible";
         private const string ActiveTabDataId = "ActiveTab";
 
-        public const string AdressExtraDataId = "Adress";
+        public const string AddressExtraDataId = "Address";
         public const string ControllerNameExtraDataId = "ControllerName";
         public const string ControllerTypeExtraDataId = "ControllerType";
 
@@ -44,7 +47,6 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private TabLayout _tabLayout;
         private ViewPager _viewPager;
-
 
 
         private IList<Fragment> _fragments;
@@ -84,6 +86,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             if (savedInstanceState == null)
             {
+                // When this is the initial startup where we hide the joystick fragment
                 HideJoystick();
             }
             else
@@ -96,28 +99,34 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             base.OnStart();
 
+            // Hook the events
             HookEvents();
 
             if (FtInterfaceInstanceProvider.Instance == null)
             {
+                // Setup the interface if we do not have an instance already
                 SetupFtInterface();
             }
 
+            // On start we conenct to the interface
             ConnectToFtInterface();
         }
 
         protected override void OnPause()
         {
+            // Dismiss the dialogs that we do not get a window leaked exception
             try
             {
                 _connectingDialog.Dismiss();
             }
+            // ReSharper disable once EmptyGeneralCatchClause
             catch (Exception) { }
 
             try
             {
                 _notAvailableDialog.Dismiss();
             }
+            // ReSharper disable once EmptyGeneralCatchClause
             catch (Exception) { }
 
 
@@ -130,6 +139,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             if (!_isActivityInFocus)
             {
+                // When this activity is not in focus we disconnect. It is not in focus when it is closed
                 DisconnectFromInterface();
             }
         }
@@ -137,7 +147,11 @@ namespace FtApp.Droid.Activities.ControlInterface
         protected override void OnDestroy()
         {
             base.OnDestroy();
+
+            // Cleanup the task queue
             _connectionTaskQueue?.Dispose();
+
+            // Unhook the events
             UnhookEvents();
         }
 
@@ -145,6 +159,7 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             base.OnSaveInstanceState(outState);
 
+            // We save the state of the joystick visibility and the current aactive tab
             outState.PutBoolean(JoystickVisibleDataId, _joystickVisibile);
             outState.PutInt(ActiveTabDataId, _tabLayout.SelectedTabPosition);
         }
@@ -161,6 +176,7 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             if (menu.Size() == 0)
             {
+                // If we did not already inflate the menu we have to inflate it now
                 MenuInflater.Inflate(Resource.Menu.ControlInterfaceOptionsMenu, menu);
             }
             return true;
@@ -171,6 +187,7 @@ namespace FtApp.Droid.Activities.ControlInterface
             switch (item.ItemId)
             {
                 case Resource.Id.optionsMenuItemJoystick:
+                    // Toggle the joystick visibility whe the joystick button has been selected
                     ToggleJoystickVisibility();
                     return true;
             }
@@ -181,16 +198,19 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             if (_joystickVisibile)
             {
+                // When the joystick is visible we hide it
                 HideJoystick();
             }
             else
             {
+                // when the joystick is not visible we close the activity
                 Finish();
             }
         }
 
         private void RetreiveSavedState(Bundle savedInstanceState)
         {
+            // Load the saved state. We load the vsibility of the joystick and the current active tab
             if (savedInstanceState.GetBoolean(JoystickVisibleDataId))
             {
                 ShowJoystick();
@@ -206,11 +226,12 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void ExtractExtraData()
         {
+            // We extract the parameters. The parameters are the controller type, the controller name and the address.
             Bundle extras = Intent.Extras;
 
             FtInterfaceInstanceProvider.ControllerType = extras != null ? (ControllerType)extras.GetInt(ControllerTypeExtraDataId) : ControllerType.Unknown;
             FtInterfaceInstanceProvider.ControllerName = extras != null ? extras.GetString(ControllerNameExtraDataId) : string.Empty;
-            FtInterfaceInstanceProvider.Ip = extras != null ? extras.GetString(AdressExtraDataId) : string.Empty;
+            FtInterfaceInstanceProvider.Ip = extras != null ? extras.GetString(AddressExtraDataId) : string.Empty;
         }
 
         private void InitializeDialogs()
@@ -250,7 +271,7 @@ namespace FtApp.Droid.Activities.ControlInterface
                 new OutputFragment()
             };
 
-
+            // Depending on the interface type we add the camera fragment or not
             switch (FtInterfaceInstanceProvider.ControllerType)
             {
                 case ControllerType.Tx:
@@ -263,14 +284,14 @@ namespace FtApp.Droid.Activities.ControlInterface
             }
 
 
-
+            // For every fragment we add it to the tab layout
             foreach (Fragment fragment in _fragments)
             {
                 string title = string.Empty;
 
-                if (fragment is IFtInterfaceFragment)
+                if (fragment is ITitledFragment)
                 {
-                    title = ((IFtInterfaceFragment)fragment).GetTitle(this);
+                    title = ((ITitledFragment)fragment).GetTitle(this);
                 }
 
                 var tab = _tabLayout.NewTab();
@@ -284,8 +305,6 @@ namespace FtApp.Droid.Activities.ControlInterface
             _viewPager.Adapter = adapter;
             _viewPager.OffscreenPageLimit = _fragments.Count; // We have to set the OffscreenPageLimit to the tab count. Otherwise the fragments would be restored
             _viewPager.AddOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(_tabLayout));
-            _viewPager.PageSelected -= ViewPagerOnPageSelected;
-            _viewPager.PageSelected += ViewPagerOnPageSelected;
 
 
             _tabLayout.SetOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(_viewPager));
@@ -294,6 +313,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void SetupFtInterface()
         {
+            // Depending on the controller type we intantiate the instance
             switch (FtInterfaceInstanceProvider.ControllerType)
             {
                 case ControllerType.Tx:
@@ -313,6 +333,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void ShowJoystick()
         {
+            // We show the joystick with an animation
             _joystickFragment.Activate();
 
             _joystickVisibile = true;
@@ -327,6 +348,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void HideJoystick()
         {
+            // We hide the joystick with an animation
             _joystickVisibile = false;
             _tabLayout.Visibility = ViewStates.Visible;
             _tabLayout.Animate().Alpha(1).SetDuration(200).SetListener(new HideOnFinishedAnimationListener(_tabLayout)).Start();
@@ -342,6 +364,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void ToggleJoystickVisibility()
         {
+            // Depending on the current visibility we hide or show the joystick
             if (_joystickVisibile)
             {
                 HideJoystick();
@@ -352,36 +375,18 @@ namespace FtApp.Droid.Activities.ControlInterface
             }
         }
 
-        private void ViewPagerOnPageSelected(object sender, ViewPager.PageSelectedEventArgs pageSelectedEventArgs)
-        {
-            // Control the camera preview of the TXT Controller.
-            // When the camera fragment is not visible we stop decoding the jpeg stream to save ressources
-            //var fragment = _fragments[pageSelectedEventArgs.Position];
-
-            //if (fragment is CameraFragment)
-            //{
-            //    ((CameraFragment) fragment).DisplayFrames = true;
-            //}
-            //else
-            //{
-            //    var cameraFragment = _fragments.FirstOrDefault(f => f is CameraFragment) as CameraFragment;
-
-            //    if (cameraFragment != null)
-            //    {
-            //        cameraFragment.DisplayFrames = false;
-            //    }
-            //}
-        }
-
 
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             _eventsHooked = false;
+
+            // When the instance has changed we hook the events
             HookEvents();
         }
 
         private void HookEvents()
         {
+            // Hook the needed events
             if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
             {
                 FtInterfaceInstanceProvider.Instance.ConnectionLost += FtInterfaceOnConnectionLost;
@@ -396,6 +401,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void UnhookEvents()
         {
+            // Unhook the hooked events
             if (FtInterfaceInstanceProvider.Instance != null)
             {
                 FtInterfaceInstanceProvider.Instance.ConnectionLost -= FtInterfaceOnConnectionLost;
@@ -409,6 +415,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void FtInterfaceOnConnected(object sender, EventArgs eventArgs)
         {
+            // When the interface is conencted we start the camera stream
             FtInterfaceCameraProxy.StartCameraStream();
         }
 
@@ -418,8 +425,10 @@ namespace FtApp.Droid.Activities.ControlInterface
             {
                 try
                 {
+                    // We hide the connection dialog when the online mode has started
                     _connectingDialog.Dismiss();
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch (Exception)
                 {
                 }
@@ -428,6 +437,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void InstanceOnOnlineStopped(object sender, EventArgs eventArgs)
         {
+            // When the online mode has stopped we also stop the camera stream
             FtInterfaceCameraProxy.StopCameraStream();
         }
 
@@ -435,8 +445,10 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             if (FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.NotConnected)
             {
+                // Show the connecting dialog
                 _connectingDialog.Show();
 
+                // The connecting process is done on a separate thread
                 _connectionTaskQueue.DoWorkInQueue(() =>
                 {
                     FtInterfaceInstanceProvider.Instance?.Connect(FtInterfaceInstanceProvider.Ip);
@@ -447,25 +459,33 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void DisconnectFromInterface()
         {
+            // Do the disconnection on a separate thread
             _connectionTaskQueue.DoWorkInQueue(() =>
             {
                 if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.CanSendCommand())
                 {
+                    // Stop the online mode and disconnect
                     FtInterfaceInstanceProvider.Instance.StopOnlineMode();
                     FtInterfaceInstanceProvider.Instance.Disconnect();
 
+                    // Cleanup the instance
                     FtInterfaceInstanceProvider.Instance.Dispose();
                     FtInterfaceInstanceProvider.Instance = null;
                 }
             }, true);
-
         }
 
 
         private void FtInterfaceOnConnectionLost(object sender, EventArgs eventArgs)
         {
+            // When the connectin has been lost we close the activity and display a toast
             Finish();
-            RunOnUiThread(() => { Toast.MakeText(this, GetString(Resource.String.ControlInterfaceActivity_interfaceConnectionLostMessage), ToastLength.Short).Show(); });
+            RunOnUiThread(() => 
+            {
+                Toast.MakeText(this,
+                    GetString(Resource.String.ControlInterfaceActivity_interfaceConnectionLostMessage),
+                    ToastLength.Short).Show();
+            });
         }
 
         private class TabPagerAdapter : FragmentPagerAdapter
@@ -482,11 +502,13 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             public override IParcelable SaveState()
             {
+                // We do not save the state because we don't need it
                 return null;
             }
 
             public override void RestoreState(IParcelable state, ClassLoader loader)
             {
+                // We have to do nothing to restore the fragments. Otherwise the camera stream is buggy
             }
 
             public override Fragment GetItem(int position)

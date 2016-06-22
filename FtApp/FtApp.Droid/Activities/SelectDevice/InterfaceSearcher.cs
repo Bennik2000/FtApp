@@ -31,7 +31,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         private BluetoothAdapter SerialAdapter { get; set; }
 
-        private IList<string> PossibleIpAdresses { get; set; }
+        private IList<string> PossibleIpaddresses { get; set; }
 
 
         public InterfaceSearcher(Context context)
@@ -40,7 +40,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
             SerialAdapter = new BluetoothAdapter(context);
 
-            PossibleIpAdresses = new List<string>
+            PossibleIpaddresses = new List<string>
             {
                 TxtInterface.ControllerWifiIp,
                 //TxtInterface.ControllerBluetoothIp,
@@ -84,20 +84,20 @@ namespace FtApp.Droid.Activities.SelectDevice
             Thread.Sleep(100);
             IFtInterface txtInterface = new TxtInterface();
 
-            foreach (string ipAdress in PossibleIpAdresses)
+            foreach (string ipaddress in PossibleIpaddresses)
             {
-                if (txtInterface.IsValidInterface(ipAdress))
+                if (txtInterface.IsValidInterface(ipaddress))
                 {
-                    InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(ipAdress, "TXT Controller", ControllerType.Txt));
+                    InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(ipaddress, "TXT Controller", ControllerType.Txt));
                 }
             }
         }
 
         private void SearchTx()
         {
-            SerialAdapter.SearchAvailableDevices(() => {}, adress =>
+            SerialAdapter.SearchAvailableDevices(() => {}, address =>
             {
-                string deviceName = Android.Bluetooth.BluetoothAdapter.DefaultAdapter.GetRemoteDevice(adress).Name;
+                string deviceName = Android.Bluetooth.BluetoothAdapter.DefaultAdapter.GetRemoteDevice(address).Name;
 
                 if (deviceName != null)
                 {
@@ -105,7 +105,7 @@ namespace FtApp.Droid.Activities.SelectDevice
                     Regex regex = new Regex(ValidateTxNameExpression);
                     if (regex.IsMatch(deviceName))
                     {
-                        InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(adress, deviceName, ControllerType.Tx));
+                        InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(address, deviceName, ControllerType.Tx));
                     }
                 }
             }, () =>
@@ -120,13 +120,13 @@ namespace FtApp.Droid.Activities.SelectDevice
         
         public class InterfaceFoundEventArgs : EventArgs
         {
-            public string Adress { get; set; }
+            public string address { get; set; }
             public string Name { get; set; }
             public ControllerType ControllerType { get; set; }
 
-            public InterfaceFoundEventArgs(string adress, string name, ControllerType type)
+            public InterfaceFoundEventArgs(string address, string name, ControllerType type)
             {
-                Adress = adress;
+                address = address;
                 Name = name;
                 ControllerType = type;
             }

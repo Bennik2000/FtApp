@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace TXCommunication.Packets
 {
+    /// <summary>
+    /// This is the base class of a packet
+    /// </summary>
     public abstract class Packet
     {
         public byte[] PayloadBytes { get; set; } = new byte[0];
@@ -118,6 +121,8 @@ namespace TXCommunication.Packets
 
                 //position += PayloadBytes.Length;
 
+
+                // We do not check the checksum because the algorithm has changed
                 //Read the checksum and check
                 //short crc = (short)((data[position++] << 8) | (data[position] << 0));
 

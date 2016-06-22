@@ -1,3 +1,4 @@
+using System;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -28,6 +29,8 @@ namespace FtApp.Droid.Activities.SelectDevice
         private ProgressBar _progressBarScanning;
         private LinearLayout _layoutListEmpty;
 
+        private ImageView _imageViewNoBluetooth;
+
         private InterfaceSearchAsyncTask _interfaceSearchAsyncTask;
 
         private readonly List<InterfaceViewModel> _foundDevices;
@@ -50,9 +53,14 @@ namespace FtApp.Droid.Activities.SelectDevice
             _listViewDevices = FindViewById<ListView>(Resource.Id.devicesListView);
             _progressBarScanning = FindViewById<ProgressBar>(Resource.Id.progressBarScanning);
             _layoutListEmpty = FindViewById<LinearLayout>(Resource.Id.layoutInterfaceListEmpty);
+            _imageViewNoBluetooth = FindViewById<ImageView>(Resource.Id.imageViewNoBluetooth);
+
+
+            _imageViewNoBluetooth.Visibility = ViewStates.Gone;
+            _imageViewNoBluetooth.Click += ImageViewNoBluetoothOnClick;
 
             _layoutListEmpty.Visibility = ViewStates.Gone;
-
+            
 
             if (savedInstanceState == null)
             {
@@ -61,6 +69,11 @@ namespace FtApp.Droid.Activities.SelectDevice
 
             SetupToolbar();
             SetupListView();
+        }
+
+        private void ImageViewNoBluetoothOnClick(object sender, EventArgs eventArgs)
+        {
+            SwitchOnBluetooth();
         }
 
         protected override void OnStart()
@@ -89,6 +102,7 @@ namespace FtApp.Droid.Activities.SelectDevice
                 if (resultCode == Result.Canceled)
                 {
                     Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
+                    SearchForInterfaces();
                 }
             }
         }
@@ -189,6 +203,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             if (BluetoothAdapter.DefaultAdapter.IsEnabled)
             {
+                _imageViewNoBluetooth.Visibility = ViewStates.Gone;
                 _interfaceSearchAsyncTask = new InterfaceSearchAsyncTask(this);
 
                 _interfaceSearchAsyncTask.ProgressUpdated += InterfaceSearchAsyncTaskOnProgressUpdated;
@@ -207,7 +222,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             }
             else
             {
-                SwitchOnBluetooth();
+                _imageViewNoBluetooth.Visibility = ViewStates.Visible;
             }
         }
 

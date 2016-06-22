@@ -52,5 +52,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:animateLayoutChanges="true" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true">
+            <ImageView
+                android:src="@drawable/ic_bluetooth_disabled_black_24dp"
+                android:id="@+id/imageViewNoBluetooth"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="16dp" />
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

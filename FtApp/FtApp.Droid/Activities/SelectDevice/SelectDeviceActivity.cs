@@ -7,6 +7,8 @@ using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using System.Collections.Generic;
+using System.Linq;
+using Android.Support.V4.Widget;
 using FtApp.Droid.Activities.About;
 using FtApp.Droid.Activities.AppRating;
 using FtApp.Droid.Activities.ControlInterface;
@@ -28,13 +30,13 @@ namespace FtApp.Droid.Activities.SelectDevice
         private FoundDevicesListAdapter _foundDevicesListAdapter;
         private ProgressBar _progressBarScanning;
         private LinearLayout _layoutListEmpty;
-
-        private ImageView _imageViewNoBluetooth;
+        private SwipeRefreshLayout _listRefreshLayout;
 
         private InterfaceSearchAsyncTask _interfaceSearchAsyncTask;
 
         private readonly List<InterfaceViewModel> _foundDevices;
 
+        private bool _searching;
 
         public SelectDeviceActivity()
         {
@@ -53,14 +55,17 @@ namespace FtApp.Droid.Activities.SelectDevice
             _listViewDevices = FindViewById<ListView>(Resource.Id.devicesListView);
             _progressBarScanning = FindViewById<ProgressBar>(Resource.Id.progressBarScanning);
             _layoutListEmpty = FindViewById<LinearLayout>(Resource.Id.layoutInterfaceListEmpty);
-            _imageViewNoBluetooth = FindViewById<ImageView>(Resource.Id.imageViewNoBluetooth);
-
-
-            _imageViewNoBluetooth.Visibility = ViewStates.Gone;
-            _imageViewNoBluetooth.Click += ImageViewNoBluetoothOnClick;
+            _listRefreshLayout = FindViewById<SwipeRefreshLayout>(Resource.Id.listInterfacesRefresh);
 
             _layoutListEmpty.Visibility = ViewStates.Gone;
-            
+
+            _listRefreshLayout.SetColorSchemeResources(new[]
+            {
+                Resource.Color.accentColor,
+                Resource.Color.primaryColor
+            });
+
+            _listRefreshLayout.Refresh += ListRefreshLayoutOnRefresh;
 
             if (savedInstanceState == null)
             {
@@ -71,9 +76,13 @@ namespace FtApp.Droid.Activities.SelectDevice
             SetupListView();
         }
 
-        private void ImageViewNoBluetoothOnClick(object sender, EventArgs eventArgs)
+        private void ListRefreshLayoutOnRefresh(object sender, EventArgs eventArgs)
         {
-            SwitchOnBluetooth();
+            if (!_searching)
+            {
+                _interfaceSearchAsyncTask?.CancelSearch();
+                SearchForInterfaces();
+            }
         }
 
         protected override void OnStart()
@@ -169,6 +178,9 @@ namespace FtApp.Droid.Activities.SelectDevice
         private void OpenControlActivity(string address, string name, ControllerType type)
         {
             _interfaceSearchAsyncTask?.CancelSearch();
+            _searching = false;
+
+            _listRefreshLayout.Refreshing = false;
 
             // Open the control activity and pass the extra data
             Intent intent = new Intent(this, typeof(ControlInterfaceActivity));
@@ -201,16 +213,13 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         private void SearchForInterfaces()
         {
-            if (BluetoothAdapter.DefaultAdapter.IsEnabled)
+            if (!BluetoothAdapter.DefaultAdapter.IsEnabled)
             {
-                _imageViewNoBluetooth.Visibility = ViewStates.Gone;
-
-            }
-            else
-            {
-                _imageViewNoBluetooth.Visibility = ViewStates.Visible;
+                Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
             }
 
+            HideEmptyStateImage();
+            
 
             _interfaceSearchAsyncTask = new InterfaceSearchAsyncTask(this);
 
@@ -220,8 +229,8 @@ namespace FtApp.Droid.Activities.SelectDevice
             _interfaceSearchAsyncTask.Execute(string.Empty);
 
 
-            HideEmptyStateImage();
             _progressBarScanning.Visibility = ViewStates.Visible;
+            _searching = true;
 
             _foundDevices.Clear();
 
@@ -240,6 +249,10 @@ namespace FtApp.Droid.Activities.SelectDevice
                 ShowEmptyStateImage();
             }
 
+            _listRefreshLayout.Refreshing = false;
+
+            _searching = false;
+
             _progressBarScanning.Visibility = ViewStates.Invisible;
             _foundDevicesListAdapter.NotifyDataSetChanged();
         }
@@ -248,17 +261,14 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             RunOnUiThread(() =>
             {
-                _foundDevices.Add(eventArgs.Interface);
-                _foundDevicesListAdapter.NotifyDataSetChanged();
+                if (_foundDevices.Count(model => model.Adress == eventArgs.Interface.Adress) == 0)
+                {
+                    _foundDevices.Add(eventArgs.Interface);
+                    _foundDevicesListAdapter.NotifyDataSetChanged();
+                }
             });
         }
-
-
-        private void SwitchOnBluetooth()
-        {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ActionRequestEnable);
-            StartActivityForResult(enableBtIntent, EnableBluetoothRequestId);
-        }
+        
 
         private void ShowEmptyStateImage()
         {

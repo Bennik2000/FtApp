@@ -4,6 +4,9 @@ using TXTCommunication.Fischertechnik;
 
 namespace FtApp.Droid.Activities.ControlInterface
 {
+    /// <summary>
+    /// This class provides the actial interface instance.
+    /// </summary>
     internal static class FtInterfaceInstanceProvider
     {
         private static IFtInterface _instance;
@@ -25,6 +28,9 @@ namespace FtApp.Droid.Activities.ControlInterface
         public static string ControllerName { get; set; }
         public static ControllerType ControllerType { get; set; }
 
+        /// <summary>
+        /// This event is called when the interface instance has changed
+        /// </summary>
         public static event PropertyChangedEventHandler InstanceChanged;
     }
 }

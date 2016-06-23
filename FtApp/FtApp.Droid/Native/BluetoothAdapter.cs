@@ -26,18 +26,18 @@ namespace FtApp.Droid.Native
             _bluetoothAdapter = Android.Bluetooth.BluetoothAdapter.DefaultAdapter;
         }
 
-        public void OpenConnection(string adress)
+        public void OpenConnection(string address)
         {
             if (!_bluetoothAdapter.IsEnabled)
             {
                 throw new InvalidOperationException("The bluetooth adapter is not enabled");
             }
-            if (!Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(adress))
+            if (!Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(address))
             {
-                throw new InvalidOperationException("The given adress is not valid");
+                throw new InvalidOperationException("The given address is not valid");
             }
             
-            _bluetoothDevice = _bluetoothAdapter.GetRemoteDevice(adress);
+            _bluetoothDevice = _bluetoothAdapter.GetRemoteDevice(address);
             _bluetoothSocket = _bluetoothDevice?.CreateInsecureRfcommSocketToServiceRecord(RfCommUuid);
             
             _bluetoothSocket?.Connect();
@@ -86,9 +86,9 @@ namespace FtApp.Droid.Native
             }
         }
 
-        public bool IsAvaliable(string adress)
+        public bool IsAvaliable(string address)
         {
-            return Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(adress);
+            return Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(address);
         }
 
 

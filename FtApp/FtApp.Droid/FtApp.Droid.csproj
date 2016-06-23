@@ -97,7 +97,7 @@
     <Compile Include="Activities\ControlInterface\ControlInterfaceActivity.cs" />
     <Compile Include="Activities\ControlInterface\FtInterfaceCameraProxy.cs" />
     <Compile Include="Activities\ControlInterface\FtInterfaceInstanceProvider.cs" />
-    <Compile Include="Activities\ControlInterface\IFtInterfaceFragment.cs" />
+    <Compile Include="Activities\ControlInterface\ITitledFragment.cs" />
     <Compile Include="Activities\ControlInterface\InputFragment.cs" />
     <Compile Include="Activities\ControlInterface\JoystickConfiguration.cs" />
     <Compile Include="Activities\ControlInterface\JoystickFragment.cs" />

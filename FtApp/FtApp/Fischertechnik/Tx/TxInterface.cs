@@ -217,9 +217,9 @@ namespace TXCommunication
             return "TXT";
         }
 
-        public bool IsInterfaceReachable(string adress)
+        public bool IsInterfaceReachable(string address)
         {
-            return SerialAdapter.IsAvaliable(adress);
+            return SerialAdapter.IsAvaliable(address);
         }
 
         public int GetInputCount()
@@ -244,24 +244,24 @@ namespace TXCommunication
 
         public ControllerType GetControllerType() => ControllerType.Tx;
 
-        public string RequestControllerName(string adress)
+        public string RequestControllerName(string address)
         {
             if (TxCommunication == null)
             {
                 TxCommunication = new TxCommunication(SerialAdapter);
             }
 
-            return TxCommunication.RequestControllerName(adress);
+            return TxCommunication.RequestControllerName(address);
         }
 
-        public bool IsValidInterface(string adress)
+        public bool IsValidInterface(string address)
         {
             if (TxCommunication == null)
             {
                 TxCommunication = new TxCommunication(SerialAdapter);
             }
 
-            return TxCommunication.IsValidInterface(adress);
+            return TxCommunication.IsValidInterface(address);
         }
 
         public int GetMotorIndex(int outputIndex)

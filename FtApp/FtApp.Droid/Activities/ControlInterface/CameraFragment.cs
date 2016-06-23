@@ -9,7 +9,10 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace FtApp.Droid.Activities.ControlInterface
 {
-    public class CameraFragment : Fragment, IFtInterfaceFragment
+    /// <summary>
+    /// The camera fragment displays the camera stream of the TXT Controller in an image view
+    /// </summary>
+    public class CameraFragment : Fragment, ITitledFragment
     {
         private ImageView _imageViewCameraStream;
         private ImageButton _imageButtonTakePicture;
@@ -30,6 +33,8 @@ namespace FtApp.Droid.Activities.ControlInterface
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             _eventsHooked = false;
+
+            // Hook the events when the interface has been changed
             HookEvents();
         }
 
@@ -40,8 +45,11 @@ namespace FtApp.Droid.Activities.ControlInterface
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.imageViewCameraStream);
             _imageButtonTakePicture = view.FindViewById<ImageButton>(Resource.Id.imageButtonTakePicture);
 
-            _firstFrame = true;
             _imageButtonTakePicture.Click += ImageButtonTakePictureOnClick;
+
+
+            // Set _firstFrame to true that the image view is initialized propertly
+            _firstFrame = true;
             
             return view;
         }
@@ -49,6 +57,8 @@ namespace FtApp.Droid.Activities.ControlInterface
         public override void OnDetach()
         {
             base.OnDetach();
+
+            // Unhook the events when detached
             UnhookEvents();
         }
 
@@ -56,14 +66,17 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             base.OnAttach(context);
 
+            // Set _firstFrame to true that the image view is initialized propertly
             _firstFrame = true;
 
+            // Hook the events when attached
             HookEvents();
         }
         
 
         private void HookEvents()
         {
+            // Hooks the camera events
             if (FtInterfaceInstanceProvider.Instance != null && !_eventsHooked)
             {
                 FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
@@ -81,6 +94,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void UnhookEvents()
         {
+            // Unhooks the camera events
             if (FtInterfaceInstanceProvider.Instance != null)
             {
                 FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
@@ -95,7 +109,10 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             Activity.RunOnUiThread(() =>
             {
+                // Set the bitmap which should be used
                 _imageViewCameraStream?.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
+
+                // Invalidate the view to display the actual stored bitmap
                 _imageViewCameraStream?.Invalidate();
                 _firstFrame = false;
             });
@@ -105,7 +122,10 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             Activity.RunOnUiThread(() =>
             {
+                // Clears the bitmap
                 _imageViewCameraStream?.SetImageBitmap(null);
+
+                // Invalidate the view to display the actual stored bitmap
                 _imageViewCameraStream?.Invalidate();
             });
         }
@@ -127,12 +147,14 @@ namespace FtApp.Droid.Activities.ControlInterface
             {
                 if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
                 {
+                    // When this is the first frame: initialize the image view
                     if (_firstFrame && !FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
                     {
                         InitializeCameraView();
                     }
                     else if (!FtInterfaceCameraProxy.ImageBitmap.IsRecycled)
                     {
+                        // Invalidate the image view to display the actual stored bitmap
                         _imageViewCameraStream?.Invalidate();
                     }
                 }
@@ -144,6 +166,7 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             var imageName = DateTime.Now.ToString("MM/dd/yyyy_HH_mm_ss") + ".jpg";
 
+            // Store the bitmap in the gallery. This should be done in another thread
             MediaStore.Images.Media.InsertImage(Context.ContentResolver, FtInterfaceCameraProxy.ImageBitmap, imageName, imageName);
 
             Toast.MakeText(Activity, Resource.String.ControlInterfaceActivity_pictureTakenToast, ToastLength.Short).Show();

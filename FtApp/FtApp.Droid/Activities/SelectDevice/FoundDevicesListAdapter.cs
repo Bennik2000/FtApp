@@ -39,7 +39,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
             var imageViewControllerIcon = view.FindViewById<ImageView>(Resource.Id.imageViewContollerIcon);
             var textViewContollerName = view.FindViewById<TextView>(Resource.Id.textViewContollerName);
-            var textViewContollerAdress = view.FindViewById<TextView>(Resource.Id.textViewContollerAdress);
+            var textViewContolleraddress = view.FindViewById<TextView>(Resource.Id.textViewContolleraddress);
             var progressBarNameLoading = view.FindViewById<ProgressBar>(Resource.Id.progressBarNameLoading);
 
             switch (item.ControllerType)
@@ -56,7 +56,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             }
 
             textViewContollerName.Text = item.Name;
-            textViewContollerAdress.Text = item.Adress;
+            textViewContolleraddress.Text = item.address;
 
             progressBarNameLoading.Visibility = item.ControllerNameLaoding ? ViewStates.Visible : ViewStates.Invisible;
 

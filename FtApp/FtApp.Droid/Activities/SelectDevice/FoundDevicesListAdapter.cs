@@ -56,7 +56,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             }
 
             textViewContollerName.Text = item.Name;
-            textViewContolleraddress.Text = item.address;
+            textViewContolleraddress.Text = item.Address;
 
             progressBarNameLoading.Visibility = item.ControllerNameLaoding ? ViewStates.Visible : ViewStates.Invisible;
 

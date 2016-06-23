@@ -170,7 +170,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             {
                 var clickedItem = _foundDevices[(int)itemClickEventArgs.Id];
                 
-                OpenControlActivity(clickedItem.address, clickedItem.Name, clickedItem.ControllerType);
+                OpenControlActivity(clickedItem.Address, clickedItem.Name, clickedItem.ControllerType);
             }
         }
 
@@ -261,7 +261,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             RunOnUiThread(() =>
             {
-                if (_foundDevices.Count(model => model.Adress == eventArgs.Interface.Adress) == 0)
+                if (_foundDevices.Count(model => model.Address == eventArgs.Interface.Address) == 0)
                 {
                     _foundDevices.Add(eventArgs.Interface);
                     _foundDevicesListAdapter.NotifyDataSetChanged();

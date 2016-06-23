@@ -2459,15 +2459,14 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06004d
 			public const int textSpacerNoButtons = 2131099725;
 			
-			// aapt resource value: 0x7f06009e
-			public const int textViewContollerAdress = 2131099806;
-			
+			// aapt resource value: 0x7f06009d
 			public const int textViewContollerName = 2131099805;
+			
+			// aapt resource value: 0x7f06009e
+			public const int textViewContolleraddress = 2131099806;
+			
 			// aapt resource value: 0x7f06008e
 			public const int textViewFaqAnswer = 2131099790;
-			
-			// aapt resource value: 0x7f06009d
-			public const int textViewContolleraddress = 2131099805;
 			
 			// aapt resource value: 0x7f06008d
 			public const int textViewFaqQuestion = 2131099789;

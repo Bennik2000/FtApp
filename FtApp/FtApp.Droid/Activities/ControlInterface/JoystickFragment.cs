@@ -59,8 +59,11 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             var view = inflater.Inflate(Resource.Layout.FragmentJoystick, container, false);
 
+            // We have to capture every touch event otherwise the controls "under" this fragment receive it
             view.Touch += (sender, args) => { args.Handled = true; };
+            
 
+            // Initialize the controls
             _imageViewCameraStream = view.FindViewById<ImageView>(Resource.Id.joystickCameraView);
 
             _joystickViewLeft = view.FindViewById<JoystickView>(Resource.Id.joystickLeft);
@@ -95,6 +98,7 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             base.OnAttach(activity);
 
+            // Load the configuration and hook the needed events
             LoadJoystickConfiguration();
             HookEvents();
 
@@ -104,6 +108,8 @@ namespace FtApp.Droid.Activities.ControlInterface
         public override void OnDetach()
         {
             base.OnDetach();
+
+            // Save the configuration and unhook the used events
             SaveJoystickConfiguration();
             UnhookEvents();
         }
@@ -111,6 +117,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         public void ShowJoystickConfigurationOptionsMenu(ImageView view, int joystickIndex)
         {
+            // inflate a new menu and show it
             var popup = new PopupMenu(Activity, view);
             popup.MenuInflater.Inflate(Resource.Menu.ConfigureJoystickPopupMenu, popup.Menu);
             popup.Show();
@@ -123,6 +130,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void ConfigureJoystickPopupOnMenuItemClick(int menuItemId, int joystickId)
         {
+            // Handle the contrext menu click event
             switch (menuItemId)
             {
                 case Resource.Id.menuJoystickMode:
@@ -136,6 +144,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void ShowMotorConfigurationDialog(int joystickId, int joystickAxis)
         {
+            // Build and display the motor configuration dialog
             AlertDialog motorConfigurationDialog = null;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(Activity, Resource.Style.AlertDialogStyle);
@@ -144,11 +153,15 @@ namespace FtApp.Droid.Activities.ControlInterface
                 GetRelatedJoystickConfiguration(joystickId).MotorIndexes[joystickAxis],
                 delegate (object sender, DialogClickEventArgs args)
                 {
+                    // When one motor was clicked we set it and display the next dialog
                     SetMotorIndex(joystickId, args.Which, joystickAxis);
 
                     // ReSharper disable once AccessToModifiedClosure
                     motorConfigurationDialog?.Dismiss();
+                    
 
+                    // If configured the first joystick axis we have to configure the second. 
+                    // This can be done better but it works :)
                     if (joystickAxis == 0)
                     {
                         ShowMotorConfigurationDialog(joystickId, ++joystickAxis);
@@ -161,6 +174,7 @@ namespace FtApp.Droid.Activities.ControlInterface
                     // ReSharper disable once AccessToModifiedClosure
                     motorConfigurationDialog?.Dismiss();
 
+                    // If configured the first joystick axis we have to configure the second. 
                     if (joystickAxis == 0)
                     {
                         ShowMotorConfigurationDialog(joystickId, ++joystickAxis);
@@ -185,6 +199,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void SetMotorIndex(int joystickId, int motorId, int joystickAxis)
         {
+            // Set the motor index of the joystick
             var configuration = GetRelatedJoystickConfiguration(joystickId);
 
             if (configuration != null)
@@ -197,6 +212,7 @@ namespace FtApp.Droid.Activities.ControlInterface
         
         private void ShowModeConfigurationDialog(int joystickId)
         {
+            // Build and display the mode configuration dialog
             AlertDialog modeConfigurationDialog = null;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(Activity, Resource.Style.AlertDialogStyle);
@@ -205,7 +221,7 @@ namespace FtApp.Droid.Activities.ControlInterface
                 (int)GetRelatedJoystickConfiguration(joystickId).JoystickMode,
                 delegate(object sender, DialogClickEventArgs args)
                 {
-                    JoystickModeConfigurationItemClick(args, joystickId);
+                    ConfigureJoystickAxis((JoystickConfiguration.JoystickModes) args.Which, joystickId);
 
                     // ReSharper disable once AccessToModifiedClosure
                     modeConfigurationDialog?.Dismiss();
@@ -227,13 +243,13 @@ namespace FtApp.Droid.Activities.ControlInterface
             modeConfigurationDialog.Show();
         }
 
-        private void JoystickModeConfigurationItemClick(DialogClickEventArgs dialogClickEventArgs, int joystickId)
+        private void ConfigureJoystickAxis(JoystickConfiguration.JoystickModes mode , int joystickId)
         {
             var configuration = GetRelatedJoystickConfiguration(joystickId);
 
             if (configuration != null)
             {
-                configuration.JoystickMode = (JoystickConfiguration.JoystickModes) dialogClickEventArgs.Which;
+                configuration.JoystickMode = mode;
 
                 ApplyJoystickConfiguration(configuration, joystickId);
             }
@@ -242,6 +258,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void LoadJoystickConfiguration()
         {
+            // Loads the joysick configuration from the sharedpreferences
             ISharedPreferences sharedPreferences = Activity.GetSharedPreferences(typeof(JoystickConfiguration).FullName, 0);
 
             string leftJoystickJson = sharedPreferences.GetString(LeftJoystickPreferenceKey, string.Empty);
@@ -252,6 +269,7 @@ namespace FtApp.Droid.Activities.ControlInterface
             {
                 try
                 {
+                    // Only if we have stored a string we deserialize its data
                     _leftJoystickConfiguration = JsonConvert.DeserializeObject<JoystickConfiguration>(leftJoystickJson);
                 }
                 catch (JsonException) { }
@@ -260,6 +278,7 @@ namespace FtApp.Droid.Activities.ControlInterface
             {
                 try
                 {
+                    // Only if we have stored a string we deserialize its data
                     _rightJoystickConfiguration = JsonConvert.DeserializeObject<JoystickConfiguration>(rightJoystickJson);
                 }
                 catch (JsonException) { }
@@ -290,6 +309,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private JoystickConfiguration GetRelatedJoystickConfiguration(int joystickId)
         {
+            // Return the related joystick configuration depending on the given id
             switch (joystickId)
             {
                 case LeftJoystickIndex:
@@ -303,6 +323,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private JoystickView GetRelatedJoystickView(int joystickId)
         {
+            // Return the related joystick view depending on the given id
             switch (joystickId)
             {
                 case LeftJoystickIndex:
@@ -316,6 +337,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void ApplyJoystickConfiguration(JoystickConfiguration configuration, int joystickId)
         {
+            // Apply the joystick configuration depending on the given id
             switch (joystickId)
             {
                 case LeftJoystickIndex:
@@ -330,6 +352,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void HookEvents()
         {
+            // Hook the needed events
             if (FtInterfaceInstanceProvider.Instance != null)
             {
                 FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
@@ -345,6 +368,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void UnhookEvents()
         {
+            // Unhook the used events
             if (FtInterfaceInstanceProvider.Instance != null)
             {
                 FtInterfaceCameraProxy.CameraFrameDecoded -= FtInterfaceCameraProxyOnCameraFrameDecoded;
@@ -356,6 +380,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void JoystickViewOnValuesChanged(int joystickId)
         {
+            // When a joystick has changed we calculate the motor values depending on the actual configuration
             var configuration = GetRelatedJoystickConfiguration(joystickId);
             JoystickView joystick = GetRelatedJoystickView(joystickId);
 
@@ -379,6 +404,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void CalculateSyncronValues(float thumbAngle, float thumbDistance, out float value1, out float value2)
         {
+            // Calculate the syncron values with simple Sin and Cos
             float axis1 = 0;
             float axis2 = 0;
 
@@ -421,6 +447,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void InitializeCameraView()
         {
+            // We initialize the camera view on the ui thread
             Activity.RunOnUiThread(() =>
             {
                 _imageViewCameraStream?.SetImageBitmap(FtInterfaceCameraProxy.ImageBitmap);
@@ -439,6 +466,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         private void CleanupCameraView()
         {
+            // We cleanup the camera view on the ui thread
             Activity.RunOnUiThread(() =>
             {
                 _imageViewCameraStream?.SetImageBitmap(null);
@@ -458,6 +486,7 @@ namespace FtApp.Droid.Activities.ControlInterface
         
         private void FtInterfaceCameraProxyOnCameraFrameDecoded(object sender, FrameDecodedEventArgs eventArgs)
         {
+            // Invalidate the camera view on the ui thread
             Activity?.RunOnUiThread(() =>
             {
                 if (_imageViewCameraStream != null && FtInterfaceCameraProxy.ImageBitmap != null)
@@ -488,7 +517,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             FtInterfaceInstanceProvider.Instance.SetMotorValue(motorIndex, value, direction);
         }
-
+        
         private string[] GetMotorList()
         {
             if (FtInterfaceInstanceProvider.Instance != null)

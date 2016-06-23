@@ -60,11 +60,9 @@ namespace FtApp.Droid.Activities.ControlInterface
 
         public override void OnAttach(Context context)
         {
-            foreach (InputViewModel inputViewModel in _inputViewModels)
-            {
-                inputViewModel.Context = context;
-            }
             HookEvents();
+
+            InitializeInputDevices();
 
             base.OnAttach(context);
         }
@@ -73,77 +71,97 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             base.OnDetach();
             UnhookEvents();
+
+            SaveInputPorts();
         }
 
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
-            LoadInputDevices();
+            ConfigureInputPorts();
         }
 
         private void FtInterfaceOnInputValueChanged(object sender, InputValueChangedEventArgs inputValueChangedEventArgs)
         {
             foreach (int inputPort in inputValueChangedEventArgs.InputPorts)
             {
-                if (_inputViewModels.Count > inputPort)
-                {
-                    _inputViewModels[inputPort].InputValue =
-                        FtInterfaceInstanceProvider.Instance.GetInputValue(inputPort);
-                    Activity?.RunOnUiThread(() => { UpdateListView(inputPort, _inputViewModels[inputPort]); });
-                }
+                UpdateInputValue(inputPort);
             }
         }
         
         private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
         {
-            //for (int i = 0; i < _inputViewModels.Count; i++)
-            //{
-            //    SetInputDeviceInPreferences(i, _inputViewModels[i].InputDevice);
-            //}
-
-            _inputViewModels.Clear();
-            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+            SaveInputPorts();
         }
 
-        private void LoadInputDevices()
+        private void UpdateInputValue(int inputPort)
         {
+            if (_inputViewModels.Count > inputPort)
+            {
+                // Read the valuee of the port to update
+                _inputViewModels[inputPort].InputValue =
+                    FtInterfaceInstanceProvider.Instance.GetInputValue(inputPort);
+
+                // Update the kistview on the ui thread
+                Activity?.RunOnUiThread(() =>
+                {
+                    UpdateListView(inputPort, _inputViewModels[inputPort]);
+                });
+            }
+        }
+
+        private void InitializeInputDevices()
+        {
+            // Clear the list before we add new items
             _inputViewModels.Clear();
 
             for (int i = 0; i < FtInterfaceInstanceProvider.Instance.GetInputCount(); i++)
             {
+                // Create a new instance and add it to the list
                 var inputViewModel = new InputViewModel
                 {
                     Context = Activity,
                     InputIndex = i,
-                    InputValue = 1
+                    InputValue = 0,
+                    InputMaxValue = 1
                 };
-
-                inputViewModel.ChangeInputDevice(InputDevices.Switch);
-                //inputViewModel.ChangeInputDevice(GetInputDeviceFromPreferences(i));
-
+                
                 _inputViewModels.Add(inputViewModel);
             }
-            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+
+            // When we are already connected we load the configuration
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                if (FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.Online)
+                {
+                    ConfigureInputPorts();
+                }
+            }
+
+            // Update the list on the ui thread
+            Activity?.RunOnUiThread(() =>
+            {
+                _listAdapter?.NotifyDataSetChanged(); 
+                
+            });
         }
 
-        //private InputDevices GetInputDeviceFromPreferences(int inputIndex)
-        //{
-        //    ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
+        private void SaveInputPorts()
+        {
+            foreach (InputViewModel inputViewModel in _inputViewModels)
+            {
+                SaveInputDeviceToPreferences(inputViewModel.InputIndex, inputViewModel.InputDevice);
+            }
+        }
 
-        //    int value = settings.GetInt($"InputState_{inputIndex}", (int) InputDevices.Switch);
-        //    Console.WriteLine((InputDevices)value);
-        //    return (InputDevices) value;
-        //}
+        private void ConfigureInputPorts()
+        {
+            foreach (InputViewModel inputViewModel in _inputViewModels)
+            {
+                inputViewModel.ChangeInputDevice(GetInputDeviceFromPreferences(inputViewModel.InputIndex));
+            }
+        }
 
-        //private void SetInputDeviceInPreferences(int inputIndex, InputDevices inputDevice)
-        //{
-        //    ISharedPreferences settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
-        //    ISharedPreferencesEditor editor = settings.Edit();
-
-            
-        //    editor.PutInt($"InputState_{inputIndex}", (int)inputDevice);
-        //    editor.Commit();
-        //}
 
         private void UpdateListView(int position, InputViewModel item)
         {
@@ -165,7 +183,34 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             progressBarValue.Progress = item.InputValue;
         }
-        
+
+
+        private InputDevices GetInputDeviceFromPreferences(int inputIndex)
+        {
+            if (Activity != null)
+            {
+                var settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
+
+                var value = settings.GetInt($"InputState_{inputIndex}", (int)InputDevices.Switch);
+                return (InputDevices)value;
+            }
+            return InputDevices.Switch;
+        }
+
+        private void SaveInputDeviceToPreferences(int inputIndex, InputDevices inputDevice)
+        {
+            if (Activity != null)
+            {
+                var settings = Activity.GetSharedPreferences(typeof(InputFragment).FullName, 0);
+                var editor = settings.Edit();
+
+
+                editor.PutInt($"InputState_{inputIndex}", (int)inputDevice);
+                editor.Commit();
+            }
+        }
+
+
         public string GetTitle(Context context)
         {
             return context.GetText(Resource.String.ControlInterfaceActivity_tabInputTitle);
@@ -186,7 +231,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.Online)
             {
-                LoadInputDevices();
+                InitializeInputDevices();
             }
 
             return view;
@@ -234,8 +279,6 @@ namespace FtApp.Droid.Activities.ControlInterface
                     {
                         ShowInputModeContextMenu(view.Context, imageViewContextualMenu, position);
                     };
-
-                    FadeInAnimation(view, position);
                 }
 
 
@@ -253,16 +296,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
                 return view;
             }
-
-            private void FadeInAnimation(View view, int position)
-            {
-                view.Alpha = 0;
-                view.TranslationY = 20;
-
-                view.Animate().Alpha(1).SetDuration(225).SetStartDelay(position*20).Start();
-                view.Animate().TranslationY(0).SetDuration(100).SetStartDelay(position*20).Start();
-            }
-
+            
             private void ShowInputModeContextMenu(Context context, ImageView imageView, int position)
             {
                 if (_popupMenus.ContainsKey(_items[position]))

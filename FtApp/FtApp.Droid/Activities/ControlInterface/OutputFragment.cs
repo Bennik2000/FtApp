@@ -60,6 +60,9 @@ namespace FtApp.Droid.Activities.ControlInterface
         public override void OnAttach(Context context)
         {
             base.OnAttach(context);
+
+            InitializeInputDevices();
+            
             HookEvents();
         }
 
@@ -67,36 +70,98 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             base.OnDetach();
             UnhookEvents();
+
+            SaveInputPorts();
         }
 
         private void FtInterfaceOnOnlineStarted(object sender, EventArgs eventArgs)
         {
-            LoadOutputDevices();
+            ConfigureInputPorts();
         }
 
         private void FtInterfaceOnOnlineStopped(object sender, EventArgs eventArgs)
         {
-            _outputViewModels.Clear();
-            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+            SaveInputPorts();
         }
 
 
-        private void LoadOutputDevices()
+        private void InitializeInputDevices()
         {
+            // Clear the list before we add new items
             _outputViewModels.Clear();
-            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
 
             for (int i = 0; i < FtInterfaceInstanceProvider.Instance.GetMotorCount(); i++)
             {
+                // Create a new instance and add it to the list
                 var outputModel = new OutputViewModel();
 
                 outputModel.SetIndexes(i * 2, i * 2 + 1, i);
-                outputModel.SetIsMotor(true);
 
                 _outputViewModels.Add(outputModel);
             }
-            Activity?.RunOnUiThread(() => _listAdapter.NotifyDataSetChanged());
+
+            // When we are already connected we load the configuration
+            if (FtInterfaceInstanceProvider.Instance != null)
+            {
+                if (FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.Online)
+                {
+                    ConfigureInputPorts();
+                }
+            }
+
+            // Update the list on the ui thread
+            Activity?.RunOnUiThread(() =>
+            {
+                _listAdapter?.NotifyDataSetChanged();
+            });
         }
+
+        private void SaveInputPorts()
+        {
+            foreach (OutputViewModel outputViewModel in _outputViewModels)
+            {
+                SaveOutputDeviceToPreferences(outputViewModel.IndexOutput1, outputViewModel.OutputDevice);
+            }
+        }
+
+        private void ConfigureInputPorts()
+        {
+            foreach (OutputViewModel outputViewModel in _outputViewModels)
+            {
+                outputViewModel.SetOutputDevice(GetOutputDeviceFromPreferences(outputViewModel.IndexOutput1));
+            }
+            Activity?.RunOnUiThread(() =>
+            {
+                _listAdapter?.NotifyDataSetChanged();
+            });
+        }
+
+
+        private OutputDevice GetOutputDeviceFromPreferences(int outputIndex)
+        {
+            if (Activity != null)
+            {
+                var settings = Activity.GetSharedPreferences(typeof(OutputFragment).FullName, 0);
+
+                var value = settings.GetInt($"OutputState_{outputIndex}", (int)OutputDevice.Motor);
+                return (OutputDevice)value;
+            }
+            return OutputDevice.Motor;
+        }
+
+        private void SaveOutputDeviceToPreferences(int inputIndex, OutputDevice outputDevice)
+        {
+            if (Activity != null)
+            {
+                var settings = Activity.GetSharedPreferences(typeof(OutputFragment).FullName, 0);
+                var editor = settings.Edit();
+
+
+                editor.PutInt($"OutputState_{inputIndex}", (int)outputDevice);
+                editor.Commit();
+            }
+        }
+
 
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -116,7 +181,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.Online)
             {
-                LoadOutputDevices();
+                InitializeInputDevices();
             }
 
             return view;
@@ -180,7 +245,7 @@ namespace FtApp.Droid.Activities.ControlInterface
                         {
                             int threshold = 0;
 
-                            if (_items[itemIndex].IsMotor)
+                            if (_items[itemIndex].OutputDevice == OutputDevice.Motor)
                             {
                                 threshold = _items[itemIndex].MaxOutput1/2;
                             }
@@ -237,7 +302,7 @@ namespace FtApp.Droid.Activities.ControlInterface
                 seekBarValue1.Progress = item.ValueOutput1;
                 seekBarValue2.Progress = item.ValueOutput2;
 
-                if (item.IsMotor)
+                if (item.OutputDevice == OutputDevice.Motor)
                 {
                     textViewIndex2.Visibility = ViewStates.Gone;
                     seekBarValue2.Visibility = ViewStates.Gone;
@@ -293,11 +358,11 @@ namespace FtApp.Droid.Activities.ControlInterface
                 switch (id)
                 {
                     case Resource.Id.menuOutpuModeMotor:
-                        item.SetIsMotor(true);
+                        item.SetOutputDevice(OutputDevice.Motor);
                         break;
 
                     case Resource.Id.menuOutpuModeOutputs:
-                        item.SetIsMotor(false);
+                        item.SetOutputDevice(OutputDevice.SingleOutput);
                         break;
                 }
 
@@ -321,12 +386,12 @@ namespace FtApp.Droid.Activities.ControlInterface
 
 
 
-            public bool IsMotor { get; private set; }
+            public OutputDevice OutputDevice { get; private set; }
             public int IndexMotor { get; private set; }
             
             public string GetDecoratedIndex1()
             {
-                if (IsMotor)
+                if (OutputDevice == OutputDevice.Motor)
                 {
                     return $"M{IndexMotor + 1}";
                 }
@@ -341,7 +406,7 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             public void SetValueOutput1(int value)
             {
-                if (IsMotor)
+                if (OutputDevice == OutputDevice.Motor)
                 {
                     int outputValue = value - MaxOutput1/2;
 
@@ -383,7 +448,7 @@ namespace FtApp.Droid.Activities.ControlInterface
                     value = MaxOutput2;
                 }
 
-                if (!IsMotor)
+                if (OutputDevice != OutputDevice.Motor)
                 {
                     if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                     {
@@ -392,30 +457,34 @@ namespace FtApp.Droid.Activities.ControlInterface
                 }
             }
 
-            public void SetIsMotor(bool isMotor)
+            public void SetOutputDevice(OutputDevice outputDevice)
             {
-                if (isMotor)
+                if (outputDevice == OutputDevice.Motor)
                 {
                     MaxOutput1 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue() * 2;
                     MaxOutput2 = 0;
 
                     ValueOutput1 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue();
                     ValueOutput2 = 0;
+
+                    FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput1, true);
+                    FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput2, true);
                 }
-                else
+                else if (outputDevice == OutputDevice.SingleOutput)
                 {
                     MaxOutput1 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue();
                     MaxOutput2 = FtInterfaceInstanceProvider.Instance.GetMaxOutputValue();
 
                     ValueOutput1 = 0;
                     ValueOutput2 = 0;
+
+                    FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput1, false);
+                    FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput2, false);
                 }
 
-                FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput1, isMotor);
-                FtInterfaceInstanceProvider.Instance.ConfigureOutputMode(IndexOutput2, isMotor);
 
 
-                IsMotor = isMotor;
+                OutputDevice = outputDevice;
             }
 
             public void SetIndexes(int indexOutput1, int indexOutput2, int indexMotor)
@@ -424,6 +493,12 @@ namespace FtApp.Droid.Activities.ControlInterface
                 IndexOutput2 = indexOutput2;
                 IndexMotor = indexMotor;
             }
+        }
+
+        private enum OutputDevice
+        {
+            Motor,
+            SingleOutput
         }
     }
 }

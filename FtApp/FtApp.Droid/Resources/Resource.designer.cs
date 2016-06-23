@@ -2096,8 +2096,8 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f06007c
 			public const int design_navigation_view = 2131099772;
 			
-			// aapt resource value: 0x7f060075
-			public const int devicesListView = 2131099765;
+			// aapt resource value: 0x7f060076
+			public const int devicesListView = 2131099766;
 			
 			// aapt resource value: 0x7f06000e
 			public const int disableHome = 2131099662;
@@ -2177,9 +2177,6 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f060073
 			public const int imageViewListEmpty = 2131099763;
 			
-			// aapt resource value: 0x7f060076
-			public const int imageViewNoBluetooth = 2131099766;
-			
 			// aapt resource value: 0x7f0600ab
 			public const int info = 2131099819;
 			
@@ -2221,6 +2218,9 @@ namespace FtApp.Droid
 			
 			// aapt resource value: 0x7f060095
 			public const int linearLayoutTextViewOutput = 2131099797;
+			
+			// aapt resource value: 0x7f060075
+			public const int listInterfacesRefresh = 2131099765;
 			
 			// aapt resource value: 0x7f06000b
 			public const int listMode = 2131099659;

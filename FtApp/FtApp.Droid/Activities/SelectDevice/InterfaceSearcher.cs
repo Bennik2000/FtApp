@@ -107,7 +107,8 @@ namespace FtApp.Droid.Activities.SelectDevice
                         Regex regex = new Regex(ValidateTxNameExpression);
                         if (regex.IsMatch(deviceName))
                         {
-                            InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(adress, deviceName, ControllerType.Tx));
+                            InterfaceFound?.Invoke(this,
+                                new InterfaceFoundEventArgs(adress, deviceName, ControllerType.Tx));
                         }
                     }
                 }, () =>
@@ -117,6 +118,11 @@ namespace FtApp.Droid.Activities.SelectDevice
                     _searching = false;
                     _waitForFinishedResetEvent.Set();
                 });
+            }
+            else
+            {
+                _searching = false;
+                _waitForFinishedResetEvent.Set();
             }
         }
 

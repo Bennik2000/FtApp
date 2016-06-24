@@ -275,9 +275,9 @@ namespace TXTCommunication.Fischertechnik.Txt
             return string.Empty;
         }
 
-        public bool IsInterfaceReachable(string adress)
+        public bool IsInterfaceReachable(string address)
         {
-            return NetworkUtils.PingIp(adress);
+            return NetworkUtils.PingIp(address);
         }
 
         public int GetInputCount()
@@ -302,24 +302,24 @@ namespace TXTCommunication.Fischertechnik.Txt
 
         public ControllerType GetControllerType() => ControllerType.Txt;
 
-        public string RequestControllerName(string adress)
+        public string RequestControllerName(string address)
         {
             if (TxtCommunication == null)
             {
                 TxtCommunication = new TxtCommunication(this);
             }
 
-            return TxtCommunication.RequestControllerName(adress);
+            return TxtCommunication.RequestControllerName(address);
         }
 
-        public bool IsValidInterface(string adress)
+        public bool IsValidInterface(string address)
         {
             if (TxtCommunication == null)
             {
                 TxtCommunication = new TxtCommunication(this);
             }
 
-            return TxtCommunication.IsValidInterface(adress);
+            return TxtCommunication.IsValidInterface(address);
         }
 
         public int GetMotorIndex(int outputIndex)

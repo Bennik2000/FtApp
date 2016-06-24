@@ -1,5 +1,8 @@
 ﻿namespace TXCommunication.Packets
 {
+    /// <summary>
+    /// This packet is used to test the connection
+    /// </summary>
     class EchoPacket : Packet
     {
         public EchoPacket()

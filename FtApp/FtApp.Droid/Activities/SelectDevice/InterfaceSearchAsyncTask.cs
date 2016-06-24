@@ -70,7 +70,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             var controller = new InterfaceViewModel
             {
-                Adress = eventArgs.Adress,
+                Address = eventArgs.Address,
                 Name = eventArgs.Name,
                 ControllerType = eventArgs.ControllerType,
                 ControllerNameLaoding = false

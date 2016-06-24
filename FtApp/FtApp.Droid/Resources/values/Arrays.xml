@@ -19,7 +19,7 @@
 
 
   <string-array name="JoystickModes">
-    <item>@string/ControlTxtActivity_joystickModeSingle</item>
-    <item>@string/ControlTxtActivity_joystickModeSyncron</item>
+    <item>@string/ControlInterfaceActivity_joystickModeSingle</item>
+    <item>@string/ControlInterfaceActivity_joystickModeSyncron</item>
   </string-array>
 </resources>

@@ -1,3 +1,4 @@
+using System;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -5,10 +6,12 @@ using Android.OS;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using FtApp.Droid.Activities.ControllInterface;
 using System.Collections.Generic;
+using System.Linq;
+using Android.Support.V4.Widget;
 using FtApp.Droid.Activities.About;
 using FtApp.Droid.Activities.AppRating;
+using FtApp.Droid.Activities.ControlInterface;
 using FtApp.Droid.Activities.Help;
 using FtApp.Fischertechnik;
 using BluetoothAdapter = Android.Bluetooth.BluetoothAdapter;
@@ -27,11 +30,13 @@ namespace FtApp.Droid.Activities.SelectDevice
         private FoundDevicesListAdapter _foundDevicesListAdapter;
         private ProgressBar _progressBarScanning;
         private LinearLayout _layoutListEmpty;
+        private SwipeRefreshLayout _listRefreshLayout;
 
         private InterfaceSearchAsyncTask _interfaceSearchAsyncTask;
 
         private readonly List<InterfaceViewModel> _foundDevices;
 
+        private bool _searching;
 
         public SelectDeviceActivity()
         {
@@ -50,9 +55,17 @@ namespace FtApp.Droid.Activities.SelectDevice
             _listViewDevices = FindViewById<ListView>(Resource.Id.devicesListView);
             _progressBarScanning = FindViewById<ProgressBar>(Resource.Id.progressBarScanning);
             _layoutListEmpty = FindViewById<LinearLayout>(Resource.Id.layoutInterfaceListEmpty);
+            _listRefreshLayout = FindViewById<SwipeRefreshLayout>(Resource.Id.listInterfacesRefresh);
 
             _layoutListEmpty.Visibility = ViewStates.Gone;
 
+            _listRefreshLayout.SetColorSchemeResources(new[]
+            {
+                Resource.Color.accentColor,
+                Resource.Color.primaryColor
+            });
+
+            _listRefreshLayout.Refresh += ListRefreshLayoutOnRefresh;
 
             if (savedInstanceState == null)
             {
@@ -61,6 +74,15 @@ namespace FtApp.Droid.Activities.SelectDevice
 
             SetupToolbar();
             SetupListView();
+        }
+
+        private void ListRefreshLayoutOnRefresh(object sender, EventArgs eventArgs)
+        {
+            if (!_searching)
+            {
+                CancelSearch();
+                SearchForInterfaces();
+            }
         }
 
         protected override void OnStart()
@@ -73,7 +95,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         protected override void OnPause()
         {
             base.OnPause();
-            _interfaceSearchAsyncTask?.CancelSearch();
+            CancelSearch();
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
@@ -89,6 +111,7 @@ namespace FtApp.Droid.Activities.SelectDevice
                 if (resultCode == Result.Canceled)
                 {
                     Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
+                    SearchForInterfaces();
                 }
             }
         }
@@ -107,7 +130,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             switch (item.ItemId)
             {
                 case Resource.Id.optionsMenuItemSimulate:
-                    OpenControlActivity(".", GetString(Resource.String.ControlTxtActivity_SimulatedInterfaceName), ControllerType.Simulate);
+                    OpenControlActivity(".", GetString(Resource.String.ControlInterfaceActivity_simulatedInterfaceName), ControllerType.Simulate);
                     return true;
 
                 case Resource.Id.optionsMenuItemAbout:
@@ -147,21 +170,21 @@ namespace FtApp.Droid.Activities.SelectDevice
             {
                 var clickedItem = _foundDevices[(int)itemClickEventArgs.Id];
                 
-                OpenControlActivity(clickedItem.Adress, clickedItem.Name, clickedItem.ControllerType);
+                OpenControlActivity(clickedItem.Address, clickedItem.Name, clickedItem.ControllerType);
             }
         }
 
 
         private void OpenControlActivity(string address, string name, ControllerType type)
         {
-            _interfaceSearchAsyncTask?.CancelSearch();
+            CancelSearch();
 
             // Open the control activity and pass the extra data
-            Intent intent = new Intent(this, typeof(ControllInterfaceActivity));
+            Intent intent = new Intent(this, typeof(ControlInterfaceActivity));
 
-            intent.PutExtra(ControllInterfaceActivity.AdressExtraDataId, address);
-            intent.PutExtra(ControllInterfaceActivity.ControllerNameExtraDataId, name);
-            intent.PutExtra(ControllInterfaceActivity.ControllerTypeExtraDataId, (int)type);
+            intent.PutExtra(ControlInterfaceActivity.AddressExtraDataId, address);
+            intent.PutExtra(ControlInterfaceActivity.ControllerNameExtraDataId, name);
+            intent.PutExtra(ControlInterfaceActivity.ControllerTypeExtraDataId, (int)type);
 
             StartActivity(intent);
         }
@@ -185,32 +208,40 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         }
 
+
         private void SearchForInterfaces()
         {
-            if (BluetoothAdapter.DefaultAdapter.IsEnabled)
+            if (!BluetoothAdapter.DefaultAdapter.IsEnabled)
             {
-                _interfaceSearchAsyncTask = new InterfaceSearchAsyncTask(this);
-
-                _interfaceSearchAsyncTask.ProgressUpdated += InterfaceSearchAsyncTaskOnProgressUpdated;
-                _interfaceSearchAsyncTask.SearchFinished += InterfaceSearchAsyncTaskOnSearchFinished;
-
-                _interfaceSearchAsyncTask.Execute(string.Empty);
-
-
-                HideEmptyStateImage();
-                _progressBarScanning.Visibility = ViewStates.Visible;
-
-                _foundDevices.Clear();
-
-                _foundDevicesListAdapter.NotifyDataSetChanged();
-
+                Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
             }
-            else
-            {
-                SwitchOnBluetooth();
-            }
+
+            HideEmptyStateImage();
+            
+
+            _interfaceSearchAsyncTask = new InterfaceSearchAsyncTask(this);
+
+            _interfaceSearchAsyncTask.ProgressUpdated += InterfaceSearchAsyncTaskOnProgressUpdated;
+            _interfaceSearchAsyncTask.SearchFinished += InterfaceSearchAsyncTaskOnSearchFinished;
+
+            _interfaceSearchAsyncTask.Execute(string.Empty);
+
+
+            _progressBarScanning.Visibility = ViewStates.Visible;
+            _searching = true;
+
+            _foundDevices.Clear();
+
+            _foundDevicesListAdapter.NotifyDataSetChanged();
         }
 
+        private void CancelSearch()
+        {
+            _interfaceSearchAsyncTask?.CancelSearch();
+            _searching = false;
+
+            _listRefreshLayout.Refreshing = false;
+        }
 
         private void InterfaceSearchAsyncTaskOnSearchFinished(object sender, InterfaceSearchAsyncTask.SearchFinishedEventArgs eventArgs)
         {
@@ -223,6 +254,10 @@ namespace FtApp.Droid.Activities.SelectDevice
                 ShowEmptyStateImage();
             }
 
+            _listRefreshLayout.Refreshing = false;
+
+            _searching = false;
+
             _progressBarScanning.Visibility = ViewStates.Invisible;
             _foundDevicesListAdapter.NotifyDataSetChanged();
         }
@@ -231,17 +266,14 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             RunOnUiThread(() =>
             {
-                _foundDevices.Add(eventArgs.Interface);
-                _foundDevicesListAdapter.NotifyDataSetChanged();
+                if (_foundDevices.Count(model => model.Address == eventArgs.Interface.Address) == 0)
+                {
+                    _foundDevices.Add(eventArgs.Interface);
+                    _foundDevicesListAdapter.NotifyDataSetChanged();
+                }
             });
         }
-
-
-        private void SwitchOnBluetooth()
-        {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ActionRequestEnable);
-            StartActivityForResult(enableBtIntent, EnableBluetoothRequestId);
-        }
+        
 
         private void ShowEmptyStateImage()
         {

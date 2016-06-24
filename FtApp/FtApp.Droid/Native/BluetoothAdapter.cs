@@ -6,6 +6,9 @@ using TXCommunication;
 
 namespace FtApp.Droid.Native
 {
+    /// <summary>
+    /// This class implements the IRfcommAdapter interface. It is used to have a serial connection over bluetooth
+    /// </summary>
     class BluetoothAdapter : IRfcommAdapter
     {
         private Context Context { get; }
@@ -26,18 +29,18 @@ namespace FtApp.Droid.Native
             _bluetoothAdapter = Android.Bluetooth.BluetoothAdapter.DefaultAdapter;
         }
 
-        public void OpenConnection(string adress)
+        public void OpenConnection(string address)
         {
             if (!_bluetoothAdapter.IsEnabled)
             {
                 throw new InvalidOperationException("The bluetooth adapter is not enabled");
             }
-            if (!Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(adress))
+            if (!Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(address))
             {
-                throw new InvalidOperationException("The given adress is not valid");
+                throw new InvalidOperationException("The given address is not valid");
             }
             
-            _bluetoothDevice = _bluetoothAdapter.GetRemoteDevice(adress);
+            _bluetoothDevice = _bluetoothAdapter.GetRemoteDevice(address);
             _bluetoothSocket = _bluetoothDevice?.CreateInsecureRfcommSocketToServiceRecord(RfCommUuid);
             
             _bluetoothSocket?.Connect();
@@ -57,6 +60,7 @@ namespace FtApp.Droid.Native
         {
             if (_bluetoothSocket != null && _bluetoothSocket.IsConnected)
             {
+                // Write the bytes to the socket
                 _bluetoothSocket.OutputStream.Write(bytes, 0, bytes.Length);
             }
         }
@@ -65,6 +69,7 @@ namespace FtApp.Droid.Native
         {
             if (_bluetoothSocket != null && _bluetoothSocket.IsConnected)
             {
+                // Read the arrived bytes
                 byte[] bytes = new byte[count];
 
                 if (_bluetoothSocket != null && _bluetoothSocket.IsConnected)
@@ -80,20 +85,23 @@ namespace FtApp.Droid.Native
 
         public void CancelSearch()
         {
+            // Cancel the bluetooth discovery
             if (_bluetoothAdapter != null && _bluetoothAdapter.IsDiscovering)
             {
                 _bluetoothAdapter.CancelDiscovery();
             }
         }
 
-        public bool IsAvaliable(string adress)
+        public bool IsAvaliable(string address)
         {
-            return Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(adress);
+            // Checks if a bluetooth adress is valid
+            return Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(address);
         }
 
 
         public void SearchAvailableDevices(SerialSearchStarted started, SerialSearchFound found, SerialSearchFinished finished)
         {
+            // Search for bluetooth devices
             _bluetoothBroadcastRecevicer = new BluetoothBroadcastReceiver(started, found, finished);
 
             IntentFilter deviceFoundFilter = new IntentFilter(BluetoothDevice.ActionFound);

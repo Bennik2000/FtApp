@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
-using BluetoothAdapter = FtApp.Droid.Native.BluetoothAdapter;
+using BluetoothAdapter = Android.Bluetooth.BluetoothAdapter;
 
 namespace FtApp.Droid.Activities.SelectDevice
 {
@@ -29,18 +29,18 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         private Context Context { get; set; }
 
-        private BluetoothAdapter SerialAdapter { get; set; }
+        private Native.BluetoothAdapter SerialAdapter { get; set; }
 
-        private IList<string> PossibleIpAdresses { get; set; }
+        private IList<string> PossibleIpaddresses { get; set; }
 
 
         public InterfaceSearcher(Context context)
         {
             Context = context;
 
-            SerialAdapter = new BluetoothAdapter(context);
+            SerialAdapter = new Native.BluetoothAdapter(context);
 
-            PossibleIpAdresses = new List<string>
+            PossibleIpaddresses = new List<string>
             {
                 TxtInterface.ControllerWifiIp,
                 //TxtInterface.ControllerBluetoothIp,
@@ -68,6 +68,9 @@ namespace FtApp.Droid.Activities.SelectDevice
         public void CancelSearchForInterfaces()
         {
             SerialAdapter.CancelSearch();
+
+            _searching = false;
+            _waitForFinishedResetEvent.Set();
         }
 
         public void WaitForSearchFinished()
@@ -84,49 +87,58 @@ namespace FtApp.Droid.Activities.SelectDevice
             Thread.Sleep(100);
             IFtInterface txtInterface = new TxtInterface();
 
-            foreach (string ipAdress in PossibleIpAdresses)
+            foreach (string ipaddress in PossibleIpaddresses)
             {
-                if (txtInterface.IsValidInterface(ipAdress))
+                if (txtInterface.IsValidInterface(ipaddress))
                 {
-                    InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(ipAdress, "TXT Controller", ControllerType.Txt));
+                    InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(ipaddress, "TXT Controller", ControllerType.Txt));
                 }
             }
         }
 
         private void SearchTx()
         {
-            SerialAdapter.SearchAvailableDevices(() => {}, adress =>
+            if (BluetoothAdapter.DefaultAdapter.IsEnabled)
             {
-                string deviceName = Android.Bluetooth.BluetoothAdapter.DefaultAdapter.GetRemoteDevice(adress).Name;
-
-                if (deviceName != null)
+                SerialAdapter.SearchAvailableDevices(() => { }, adress =>
                 {
-                    // Connecting to a bluetooth device while discovery is not possible (or very slow). Therefore we only check for a match in the device name.
-                    Regex regex = new Regex(ValidateTxNameExpression);
-                    if (regex.IsMatch(deviceName))
-                    {
-                        InterfaceFound?.Invoke(this, new InterfaceFoundEventArgs(adress, deviceName, ControllerType.Tx));
-                    }
-                }
-            }, () =>
-            {
-                SearchFinished?.Invoke(this, EventArgs.Empty);
+                    string deviceName = BluetoothAdapter.DefaultAdapter.GetRemoteDevice(adress).Name;
 
+                    if (deviceName != null)
+                    {
+                        // Connecting to a bluetooth device while discovery is not possible (or very slow). Therefore we only check for a match in the device name.
+                        Regex regex = new Regex(ValidateTxNameExpression);
+                        if (regex.IsMatch(deviceName))
+                        {
+                            InterfaceFound?.Invoke(this,
+                                new InterfaceFoundEventArgs(adress, deviceName, ControllerType.Tx));
+                        }
+                    }
+                }, () =>
+                {
+                    SearchFinished?.Invoke(this, EventArgs.Empty);
+
+                    _searching = false;
+                    _waitForFinishedResetEvent.Set();
+                });
+            }
+            else
+            {
                 _searching = false;
                 _waitForFinishedResetEvent.Set();
-            });
+            }
         }
 
         
         public class InterfaceFoundEventArgs : EventArgs
         {
-            public string Adress { get; set; }
+            public string Address { get; set; }
             public string Name { get; set; }
             public ControllerType ControllerType { get; set; }
 
-            public InterfaceFoundEventArgs(string adress, string name, ControllerType type)
+            public InterfaceFoundEventArgs(string address, string name, ControllerType type)
             {
-                Adress = adress;
+                Address = address;
                 Name = name;
                 ControllerType = type;
             }

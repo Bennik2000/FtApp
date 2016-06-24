@@ -14,7 +14,7 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
     class TxtCameraCommunication : IDisposable
     {
         private bool Connected { get; set; }
-        private string IpAdress { get; set; }
+        private string Ipaddress { get; set; }
 
         private bool RequestedStop { get; set; }
 
@@ -37,7 +37,7 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
         public TxtCameraCommunication(TxtCommunication txtCommunication)
         {
             TxtCommunication = txtCommunication;
-            IpAdress = TxtCommunication.TxtInterface.Ip;
+            Ipaddress = TxtCommunication.TxtInterface.Ip;
 
             ReceivedFrames = new ConcurrentQueue<ResponseCameraFrame>();
             _networkingTaskQueue = new TaskQueue("TXT Camera communication");
@@ -86,7 +86,7 @@ namespace TXTCommunication.Fischertechnik.Txt.Camera
                 TxtCommunication.TxtInterface.LogMessage("Trying to connect to camera server");
                 try
                 {
-                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(IpAdress), TxtInterface.ControllerCameraIpPort);
+                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(Ipaddress), TxtInterface.ControllerCameraIpPort);
                     _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     _socket.Connect(ipEndPoint);
                     

@@ -93,15 +93,15 @@
   <ItemGroup>
     <Compile Include="Activities\About\AboutActivity.cs" />
     <Compile Include="Activities\AppRating\RatingDialog.cs" />
-    <Compile Include="Activities\ControllInterface\CameraFragment.cs" />
-    <Compile Include="Activities\ControllInterface\ControllInterfaceActivity.cs" />
-    <Compile Include="Activities\ControllInterface\FtInterfaceCameraProxy.cs" />
-    <Compile Include="Activities\ControllInterface\FtInterfaceInstanceProvider.cs" />
-    <Compile Include="Activities\ControllInterface\IFtInterfaceFragment.cs" />
-    <Compile Include="Activities\ControllInterface\InputFragment.cs" />
-    <Compile Include="Activities\ControllInterface\JoystickConfiguration.cs" />
-    <Compile Include="Activities\ControllInterface\JoystickFragment.cs" />
-    <Compile Include="Activities\ControllInterface\OutputFragment.cs" />
+    <Compile Include="Activities\ControlInterface\CameraFragment.cs" />
+    <Compile Include="Activities\ControlInterface\ControlInterfaceActivity.cs" />
+    <Compile Include="Activities\ControlInterface\FtInterfaceCameraProxy.cs" />
+    <Compile Include="Activities\ControlInterface\FtInterfaceInstanceProvider.cs" />
+    <Compile Include="Activities\ControlInterface\ITitledFragment.cs" />
+    <Compile Include="Activities\ControlInterface\InputFragment.cs" />
+    <Compile Include="Activities\ControlInterface\JoystickConfiguration.cs" />
+    <Compile Include="Activities\ControlInterface\JoystickFragment.cs" />
+    <Compile Include="Activities\ControlInterface\OutputFragment.cs" />
     <Compile Include="Activities\Help\FaqListAdapter.cs" />
     <Compile Include="Activities\Help\FaqViewModel.cs" />
     <Compile Include="Activities\Help\HelpActivity.cs" />
@@ -111,6 +111,7 @@
     <Compile Include="Activities\SelectDevice\InterfaceSearcher.cs" />
     <Compile Include="Activities\SelectDevice\InterfaceViewModel.cs" />
     <Compile Include="Native\BluetoothAdapter.cs" />
+    <Compile Include="Native\GenericAsyncTask.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Activities\SelectDevice\SelectDeviceActivity.cs" />
@@ -197,15 +198,15 @@
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportdesign">
       <Visible>False</Visible>
-      <Version>23.1.1.1</Version>
+      <Version>23.2.1</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportv7appcompat">
       <Visible>False</Visible>
-      <Version>23.1.1.1</Version>
+      <Version>23.2.1</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportv7cardview">
       <Visible>False</Visible>
-      <Version>23.1.1.1</Version>
+      <Version>23.2.1</Version>
     </XamarinComponentReference>
   </ItemGroup>
   <ItemGroup>
@@ -368,6 +369,21 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-hdpi\ic_settings_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_bluetooth_disabled_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\ic_bluetooth_disabled_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_bluetooth_disabled_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_bluetooth_disabled_black_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_bluetooth_disabled_black_24dp.png" />
   </ItemGroup>
   <Import Project="..\FtApp\FtApp.projitems" Label="Shared" Condition="Exists('..\FtApp\FtApp.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

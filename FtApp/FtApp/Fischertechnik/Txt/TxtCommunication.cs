@@ -177,19 +177,19 @@ namespace TXTCommunication.Fischertechnik.Txt
         }
 
 
-        public string RequestControllerName(string adress)
+        public string RequestControllerName(string address)
         {
-            // If we cached the adress already: return the controller name
-            if (_controllerNameCache.ContainsKey(adress))
+            // If we cached the address already: return the controller name
+            if (_controllerNameCache.ContainsKey(address))
             {
-                return _controllerNameCache[adress];
+                return _controllerNameCache[address];
             }
 
 
             try
             {
                 // Connect to the interface
-                var ipEndPoint = new IPEndPoint(IPAddress.Parse(adress), TxtInterface.ControllerIpPort);
+                var ipEndPoint = new IPEndPoint(IPAddress.Parse(address), TxtInterface.ControllerIpPort);
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
                 {
                     SendTimeout = 1000,
@@ -217,7 +217,7 @@ namespace TXTCommunication.Fischertechnik.Txt
                 // Process the response
                 response.FromByteArray(responseBytes);
                 
-                _controllerNameCache.Add(adress, response.GetControllerName());
+                _controllerNameCache.Add(address, response.GetControllerName());
 
                 return response.GetControllerName();
             }
@@ -226,9 +226,9 @@ namespace TXTCommunication.Fischertechnik.Txt
                 return string.Empty;
             }
         }
-        public bool IsValidInterface(string adress)
+        public bool IsValidInterface(string address)
         {
-            return !string.IsNullOrEmpty(RequestControllerName(adress));
+            return !string.IsNullOrEmpty(RequestControllerName(address));
         }
 
         public void Dispose()

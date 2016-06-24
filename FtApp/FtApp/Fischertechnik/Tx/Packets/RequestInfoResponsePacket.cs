@@ -2,6 +2,9 @@
 
 namespace TXCommunication.Packets
 {
+    /// <summary>
+    /// This packet is received after an request info packet. It contains the controller name and its firmware version
+    /// </summary>
     class RequestInfoResponsePacket : Packet
     {
         public string ControllerName { get; private set; }

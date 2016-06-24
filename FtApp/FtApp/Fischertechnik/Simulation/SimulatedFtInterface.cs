@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using FtApp.Fischertechnik.Txt.Events;
 using TXTCommunication.Fischertechnik;
 
 namespace FtApp.Fischertechnik.Simulation
 {
+    /// <summary>
+    /// This class simulates an interface. You can use it to test the UI without connecting to a real interface.
+    /// </summary>
     class SimulatedFtInterface : IFtInterface
     {
         public ConnectionStatus Connection { get; set; }
 
-        public void Connect(string adress)
+        public void Connect(string address)
         {
             Thread.Sleep(500);
             Connected?.Invoke(this, EventArgs.Empty);
@@ -24,6 +29,14 @@ namespace FtApp.Fischertechnik.Simulation
         {
             Thread.Sleep(300);
             OnlineStarted?.Invoke(this, EventArgs.Empty);
+
+            // When the online mode "started" then we reset all input values
+            List<int> inputPorts = new List<int>();
+            for (int i = 0; i < GetInputCount(); i++)
+            {
+                inputPorts.Add(i);
+            }
+            InputValueChanged?.Invoke(this, new InputValueChangedEventArgs(inputPorts));
         }
 
         public void StopOnlineMode()
@@ -72,12 +85,12 @@ namespace FtApp.Fischertechnik.Simulation
             return ControllerType.Simulate;
         }
 
-        public string RequestControllerName(string adress)
+        public string RequestControllerName(string address)
         {
             return "Simulated Interface";
         }
 
-        public bool IsValidInterface(string adress)
+        public bool IsValidInterface(string address)
         {
             return true;
         }

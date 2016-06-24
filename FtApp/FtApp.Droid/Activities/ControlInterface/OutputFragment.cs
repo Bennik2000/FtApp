@@ -426,7 +426,11 @@ namespace FtApp.Droid.Activities.ControlInterface
                     {
                         if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                         {
-                            FtInterfaceInstanceProvider.Instance.SetMotorValue(IndexMotor, absoluteValue, direction);
+                            try
+                            {
+                                FtInterfaceInstanceProvider.Instance.SetMotorValue(IndexMotor, absoluteValue, direction);
+                            }
+                            catch (InvalidOperationException) { }
                         }
                     }
                 }
@@ -441,7 +445,11 @@ namespace FtApp.Droid.Activities.ControlInterface
                     {
                         if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                         {
-                            FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput1, value);
+                            try
+                            {
+                                FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput1, value);
+                            }
+                            catch (InvalidOperationException) { }
                         }
                     }
                 }
@@ -458,11 +466,15 @@ namespace FtApp.Droid.Activities.ControlInterface
                 {
                     if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
                     {
-                        FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput2, value);
+                        try
+                        {
+                            FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput2, value);
+                        }
+                        catch (InvalidOperationException) { }
                     }
                 }
             }
-
+            
             public void SetOutputDevice(OutputDevice outputDevice)
             {
                 if (outputDevice == OutputDevice.Motor)

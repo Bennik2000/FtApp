@@ -68,6 +68,9 @@ namespace FtApp.Droid.Activities.SelectDevice
         public void CancelSearchForInterfaces()
         {
             SerialAdapter.CancelSearch();
+
+            _searching = false;
+            _waitForFinishedResetEvent.Set();
         }
 
         public void WaitForSearchFinished()
@@ -129,13 +132,13 @@ namespace FtApp.Droid.Activities.SelectDevice
         
         public class InterfaceFoundEventArgs : EventArgs
         {
-            public string address { get; set; }
+            public string Address { get; set; }
             public string Name { get; set; }
             public ControllerType ControllerType { get; set; }
 
             public InterfaceFoundEventArgs(string address, string name, ControllerType type)
             {
-                address = address;
+                Address = address;
                 Name = name;
                 ControllerType = type;
             }

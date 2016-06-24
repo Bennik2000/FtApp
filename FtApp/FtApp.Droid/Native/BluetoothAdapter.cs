@@ -6,6 +6,9 @@ using TXCommunication;
 
 namespace FtApp.Droid.Native
 {
+    /// <summary>
+    /// This class implements the IRfcommAdapter interface. It is used to have a serial connection over bluetooth
+    /// </summary>
     class BluetoothAdapter : IRfcommAdapter
     {
         private Context Context { get; }
@@ -57,6 +60,7 @@ namespace FtApp.Droid.Native
         {
             if (_bluetoothSocket != null && _bluetoothSocket.IsConnected)
             {
+                // Write the bytes to the socket
                 _bluetoothSocket.OutputStream.Write(bytes, 0, bytes.Length);
             }
         }
@@ -65,6 +69,7 @@ namespace FtApp.Droid.Native
         {
             if (_bluetoothSocket != null && _bluetoothSocket.IsConnected)
             {
+                // Read the arrived bytes
                 byte[] bytes = new byte[count];
 
                 if (_bluetoothSocket != null && _bluetoothSocket.IsConnected)
@@ -80,6 +85,7 @@ namespace FtApp.Droid.Native
 
         public void CancelSearch()
         {
+            // Cancel the bluetooth discovery
             if (_bluetoothAdapter != null && _bluetoothAdapter.IsDiscovering)
             {
                 _bluetoothAdapter.CancelDiscovery();
@@ -88,12 +94,14 @@ namespace FtApp.Droid.Native
 
         public bool IsAvaliable(string address)
         {
+            // Checks if a bluetooth adress is valid
             return Android.Bluetooth.BluetoothAdapter.CheckBluetoothAddress(address);
         }
 
 
         public void SearchAvailableDevices(SerialSearchStarted started, SerialSearchFound found, SerialSearchFinished finished)
         {
+            // Search for bluetooth devices
             _bluetoothBroadcastRecevicer = new BluetoothBroadcastReceiver(started, found, finished);
 
             IntentFilter deviceFoundFilter = new IntentFilter(BluetoothDevice.ActionFound);

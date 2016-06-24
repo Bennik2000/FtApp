@@ -1,8 +1,10 @@
 using System;
 using System.ComponentModel;
 using Android.Graphics;
+using Java.Lang;
 using TXTCommunication.Fischertechnik.Txt;
 using TXTCommunication.Fischertechnik.Txt.Camera;
+using Exception = System.Exception;
 
 namespace FtApp.Droid.Activities.ControlInterface
 {
@@ -140,7 +142,15 @@ namespace FtApp.Droid.Activities.ControlInterface
             }
 
             // We decode the frame using ImageOptions
-            ImageBitmap = BitmapFactory.DecodeByteArray(bytes, 0, length, ImageOptions);
+            try
+            {
+                ImageBitmap = BitmapFactory.DecodeByteArray(bytes, 0, length, ImageOptions);
+            }
+            catch (IllegalArgumentException)
+            {
+                // Sometimes when the image changes very fast (i.e. you shake the camera) we are unable to decode the frame
+                return;
+            }
 
             if (FirstFrame)
             {

@@ -18,8 +18,6 @@ using System.Linq;
 using TXCommunication;
 using TXTCommunication.Fischertechnik;
 using TXTCommunication.Fischertechnik.Txt;
-using TXTCommunication.Utils;
-using AlertDialog = Android.Support.V7.App.AlertDialog;
 using Exception = System.Exception;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
@@ -39,11 +37,9 @@ namespace FtApp.Droid.Activities.ControlInterface
         public const string AddressExtraDataId = "Address";
         public const string ControllerNameExtraDataId = "ControllerName";
         public const string ControllerTypeExtraDataId = "ControllerType";
-
-        private readonly TaskQueue _connectionTaskQueue;
-
+        
         private ProgressDialog _connectingDialog;
-        private AlertDialog _notAvailableDialog;
+        private ProgressDialog _disconnectingDialog;
 
         private TabLayout _tabLayout;
         private ViewPager _viewPager;
@@ -56,14 +52,21 @@ namespace FtApp.Droid.Activities.ControlInterface
         private bool _isActivityInFocus;
         private bool _eventsHooked;
 
+        private ConnectionState _targetConnectionState;
+
+        private enum ConnectionState
+        {
+            Connected,
+            Disconnected
+        }
+
         public ControlInterfaceActivity()
         {
-            _connectionTaskQueue = new TaskQueue("Connection handler");
-
             FtInterfaceInstanceProvider.InstanceChanged += FtInterfaceInstanceProviderOnInstanceChanged;
 
             // We have to use the FtInterfaceCameraProxy one time to call the static constructor
-            bool b = FtInterfaceCameraProxy.FirstFrame;
+            // ReSharper disable once UnusedVariable
+            var b = FtInterfaceCameraProxy.FirstFrame;
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -78,7 +81,6 @@ namespace FtApp.Droid.Activities.ControlInterface
 
 
             ExtractExtraData();
-            InitializeDialogs();
 
 
             SetupToolbar();
@@ -87,7 +89,7 @@ namespace FtApp.Droid.Activities.ControlInterface
             if (savedInstanceState == null)
             {
                 // When this is the initial startup where we hide the joystick fragment
-                HideJoystick();
+                HideJoystick(false);
             }
             else
             {
@@ -124,10 +126,11 @@ namespace FtApp.Droid.Activities.ControlInterface
 
             try
             {
-                _notAvailableDialog.Dismiss();
+                _disconnectingDialog.Dismiss();
             }
             // ReSharper disable once EmptyGeneralCatchClause
             catch (Exception) { }
+            
 
 
             base.OnPause();
@@ -140,17 +143,14 @@ namespace FtApp.Droid.Activities.ControlInterface
             if (!_isActivityInFocus)
             {
                 // When this activity is not in focus we disconnect. It is not in focus when it is closed
-                DisconnectFromInterface();
+                DisconnectFromInterface(false);
             }
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            // Cleanup the task queue
-            _connectionTaskQueue?.Dispose();
-
+            
             // Unhook the events
             UnhookEvents();
         }
@@ -199,12 +199,13 @@ namespace FtApp.Droid.Activities.ControlInterface
             if (_joystickVisibile)
             {
                 // When the joystick is visible we hide it
-                HideJoystick();
+                HideJoystick(true);
             }
             else
             {
                 // when the joystick is not visible we close the activity
-                Finish();
+                //Finish();
+                DisconnectFromInterface(true);
             }
         }
 
@@ -213,11 +214,11 @@ namespace FtApp.Droid.Activities.ControlInterface
             // Load the saved state. We load the vsibility of the joystick and the current active tab
             if (savedInstanceState.GetBoolean(JoystickVisibleDataId))
             {
-                ShowJoystick();
+                ShowJoystick(false);
             }
             else
             {
-                HideJoystick();
+                HideJoystick(false);
             }
 
             _viewPager.SetCurrentItem(savedInstanceState.GetInt(ActiveTabDataId, 0), false);
@@ -233,8 +234,8 @@ namespace FtApp.Droid.Activities.ControlInterface
             FtInterfaceInstanceProvider.ControllerName = extras != null ? extras.GetString(ControllerNameExtraDataId) : string.Empty;
             FtInterfaceInstanceProvider.Ip = extras != null ? extras.GetString(AddressExtraDataId) : string.Empty;
         }
-
-        private void InitializeDialogs()
+        
+        private void InitializeConnectingDialog()
         {
             _connectingDialog = new ProgressDialog(this);
 
@@ -242,16 +243,16 @@ namespace FtApp.Droid.Activities.ControlInterface
             _connectingDialog.SetMessage(GetString(Resource.String.ControlInterfaceActivity_interfaceConnecting));
             _connectingDialog.SetCancelable(false);
             _connectingDialog.Indeterminate = true;
+        }
 
-            var notAvailableBuilder = new AlertDialog.Builder(this, Resource.Style.AlertDialogStyle);
+        private void InitializeDisconnectingDialog()
+        {
+            _disconnectingDialog = new ProgressDialog(this);
 
-            notAvailableBuilder.SetTitle(GetString(Resource.String.ControlInterfaceActivity_interfaceNotAvaliableTitle));
-            notAvailableBuilder.SetMessage(GetString(Resource.String.ControlInterfaceActivity_interfaceNotAvaliable));
-            notAvailableBuilder.SetCancelable(false);
-            notAvailableBuilder.SetPositiveButton(Resource.String.ControlInterfaceActivity_interfaceNotAvaliablePositive,
-                delegate { Finish(); });
-
-            _notAvailableDialog = notAvailableBuilder.Create();
+            _disconnectingDialog.SetTitle(GetString(Resource.String.ControlInterfaceActivity_interfaceConnectingTitle));
+            _disconnectingDialog.SetMessage(GetString(Resource.String.ControlInterfaceActivity_interfaceConnecting));
+            _disconnectingDialog.SetCancelable(false);
+            _disconnectingDialog.Indeterminate = true;
         }
 
         private void SetupToolbar()
@@ -331,35 +332,68 @@ namespace FtApp.Droid.Activities.ControlInterface
             }
         }
 
-        private void ShowJoystick()
+        private void ShowJoystick(bool animated)
         {
-            // We show the joystick with an animation
             _joystickFragment.Activate();
-
             _joystickVisibile = true;
-            _tabLayout.Animate().Alpha(0).SetDuration(200).Start();
-            _viewPager.Animate().Alpha(0).SetDuration(200).Start();
 
-            FragmentManager.BeginTransaction()
-                .SetCustomAnimations(Resource.Animation.FadeIn, Resource.Animation.FadeOut)
-                .Show(_joystickFragment)
-                .Commit();
+            if (animated)
+            {
+                // We show the joystick with an animation
+                _tabLayout.Animate().Alpha(0).SetDuration(200).Start();
+                _viewPager.Animate().Alpha(0).SetDuration(200).Start();
+
+                FragmentManager.BeginTransaction()
+                    .SetCustomAnimations(Resource.Animation.FadeIn, Resource.Animation.FadeOut)
+                    .Show(_joystickFragment)
+                    .Commit();
+            }
+            else
+            {
+                _tabLayout.Alpha = 0;
+                _viewPager.Alpha = 0;
+
+                FragmentManager.BeginTransaction()
+                    .Show(_joystickFragment)
+                    .Commit();
+            }
         }
 
-        private void HideJoystick()
+        private void HideJoystick(bool animated)
         {
-            // We hide the joystick with an animation
             _joystickVisibile = false;
-            _tabLayout.Visibility = ViewStates.Visible;
-            _tabLayout.Animate().Alpha(1).SetDuration(200).SetListener(new HideOnFinishedAnimationListener(_tabLayout)).Start();
 
-            _viewPager.Visibility = ViewStates.Visible;
-            _viewPager.Animate().Alpha(1).SetDuration(200).SetListener(new HideOnFinishedAnimationListener(_viewPager)).Start();
+            if (animated)
+            {
+                // We hide the joystick with an animation
+                _tabLayout.Visibility = ViewStates.Visible;
+                _tabLayout.Animate()
+                    .Alpha(1)
+                    .SetDuration(200)
+                    .SetListener(new HideOnFinishedAnimationListener(_tabLayout))
+                    .Start();
 
-            FragmentManager.BeginTransaction()
-                .SetCustomAnimations(Resource.Animation.FadeIn, Resource.Animation.FadeOut)
-                .Hide(_joystickFragment)
-                .Commit();
+                _viewPager.Visibility = ViewStates.Visible;
+                _viewPager.Animate()
+                    .Alpha(1)
+                    .SetDuration(200)
+                    .SetListener(new HideOnFinishedAnimationListener(_viewPager))
+                    .Start();
+
+                FragmentManager.BeginTransaction()
+                    .SetCustomAnimations(Resource.Animation.FadeIn, Resource.Animation.FadeOut)
+                    .Hide(_joystickFragment)
+                    .Commit();
+            }
+            else
+            {
+                _tabLayout.Visibility = ViewStates.Visible;
+                _viewPager.Visibility = ViewStates.Visible;
+                
+                FragmentManager.BeginTransaction()
+                    .Hide(_joystickFragment)
+                    .Commit();
+            }
         }
 
         private void ToggleJoystickVisibility()
@@ -367,18 +401,20 @@ namespace FtApp.Droid.Activities.ControlInterface
             // Depending on the current visibility we hide or show the joystick
             if (_joystickVisibile)
             {
-                HideJoystick();
+                HideJoystick(true);
             }
             else
             {
-                ShowJoystick();
+                ShowJoystick(true);
             }
         }
-
+        
 
         private void FtInterfaceInstanceProviderOnInstanceChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             _eventsHooked = false;
+
+            UnhookEvents();
 
             // When the instance has changed we hook the events
             HookEvents();
@@ -441,38 +477,69 @@ namespace FtApp.Droid.Activities.ControlInterface
             FtInterfaceCameraProxy.StopCameraStream();
         }
 
+
         private void ConnectToFtInterface()
         {
             if (FtInterfaceInstanceProvider.Instance.Connection == ConnectionStatus.NotConnected)
             {
+                _targetConnectionState = ConnectionState.Connected;
+
+
                 // Show the connecting dialog
+                InitializeConnectingDialog();
                 _connectingDialog.Show();
 
                 // The connecting process is done on a separate thread
-                _connectionTaskQueue.DoWorkInQueue(() =>
+                GenericAsyncTask task = new GenericAsyncTask();
+                task.Execute(() =>
                 {
-                    FtInterfaceInstanceProvider.Instance?.Connect(FtInterfaceInstanceProvider.Ip);
-                    FtInterfaceInstanceProvider.Instance?.StartOnlineMode();
-                }, false);
+                    if (_targetConnectionState == ConnectionState.Connected)
+                    {
+                        FtInterfaceInstanceProvider.Instance?.Connect(FtInterfaceInstanceProvider.Ip);
+                        FtInterfaceInstanceProvider.Instance?.StartOnlineMode();
+                    }
+                });
             }
         }
 
-        private void DisconnectFromInterface()
+        private void DisconnectFromInterface(bool showDialog)
         {
-            // Do the disconnection on a separate thread
-            _connectionTaskQueue.DoWorkInQueue(() =>
-            {
-                if (FtInterfaceInstanceProvider.Instance != null && FtInterfaceInstanceProvider.Instance.CanSendCommand())
-                {
-                    // Stop the online mode and disconnect
-                    FtInterfaceInstanceProvider.Instance.StopOnlineMode();
-                    FtInterfaceInstanceProvider.Instance.Disconnect();
+            _targetConnectionState = ConnectionState.Disconnected;
 
-                    // Cleanup the instance
-                    FtInterfaceInstanceProvider.Instance.Dispose();
-                    FtInterfaceInstanceProvider.Instance = null;
+            // Do the disconnection on a separate thread
+            GenericAsyncTask task = new GenericAsyncTask();
+
+            if (showDialog)
+            {
+                InitializeDisconnectingDialog();
+                _disconnectingDialog.Show();
+
+
+                task.ExecutionFinished += delegate
+                {
+                    _disconnectingDialog.Dismiss();
+                    Finish();
+                };
+            }
+
+
+            task.Execute(() =>
+            {
+                if (_targetConnectionState == ConnectionState.Disconnected)
+                {
+                    if (FtInterfaceInstanceProvider.Instance != null &&
+                        FtInterfaceInstanceProvider.Instance.CanSendCommand())
+                    {
+                        // Stop the online mode and disconnect
+                        FtInterfaceInstanceProvider.Instance.StopOnlineMode();
+                        FtInterfaceInstanceProvider.Instance.Disconnect();
+
+                        // Cleanup the instance
+                        FtInterfaceInstanceProvider.Instance.Dispose();
+                        FtInterfaceInstanceProvider.Instance = null;
+                    }
                 }
-            }, true);
+            });
         }
 
 

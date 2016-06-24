@@ -422,9 +422,12 @@ namespace FtApp.Droid.Activities.ControlInterface
                         absoluteValue = MaxOutput1;
                     }
 
-                    if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
+                    if (FtInterfaceInstanceProvider.Instance != null)
                     {
-                        FtInterfaceInstanceProvider.Instance.SetMotorValue(IndexMotor, absoluteValue, direction);
+                        if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
+                        {
+                            FtInterfaceInstanceProvider.Instance.SetMotorValue(IndexMotor, absoluteValue, direction);
+                        }
                     }
                 }
                 else
@@ -434,9 +437,12 @@ namespace FtApp.Droid.Activities.ControlInterface
                         value = MaxOutput1;
                     }
 
-                    if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
+                    if (FtInterfaceInstanceProvider.Instance != null)
                     {
-                        FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput1, value);
+                        if (FtInterfaceInstanceProvider.Instance.CanSendCommand())
+                        {
+                            FtInterfaceInstanceProvider.Instance.SetOutputValue(IndexOutput1, value);
+                        }
                     }
                 }
             }

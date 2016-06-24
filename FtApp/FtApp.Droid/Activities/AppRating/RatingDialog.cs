@@ -86,7 +86,7 @@ namespace FtApp.Droid.Activities.AppRating
                     _rateDialog?.Dismiss();
                 });
 
-            _rateDialog.SetCancelable(false);
+            rateReminderDialogBuilder.SetCancelable(false);
 
             // Create and show the dialog
             _rateDialog = rateReminderDialogBuilder.Create();

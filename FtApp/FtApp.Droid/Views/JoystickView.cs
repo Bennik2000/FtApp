@@ -8,6 +8,10 @@ using System;
 
 namespace FtApp.Droid.Views
 {
+    /// <summary>
+    /// The JoystickView displays a jostick which can be used to control something
+    /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class JoystickView : View
     {
         public delegate void ValuesChangedEventHandler(object sender, EventArgs eventArgs);

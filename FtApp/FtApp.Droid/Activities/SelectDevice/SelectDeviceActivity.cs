@@ -80,7 +80,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         {
             if (!_searching)
             {
-                _interfaceSearchAsyncTask?.CancelSearch();
+                CancelSearch();
                 SearchForInterfaces();
             }
         }
@@ -95,7 +95,7 @@ namespace FtApp.Droid.Activities.SelectDevice
         protected override void OnPause()
         {
             base.OnPause();
-            _interfaceSearchAsyncTask?.CancelSearch();
+            CancelSearch();
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
@@ -177,10 +177,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         private void OpenControlActivity(string address, string name, ControllerType type)
         {
-            _interfaceSearchAsyncTask?.CancelSearch();
-            _searching = false;
-
-            _listRefreshLayout.Refreshing = false;
+            CancelSearch();
 
             // Open the control activity and pass the extra data
             Intent intent = new Intent(this, typeof(ControlInterfaceActivity));
@@ -211,6 +208,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         }
 
+
         private void SearchForInterfaces()
         {
             if (!BluetoothAdapter.DefaultAdapter.IsEnabled)
@@ -237,6 +235,13 @@ namespace FtApp.Droid.Activities.SelectDevice
             _foundDevicesListAdapter.NotifyDataSetChanged();
         }
 
+        private void CancelSearch()
+        {
+            _interfaceSearchAsyncTask?.CancelSearch();
+            _searching = false;
+
+            _listRefreshLayout.Refreshing = false;
+        }
 
         private void InterfaceSearchAsyncTaskOnSearchFinished(object sender, InterfaceSearchAsyncTask.SearchFinishedEventArgs eventArgs)
         {

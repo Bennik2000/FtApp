@@ -78,6 +78,7 @@ namespace TXCommunication
                 LogMessage($"Exception while connecting: {e.Message}");
                 Connection = ConnectionStatus.Invalid;
                 HandleException(e);
+                return;
             }
 
 

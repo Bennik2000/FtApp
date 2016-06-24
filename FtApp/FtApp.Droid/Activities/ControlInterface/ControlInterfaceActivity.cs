@@ -249,8 +249,8 @@ namespace FtApp.Droid.Activities.ControlInterface
         {
             _disconnectingDialog = new ProgressDialog(this);
 
-            _disconnectingDialog.SetTitle(GetString(Resource.String.ControlInterfaceActivity_interfaceConnectingTitle));
-            _disconnectingDialog.SetMessage(GetString(Resource.String.ControlInterfaceActivity_interfaceConnecting));
+            _disconnectingDialog.SetTitle(GetString(Resource.String.ControlInterfaceActivity_interfaceDisconnectingTitle));
+            _disconnectingDialog.SetMessage(GetString(Resource.String.ControlInterfaceActivity_interfaceDisconnecting));
             _disconnectingDialog.SetCancelable(false);
             _disconnectingDialog.Indeterminate = true;
         }

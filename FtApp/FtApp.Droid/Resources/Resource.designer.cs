@@ -2805,62 +2805,62 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f09001a
 			public const int AboutActivity_moreInformation = 2131296282;
 			
-			// aapt resource value: 0x7f09004c
-			public const int ControlInterfaceActivity_configureJoystickModeDialogPositive = 2131296332;
-			
-			// aapt resource value: 0x7f09004b
-			public const int ControlInterfaceActivity_configureJoystickModeDialogTitle = 2131296331;
-			
 			// aapt resource value: 0x7f09004e
-			public const int ControlInterfaceActivity_configureJoystickMotor1DialogPositive = 2131296334;
+			public const int ControlInterfaceActivity_configureJoystickModeDialogPositive = 2131296334;
 			
 			// aapt resource value: 0x7f09004d
-			public const int ControlInterfaceActivity_configureJoystickMotor1DialogTitle = 2131296333;
+			public const int ControlInterfaceActivity_configureJoystickModeDialogTitle = 2131296333;
+			
+			// aapt resource value: 0x7f090050
+			public const int ControlInterfaceActivity_configureJoystickMotor1DialogPositive = 2131296336;
 			
 			// aapt resource value: 0x7f09004f
-			public const int ControlInterfaceActivity_configureJoystickMotor2DialogTitle = 2131296335;
+			public const int ControlInterfaceActivity_configureJoystickMotor1DialogTitle = 2131296335;
 			
-			// aapt resource value: 0x7f090049
-			public const int ControlInterfaceActivity_configureJoystickOptionsMenuMode = 2131296329;
+			// aapt resource value: 0x7f090051
+			public const int ControlInterfaceActivity_configureJoystickMotor2DialogTitle = 2131296337;
 			
-			// aapt resource value: 0x7f09004a
-			public const int ControlInterfaceActivity_configureJoystickOptionsMenuMotors = 2131296330;
+			// aapt resource value: 0x7f09004b
+			public const int ControlInterfaceActivity_configureJoystickOptionsMenuMode = 2131296331;
 			
-			// aapt resource value: 0x7f09003a
-			public const int ControlInterfaceActivity_inputDigitalNoTrail = 2131296314;
-			
-			// aapt resource value: 0x7f090037
-			public const int ControlInterfaceActivity_inputDigitalOne = 2131296311;
-			
-			// aapt resource value: 0x7f090039
-			public const int ControlInterfaceActivity_inputDigitalTrail = 2131296313;
-			
-			// aapt resource value: 0x7f090038
-			public const int ControlInterfaceActivity_inputDigitalZero = 2131296312;
-			
-			// aapt resource value: 0x7f090040
-			public const int ControlInterfaceActivity_inputModeAnalogR = 2131296320;
-			
-			// aapt resource value: 0x7f090042
-			public const int ControlInterfaceActivity_inputModeAnalogU = 2131296322;
-			
-			// aapt resource value: 0x7f09003f
-			public const int ControlInterfaceActivity_inputModeDigitalR = 2131296319;
-			
-			// aapt resource value: 0x7f090041
-			public const int ControlInterfaceActivity_inputModeDigitalU = 2131296321;
+			// aapt resource value: 0x7f09004c
+			public const int ControlInterfaceActivity_configureJoystickOptionsMenuMotors = 2131296332;
 			
 			// aapt resource value: 0x7f09003c
-			public const int ControlInterfaceActivity_inputModeNtc = 2131296316;
+			public const int ControlInterfaceActivity_inputDigitalNoTrail = 2131296316;
+			
+			// aapt resource value: 0x7f090039
+			public const int ControlInterfaceActivity_inputDigitalOne = 2131296313;
 			
 			// aapt resource value: 0x7f09003b
-			public const int ControlInterfaceActivity_inputModeSwitch = 2131296315;
+			public const int ControlInterfaceActivity_inputDigitalTrail = 2131296315;
 			
-			// aapt resource value: 0x7f09003d
-			public const int ControlInterfaceActivity_inputModeTrailSensor = 2131296317;
+			// aapt resource value: 0x7f09003a
+			public const int ControlInterfaceActivity_inputDigitalZero = 2131296314;
+			
+			// aapt resource value: 0x7f090042
+			public const int ControlInterfaceActivity_inputModeAnalogR = 2131296322;
+			
+			// aapt resource value: 0x7f090044
+			public const int ControlInterfaceActivity_inputModeAnalogU = 2131296324;
+			
+			// aapt resource value: 0x7f090041
+			public const int ControlInterfaceActivity_inputModeDigitalR = 2131296321;
+			
+			// aapt resource value: 0x7f090043
+			public const int ControlInterfaceActivity_inputModeDigitalU = 2131296323;
 			
 			// aapt resource value: 0x7f09003e
-			public const int ControlInterfaceActivity_inputModeUltrasonic = 2131296318;
+			public const int ControlInterfaceActivity_inputModeNtc = 2131296318;
+			
+			// aapt resource value: 0x7f09003d
+			public const int ControlInterfaceActivity_inputModeSwitch = 2131296317;
+			
+			// aapt resource value: 0x7f09003f
+			public const int ControlInterfaceActivity_inputModeTrailSensor = 2131296319;
+			
+			// aapt resource value: 0x7f090040
+			public const int ControlInterfaceActivity_inputModeUltrasonic = 2131296320;
 			
 			// aapt resource value: 0x7f090032
 			public const int ControlInterfaceActivity_interfaceConnecting = 2131296306;
@@ -2868,14 +2868,20 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f090033
 			public const int ControlInterfaceActivity_interfaceConnectingTitle = 2131296307;
 			
-			// aapt resource value: 0x7f090034
-			public const int ControlInterfaceActivity_interfaceConnectionLostMessage = 2131296308;
-			
 			// aapt resource value: 0x7f090036
-			public const int ControlInterfaceActivity_interfaceConnectionLostPositive = 2131296310;
+			public const int ControlInterfaceActivity_interfaceConnectionLostMessage = 2131296310;
+			
+			// aapt resource value: 0x7f090038
+			public const int ControlInterfaceActivity_interfaceConnectionLostPositive = 2131296312;
+			
+			// aapt resource value: 0x7f090037
+			public const int ControlInterfaceActivity_interfaceConnectionLostTitle = 2131296311;
+			
+			// aapt resource value: 0x7f090034
+			public const int ControlInterfaceActivity_interfaceDisconnecting = 2131296308;
 			
 			// aapt resource value: 0x7f090035
-			public const int ControlInterfaceActivity_interfaceConnectionLostTitle = 2131296309;
+			public const int ControlInterfaceActivity_interfaceDisconnectingTitle = 2131296309;
 			
 			// aapt resource value: 0x7f090030
 			public const int ControlInterfaceActivity_interfaceNotAvaliable = 2131296304;
@@ -2886,23 +2892,23 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f09002f
 			public const int ControlInterfaceActivity_interfaceNotAvaliableTitle = 2131296303;
 			
-			// aapt resource value: 0x7f090047
-			public const int ControlInterfaceActivity_joystickModeSingle = 2131296327;
+			// aapt resource value: 0x7f090049
+			public const int ControlInterfaceActivity_joystickModeSingle = 2131296329;
+			
+			// aapt resource value: 0x7f09004a
+			public const int ControlInterfaceActivity_joystickModeSyncron = 2131296330;
 			
 			// aapt resource value: 0x7f090048
-			public const int ControlInterfaceActivity_joystickModeSyncron = 2131296328;
-			
-			// aapt resource value: 0x7f090046
-			public const int ControlInterfaceActivity_noCamera = 2131296326;
-			
-			// aapt resource value: 0x7f090043
-			public const int ControlInterfaceActivity_outputModeMotor = 2131296323;
-			
-			// aapt resource value: 0x7f090044
-			public const int ControlInterfaceActivity_outputModeOutuput = 2131296324;
+			public const int ControlInterfaceActivity_noCamera = 2131296328;
 			
 			// aapt resource value: 0x7f090045
-			public const int ControlInterfaceActivity_pictureTakenToast = 2131296325;
+			public const int ControlInterfaceActivity_outputModeMotor = 2131296325;
+			
+			// aapt resource value: 0x7f090046
+			public const int ControlInterfaceActivity_outputModeOutuput = 2131296326;
+			
+			// aapt resource value: 0x7f090047
+			public const int ControlInterfaceActivity_pictureTakenToast = 2131296327;
 			
 			// aapt resource value: 0x7f09002a
 			public const int ControlInterfaceActivity_simulatedInterfaceName = 2131296298;
@@ -2922,29 +2928,29 @@ namespace FtApp.Droid
 			// aapt resource value: 0x7f090029
 			public const int ControlInterfaceActivity_toolbarTitle = 2131296297;
 			
-			// aapt resource value: 0x7f090050
-			public const int ControlInterfaceOptionsMenu_joystick = 2131296336;
-			
-			// aapt resource value: 0x7f090056
-			public const int RateReminderDialog_doNotShowAgainKey = 2131296342;
-			
-			// aapt resource value: 0x7f090057
-			public const int RateReminderDialog_launchCountKey = 2131296343;
-			
 			// aapt resource value: 0x7f090052
-			public const int RateReminderDialog_message = 2131296338;
+			public const int ControlInterfaceOptionsMenu_joystick = 2131296338;
 			
-			// aapt resource value: 0x7f090055
-			public const int RateReminderDialog_negative = 2131296341;
+			// aapt resource value: 0x7f090058
+			public const int RateReminderDialog_doNotShowAgainKey = 2131296344;
+			
+			// aapt resource value: 0x7f090059
+			public const int RateReminderDialog_launchCountKey = 2131296345;
 			
 			// aapt resource value: 0x7f090054
-			public const int RateReminderDialog_neutral = 2131296340;
+			public const int RateReminderDialog_message = 2131296340;
+			
+			// aapt resource value: 0x7f090057
+			public const int RateReminderDialog_negative = 2131296343;
+			
+			// aapt resource value: 0x7f090056
+			public const int RateReminderDialog_neutral = 2131296342;
+			
+			// aapt resource value: 0x7f090055
+			public const int RateReminderDialog_positive = 2131296341;
 			
 			// aapt resource value: 0x7f090053
-			public const int RateReminderDialog_positive = 2131296339;
-			
-			// aapt resource value: 0x7f090051
-			public const int RateReminderDialog_title = 2131296337;
+			public const int RateReminderDialog_title = 2131296339;
 			
 			// aapt resource value: 0x7f09001f
 			public const int SelectDeviceActivity_bluetooth = 2131296287;

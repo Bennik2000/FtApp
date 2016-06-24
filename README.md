@@ -86,6 +86,12 @@ desctibed [here](https://help.github.com/articles/using-pull-requests/).
 
 
 ## History
+#### Version 1.2.2
+* The I/O configuration can now be saved
+* The interface list can now be refreshed
+* Improved the connecting and disconnecting process
+* Corrected typo in german translation
+
 #### Version 1.2.1
 * Fixed the not working left joystick
 

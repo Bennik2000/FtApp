@@ -98,7 +98,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         private void SearchTx()
         {
-            if (BluetoothAdapter.DefaultAdapter.IsEnabled)
+            if (BluetoothAdapter.DefaultAdapter != null && BluetoothAdapter.DefaultAdapter.IsEnabled)
             {
                 SerialAdapter.SearchAvailableDevices(() => { }, adress =>
                 {

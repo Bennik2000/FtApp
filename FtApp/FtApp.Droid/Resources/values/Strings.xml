@@ -20,6 +20,7 @@
   <string name="SelectDeviceActivity_notInterfaceFound">No fischertechnik Interfaces was found</string>
 
   <string name="SelectDeviceActivity_bluetoothHasToBeEnabled">Bluetooth has to be enabled to search for TX Controllers!</string>
+  <string name="SelectDeviceActivity_noBluetooth">This device does not have bluetooth!</string>
 
   <string name="SelectDeviceOptionsMenu_simulate">Simulate</string>
   <string name="SelectDeviceOptionsMenu_about">About</string>

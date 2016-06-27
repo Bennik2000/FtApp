@@ -211,9 +211,16 @@ namespace FtApp.Droid.Activities.SelectDevice
 
         private void SearchForInterfaces()
         {
-            if (!BluetoothAdapter.DefaultAdapter.IsEnabled)
+            if (BluetoothAdapter.DefaultAdapter != null)
             {
-                Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
+                if (!BluetoothAdapter.DefaultAdapter.IsEnabled)
+                {
+                    Toast.MakeText(this, Resource.String.SelectDeviceActivity_bluetoothHasToBeEnabled, ToastLength.Short).Show();
+                }
+            }
+            else
+            {
+                Toast.MakeText(this, Resource.String.SelectDeviceActivity_noBluetooth, ToastLength.Short).Show();
             }
 
             HideEmptyStateImage();

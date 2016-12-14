@@ -17,7 +17,7 @@
   <string name="SelectDeviceActivity_connect">Connect</string>
   <string name="SelectDeviceActivity_notValidIp">"%1$s" is not a valid ip address</string>
   <string name="SelectDeviceActivity_noIp">No ip is avaliable</string>
-  <string name="SelectDeviceActivity_notInterfaceFound">No fischertechnik Interfaces was found</string>
+  <string name="SelectDeviceActivity_notInterfaceFound">No fischertechnik Interface was found</string>
   <string name="SelectDeviceActivity_permissionNeededTitle">Permission needed</string>
   <string name="SelectDeviceActivity_permissionNeeded">This permission is needed to search for the nearby bluetooth devices!</string>
 

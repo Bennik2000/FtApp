@@ -10,7 +10,7 @@
   </string-array>
   
   <string-array name="HelpFaqMessages">
-    <item>Make sure that the firmware on your controller is up-to-date. Therefore open ROBO Pro (of course also the newest version) and connect to the controller. If your firmware is not up-to-date, a popup window will inform you.</item>
+    <item>Try to close and kll this app. Also try to restart the controller. If this does not work make sure that the firmware on your controller is up-to-date. Therefore open ROBO Pro (of course also the newest version) and connect to the controller. If your firmware is not up-to-date, a popup window will inform you.</item>
     <item>Ensure that bluetooth is turned on and your controller is visible. If you want to connect to a ROBOTICS TXT Controller you have to be connected to its WiFi network.</item>
     <item>Ensure that the signal strength is good enough. Also swipe away from the camera tab. Then swipe back to the camera tab. Normally the camera stream should work again.</item>
     <item>If this is the case you should try to restart your TXT Controller</item>

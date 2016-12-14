@@ -8,12 +8,16 @@ using Android.Views;
 using Android.Widget;
 using System.Collections.Generic;
 using System.Linq;
+using Android;
+using Android.Support.V4.App;
+using Android.Support.V4.Content;
 using Android.Support.V4.Widget;
 using FtApp.Droid.Activities.About;
 using FtApp.Droid.Activities.AppRating;
 using FtApp.Droid.Activities.ControlInterface;
 using FtApp.Droid.Activities.Help;
 using FtApp.Fischertechnik;
+using AlertDialog = Android.Support.V7.App.AlertDialog;
 using BluetoothAdapter = Android.Bluetooth.BluetoothAdapter;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
@@ -25,6 +29,7 @@ namespace FtApp.Droid.Activities.SelectDevice
     public class SelectDeviceActivity : AppCompatActivity
     {
         private const int EnableBluetoothRequestId = 1;
+        private const int PermissionRequestAccessCoarseLocationId = 1;
 
         private ListView _listViewDevices;
         private FoundDevicesListAdapter _foundDevicesListAdapter;
@@ -249,7 +254,7 @@ namespace FtApp.Droid.Activities.SelectDevice
 
             _listRefreshLayout.Refreshing = false;
         }
-
+        
         private void InterfaceSearchAsyncTaskOnSearchFinished(object sender, InterfaceSearchAsyncTask.SearchFinishedEventArgs eventArgs)
         {
             if (_foundDevices.Count > 0)
@@ -287,7 +292,7 @@ namespace FtApp.Droid.Activities.SelectDevice
             _layoutListEmpty.Alpha = 0;
             _layoutListEmpty.Visibility = ViewStates.Visible;
 
-            _layoutListEmpty.Animate().Alpha(1).SetDuration(225).Start();
+            _layoutListEmpty.Animate().Alpha(1).SetDuration(225).SetListener(null).Start();
         }
 
         private void HideEmptyStateImage()

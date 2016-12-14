@@ -2,7 +2,11 @@ using Android.Bluetooth;
 using Android.Content;
 using Java.Util;
 using System;
+using Java.Lang;
+using Java.Lang.Reflect;
 using TXCommunication;
+using Exception = System.Exception;
+using Object = System.Object;
 
 namespace FtApp.Droid.Native
 {
@@ -14,7 +18,7 @@ namespace FtApp.Droid.Native
         private Context Context { get; }
 
         private static readonly UUID RfCommUuid = UUID.FromString("00001101-0000-1000-8000-00805F9B34FB");
-        
+
         private BluetoothDevice _bluetoothDevice;
         private BluetoothSocket _bluetoothSocket;
 
@@ -39,9 +43,28 @@ namespace FtApp.Droid.Native
             {
                 throw new InvalidOperationException("The given address is not valid");
             }
-            
+
             _bluetoothDevice = _bluetoothAdapter.GetRemoteDevice(address);
-            _bluetoothSocket = _bluetoothDevice?.CreateInsecureRfcommSocketToServiceRecord(RfCommUuid);
+
+            try
+            {
+
+                // Create the socket using reflection
+                Method m = _bluetoothDevice.Class.GetMethod("createRfcommSocket", Integer.Type);
+                _bluetoothSocket = (BluetoothSocket) m.Invoke(_bluetoothDevice, 1);
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    // When the first method failed try to connect using the public method
+                    _bluetoothSocket = _bluetoothDevice?.CreateInsecureRfcommSocketToServiceRecord(RfCommUuid);
+                }
+                catch (Exception e)
+                {
+                    
+                }
+            }
             
             _bluetoothSocket?.Connect();
         }

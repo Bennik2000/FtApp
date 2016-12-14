@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.bennik2000.ftapp" android:installLocation="preferExternal" android:versionName="1.2.2" android:versionCode="7">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.bennik2000.ftapp" android:installLocation="preferExternal" android:versionName="1.2.3" android:versionCode="8">
 	<uses-sdk android:minSdkVersion="15" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.BLUETOOTH" />
 	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<application android:icon="@drawable/Icon" android:label="FtApp" android:theme="@style/FtApp.Base"></application>
 </manifest>

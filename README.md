@@ -23,8 +23,10 @@ Tested on these devices:
 |---------------------------|---------------|------ |
 | Samsung Galaxy J5         |Android 5.1    |Working|
 | Samsung Galaxy S4 mini    |Android 4.4    |Working|
+| Samsung Galaxy S4 mini    |Android 6.0.1  |Working|
 | Samsung Galaxy S3 mini    |Android 4.1.2  |Working|
 | Samsung Galaxy S2         |Android 4.2    |Working|
+| One Plus 3                |Android 6.0.1  |Working|
 
 
 Feel free to test on more devices and report your result!
@@ -86,6 +88,9 @@ desctibed [here](https://help.github.com/articles/using-pull-requests/).
 
 
 ## History
+#### Version 1.2.3
+* Fixed issues for Android Lollipop and newer
+
 #### Version 1.2.2
 * The I/O configuration can now be saved
 * The interface list can now be refreshed

@@ -110,7 +110,7 @@ namespace FtApp.Droid.Activities.ControlInterface
                 SetupFtInterface();
             }
 
-            // On start we conenct to the interface
+            // On start we connect to the interface
             ConnectToFtInterface();
         }
 
@@ -340,8 +340,8 @@ namespace FtApp.Droid.Activities.ControlInterface
             if (animated)
             {
                 // We show the joystick with an animation
-                _tabLayout.Animate().Alpha(0).SetDuration(200).Start();
-                _viewPager.Animate().Alpha(0).SetDuration(200).Start();
+                _tabLayout.Animate().Alpha(0).SetDuration(200).SetListener(null).Start();
+                _viewPager.Animate().Alpha(0).SetDuration(200).SetListener(null).Start();
 
                 FragmentManager.BeginTransaction()
                     .SetCustomAnimations(Resource.Animation.FadeIn, Resource.Animation.FadeOut)
@@ -370,14 +370,12 @@ namespace FtApp.Droid.Activities.ControlInterface
                 _tabLayout.Animate()
                     .Alpha(1)
                     .SetDuration(200)
-                    .SetListener(new HideOnFinishedAnimationListener(_tabLayout))
                     .Start();
 
                 _viewPager.Visibility = ViewStates.Visible;
                 _viewPager.Animate()
                     .Alpha(1)
                     .SetDuration(200)
-                    .SetListener(new HideOnFinishedAnimationListener(_viewPager))
                     .Start();
 
                 FragmentManager.BeginTransaction()

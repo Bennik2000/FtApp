@@ -4,14 +4,8 @@ using System;
 
 namespace FtApp.Droid.Activities.SelectDevice
 {
-    class HideOnFinishedAnimationListener : Animator.IAnimatorListener
+    class HideOnFinishedAnimationListener : Java.Lang.Object, Animator.IAnimatorListener
     {
-        public void Dispose()
-        {
-        }
-
-        public IntPtr Handle { get; }
-
         private readonly View _animatedView;
 
         public HideOnFinishedAnimationListener(View view)

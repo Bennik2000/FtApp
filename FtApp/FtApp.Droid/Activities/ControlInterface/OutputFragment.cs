@@ -322,8 +322,8 @@ namespace FtApp.Droid.Activities.ControlInterface
 
                 view.TranslationY = 20;
 
-                view.Animate().Alpha(1).SetDuration(225).SetStartDelay(position * 20).Start();
-                view.Animate().TranslationY(0).SetDuration(100).SetStartDelay(position * 20).Start();
+                view.Animate().Alpha(1).SetDuration(225).SetStartDelay(position * 20).SetListener(null).Start();
+                view.Animate().TranslationY(0).SetDuration(100).SetStartDelay(position * 20).SetListener(null).Start();
             }
 
             private void ShowInputModeContextMenu(Context context, ImageView imageView, int position)

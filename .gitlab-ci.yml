@@ -18,7 +18,8 @@ build:
   script:
   - echo building...
   - '"%NugetExec%" restore "%Solution%"'
-  - '"%MsBuildExec%" "%Solution%" /p:Configuration=Release'
+  - '"%MsBuildExec%" "%Solution%" /p:Configuration=Release /t:Clean'
+  - '"%MsBuildExec%" "%Solution%" /p:Configuration=Release /m'
   - '"%MsBuildExec%" /p:Configuration=Release /t:SignAndroidPackage /p:Configuration=Release FtApp\FtApp.Droid\FtApp.Droid.csproj'
   except:
   - tags

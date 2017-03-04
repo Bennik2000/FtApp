@@ -2,6 +2,9 @@ variables:
   Solution: FtApp.sln
   MsBuildExec: 'C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild'
   NugetExec: 'C:\Users\Benedikt Kolb\Desktop\GitlabRunner\nuget.exe'
+  AndroidSdkDirectory: 'C:\Program Files (x86)\Android\android-sdk'
+  AndroidNdkDirectory: 'D:\Benedikt Kolb\Documents\Android\ndk\android-ndk-r10e'
+  JavaSdkDirectory: 'C:\Program Files\Java\jdk1.8.0_112'
 
 before_script:
   - "echo off"
@@ -19,7 +22,7 @@ build:
   - echo building...
   - '"%NugetExec%" restore "%Solution%"'
   - '"%MsBuildExec%" "%Solution%" /p:Configuration=Release /t:Clean'
-  - '"%MsBuildExec%" "%Solution%" /p:Configuration=Release /m'
+  - '"%MsBuildExec%" "%Solution%" /p:Configuration=Release /m /p:AndroidSdkDirectory="%AndroidSdkDirectory%" /p:AndroidNdkDirectory="%AndroidNdkDirectory%" /p:JavaSdkDirectory="%JavaSdkDirectory%"'
   - '"%MsBuildExec%" /p:Configuration=Release /t:SignAndroidPackage /p:Configuration=Release FtApp\FtApp.Droid\FtApp.Droid.csproj'
   except:
   - tags

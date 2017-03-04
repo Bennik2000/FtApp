@@ -7,7 +7,7 @@ before_script:
   - "echo off"
   - 'call "%VS120COMNTOOLS%\vsvars32.bat"'
   - set
-  - '"%NugetExec%" "%Solution%"'
+  - '"%NugetExec%" restore "%Solution%"'
 
 stages:
   - build

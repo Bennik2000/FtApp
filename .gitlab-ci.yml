@@ -1,0 +1,39 @@
+variables:
+  Solution: FtApp.sln
+  MsBuildExec: 'C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild'
+
+before_script:
+  - "echo off"
+  - 'call "%VS120COMNTOOLS%\vsvars32.bat"'
+  - set
+
+stages:
+  - build
+#  - test
+#  - deploy
+
+build:
+  stage: build
+  script:
+  - echo building...
+  - '"%MsBuildExec%" "%Solution%"'
+  except:
+  - tags
+
+#test:
+#  stage: test
+#  script:
+#  - echo testing...
+#  - '"%MsBuildExec%" "%Solution%"'
+#  - dir /s /b *.Tests.dll | findstr /r Tests\\*\\bin\\ > testcontainers.txt
+#  - 'for /f %%f in (testcontainers.txt) do mstest.exe /testcontainer:"%%f"'
+#  except:
+#  - tags
+
+#deploy:
+#  stage: deploy
+#  script:
+#  - echo deploying...
+#  - '"%MsBuildExec%" "%Solution%"'
+#  only:
+#  - production

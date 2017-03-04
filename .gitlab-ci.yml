@@ -7,7 +7,6 @@ before_script:
   - "echo off"
   - 'call "%VS120COMNTOOLS%\vsvars32.bat"'
   - set
-  - '"%NugetExec%" restore "%Solution%"'
 
 stages:
   - build
@@ -18,7 +17,9 @@ build:
   stage: build
   script:
   - echo building...
-  - '"%MsBuildExec%" "%Solution%"'
+  - '"%NugetExec%" restore "%Solution%"'
+  - '"%MsBuildExec%" "%Solution%" /p:Configuration=Release'
+  - '"%MsBuildExec%" /p:Configuration=Release /t:SignAndroidPackage /p:Configuration=Release FtApp\FtApp.Droid\FtApp.Droid.csproj'
   except:
   - tags
 

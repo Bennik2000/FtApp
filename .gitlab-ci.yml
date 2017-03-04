@@ -1,11 +1,13 @@
 variables:
   Solution: FtApp.sln
   MsBuildExec: 'C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild'
+  NugetExec: 'C:\Users\Benedikt Kolb\Desktop\GitlabRunner\nuget.exe'
 
 before_script:
   - "echo off"
   - 'call "%VS120COMNTOOLS%\vsvars32.bat"'
   - set
+  - '"%NugetExec%" "%Solution%"'
 
 stages:
   - build
